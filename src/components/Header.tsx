@@ -13,24 +13,7 @@ import {
   dropdownItemHover,
   dropdownDivider,
 } from '@/components/Dropdown'
-
-const navLinks = {
-  perfume: [
-    { label: '단품 상품 리스트', href: '/products/single' },
-    { label: '조합 상품 리스트', href: '/products/combo' },
-  ],
-  findMyScent: [
-    { title: '취향 추천 테스트', subtitle: '취향 정보 기반 향기 추천', href: '/find-my-scent/taste-test' },
-    { title: '웰니스 케어 진단', subtitle: '건강 정보 기반 아로마 테라피', href: '/find-my-scent/wellness' },
-    { title: 'AI 비주얼 분석', subtitle: '사진 기반 향기 추천', href: '/find-my-scent/ai-visual' },
-  ],
-  profile: [
-    { label: '내 정보 수정', href: '/profile', icon: 'pencil' },
-    { label: '향기 저장소', href: '/profile/storage', icon: 'heart' },
-    { label: '관리자 페이지', href: '/admin', icon: 'gear' },
-    { label: '로그아웃', href: '/login', icon: 'logout' },
-  ],
-}
+import { headerNavLinks } from '@/constants/headerNavLinks'
 
 const styles = {
   header: 'sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur',
@@ -87,7 +70,7 @@ export function Header() {
 
   const renderPerfumeDropdown = () => (
     <DropdownMenu className={perfumeMenuClassName}>
-      {navLinks.perfume.map((item, index) => (
+      {headerNavLinks.perfume.map((item, index) => (
         <DropdownItem
           key={item.href}
           href={item.href}
@@ -103,7 +86,7 @@ export function Header() {
 
   const renderFindMyScentDropdown = () => (
     <DropdownMenu className={findMyScentMenuClassName}>
-      {navLinks.findMyScent.map((item, index) => (
+      {headerNavLinks.findMyScent.map((item, index) => (
         <DropdownItem
           key={item.href}
           href={item.href}
@@ -120,7 +103,7 @@ export function Header() {
 
   const renderProfileList = () => (
     <DropdownMenu className={dropdownMenuProfile}>
-      {navLinks.profile.map((item) => (
+      {headerNavLinks.profile.map((item) => (
         <DropdownItem
           key={item.href}
           href={item.href}

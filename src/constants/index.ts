@@ -1,1 +1,1 @@
-export {}
+export { headerNavLinks } from './headerNavLinks'
