@@ -18,6 +18,7 @@ const style = {
   },
 } as const
 
+<<<<<<< HEAD
 // 기본
 export const dropdownMenuDefault = `rounded-lg border ${style.default.border} ${style.default.panelBg} py-2 shadow-lg`
 export const dropdownMenuPositionLeft = 'absolute left-0 top-full mt-0.5'
@@ -25,6 +26,15 @@ export const dropdownMenuPositionRight = 'absolute right-0 top-full mt-2'
 // 항목: 디폴트
 export const dropdownItemDefault = `block w-full px-4 py-3 text-left text-sm ${style.default.itemText}`
 // 항목: 호버 시
+=======
+// 기본 스타일
+export const dropdownMenuDefault = `rounded-lg border ${style.default.border} ${style.default.panelBg} py-2 shadow-lg`
+export const dropdownMenuPositionLeft = 'absolute left-0 top-full mt-0.5'
+export const dropdownMenuPositionRight = 'absolute right-0 top-full mt-2'
+// 디폴트 스타일
+export const dropdownItemDefault = `block w-full px-4 py-3 text-left text-sm ${style.default.itemText}`
+// 호버 스타일
+>>>>>>> a5f7830 (refactor: common에 Dropdown 컴포넌트 추가 (#11))
 export const dropdownItemHover = `${style.hover.bg} ${style.hover.text}`
 export const dropdownDivider = `border-t ${style.default.border}`
 export const dropdownMenuProfile = `absolute right-0 top-full mt-2 min-w-[200px] overflow-hidden rounded-xl border ${style.default.border} ${style.default.panelBg} shadow-lg`
