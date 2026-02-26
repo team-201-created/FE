@@ -1,0 +1,9 @@
+echo "pre-commit lint-staged 검사 중..."
+npx lint-staged
+
+if [ $? -ne 0 ]; then
+  echo "Failed 수정 후 다시 커밋해주세요."
+  exit 1
+fi
+
+echo "Success 커밋을 계속 진행합니다."
