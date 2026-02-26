@@ -1,56 +1,58 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  
   /* 향조 색 */
-  --color-base: #FEE685;
-  --color-base-bg: #FFFBEB;
+  --color-base: #fee685;
+  --color-base-bg: #fffbeb;
 
-  --color-citrus: #FFF085;
-  --color-citrus-bg: #FEF9C2;
+  --color-citrus: #fff085;
+  --color-citrus-bg: #fef9c2;
 
   --color-aromatic: #008236;
-  --color-aromatic-bg: #F0FDF4;
+  --color-aromatic-bg: #f0fdf4;
 
-  --color-woody: #973C00;
-  --color-woody-bg: #FEF3C6;
+  --color-woody: #973c00;
+  --color-woody-bg: #fef3c6;
 
-  --color-floral: #A3004C;
-  --color-floral-bg: #FCE7F3;
+  --color-floral: #a3004c;
+  --color-floral-bg: #fce7f3;
 
-  --color-oriental: #6E11B0;
-  --color-oriental-bg: #F3E8FF;
+  --color-oriental: #6e11b0;
+  --color-oriental-bg: #f3e8ff;
 
-  --color-animalic: #C10007;
-  --color-animalic-bg: #FEF2F2;
+  --color-animalic: #c10007;
+  --color-animalic-bg: #fef2f2;
 
   /* 그라데이션 색상들 */
-  --color-logo: linear-gradient(90deg, #FF73C7 28%, #9400FF 100%);
-  --color-icon-primary: linear-gradient(-45deg, #AD46FF 0%, #F6339A 100%);
-  --color-icon-secondary: linear-gradient(-45deg, #FFA8DA 0%, #F6339A 100%);
-  --color-icon-tertiary: linear-gradient(0deg, #9400FF 0%, #FF73C3 100%);
+  --color-logo: linear-gradient(90deg, #ff73c7 28%, #9400ff 100%);
+  --color-icon-primary: linear-gradient(-45deg, #ad46ff 0%, #f6339a 100%);
+  --color-icon-secondary: linear-gradient(-45deg, #ffa8da 0%, #f6339a 100%);
+  --color-icon-tertiary: linear-gradient(0deg, #9400ff 0%, #ff73c3 100%);
 
-  --color-main: linear-gradient(90deg, #BFDBFF 0%, #FFB5FB 100%);
+  --color-main: linear-gradient(90deg, #bfdbff 0%, #ffb5fb 100%);
 
   /* 일반 색상들 */
-  --color-box-bg: #FBF0FF;
-  --color-white: #FFFFFF;
-  --color-gray-light: #DDDDDD;
-  --color-gray-white: #F5F5F5;
-  --color-gray-secondary: #99A1AF;
+  --color-box-bg: #fbf0ff;
+  --color-white: #ffffff;
+  --color-gray-light: #dddddd;
+  --color-gray-white: #f5f5f5;
+  --color-gray-secondary: #99a1af;
 
-  --color-purple-primary: #9400FF;
+  --color-purple-primary: #9400ff;
   --color-gray: #909090;
   --color-black-primary: #414141;
   --color-black-secondary: #364153;
 
-  --color-danger: #FB2C36;
-  --color-success: #00C950;
-  --color-kakao: #FEE500;
+  --color-danger: #fb2c36;
+  --color-success: #00c950;
+  --color-kakao: #fee500;
 
-  --background-gray-bg: #F2F2F2;
+  --background-gray-bg: #f2f2f2;
 }
 
 body {
+  font-family: var(--font-pretendard);
   background-color: var(--background-gray-bg);
+  -webkit-font-smoothing: antialiased; /* 폰트 부드럽게 */
+  -moz-osx-font-smoothing: grayscale; /* 폰트 부드럽게 */
 }
