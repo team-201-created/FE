@@ -7,12 +7,10 @@ import {
   DropdownItem,
   dropdownMenuDefault,
   dropdownMenuPositionLeft,
-  dropdownMenuPositionRight,
   dropdownMenuProfile,
   dropdownItemDefault,
   dropdownItemHover,
-  dropdownDivider,
-} from '@/components/Dropdown'
+} from '@/components/common/Dropdown'
 import { headerNavLinks } from '@/constants/headerNavLinks'
 
 const styles = {
