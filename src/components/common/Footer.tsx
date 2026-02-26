@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 const styles = {
   footer: 'border-t border-neutral-200 bg-white',
   container: 'mx-auto max-w-6xl px-4 py-12 sm:px-6',
@@ -29,9 +31,9 @@ export function Footer() {
               AI 기반 추천 시스템과 전문 향기 분석으로 완벽한 조합 향기를 경험하세요.
             </p>
             <div className={styles.snsWrap}>
-              <img src="/LinkA.svg" alt="" width={40} height={40} className={styles.snsIcon} />
-              <img src="/LinkB.svg" alt="" width={40} height={40} className={styles.snsIcon} />
-              <img src="/LinkC.svg" alt="" width={40} height={40} className={styles.snsIcon} />
+              <Image src="/LinkA.svg" alt="" width={40} height={40} className={styles.snsIcon} />
+              <Image src="/LinkB.svg" alt="" width={40} height={40} className={styles.snsIcon} />
+              <Image src="/LinkC.svg" alt="" width={40} height={40} className={styles.snsIcon} />
             </div>
           </div>
 
