@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React, { useState, useRef, useEffect } from 'react'
 import {
   DropdownMenu,
@@ -59,6 +60,7 @@ function ProfileDropdownIcon({ type }: { type: string }) {
 }
 
 export function Header() {
+  const pathname = usePathname()
   const [openPerfume, setOpenPerfume] = useState(false)
   const [openFindMyScent, setOpenFindMyScent] = useState(false)
   const [openProfile, setOpenProfile] = useState(false)
@@ -67,6 +69,12 @@ export function Header() {
   const togglePerfume = () => setOpenPerfume((prev) => !prev)
   const toggleFindMyScent = () => setOpenFindMyScent((prev) => !prev)
   const toggleProfile = () => setOpenProfile((prev) => !prev)
+
+  // 페이지 이동 시 네비 드롭다운(향, 나의 향기 찾기) 닫기
+  useEffect(() => {
+    setOpenPerfume(false)
+    setOpenFindMyScent(false)
+  }, [pathname])
 
   useEffect(() => {
     if (!openProfile) return
