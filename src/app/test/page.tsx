@@ -17,15 +17,18 @@ const SORT_OPTIONS = [
   { value: 'name', label: '이름순' },
 ] as const
 
-const sectionTitle = 'text-sm font-bold text-neutral-500 uppercase tracking-wider mb-2'
+const sectionTitle =
+  'text-sm font-bold text-neutral-500 uppercase tracking-wider mb-2'
 const card = 'rounded-xl border border-neutral-200 bg-white p-6 shadow-sm'
 const triggerButton =
   'inline-flex items-center gap-1 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50'
 
 // 제목+부제목용 스타일
 const itemWithSubtitle = 'block w-full px-4 py-3 text-left group'
-const itemTitle = 'text-sm font-bold text-neutral-900 group-hover:text-violet-700'
-const itemSubtitle = 'mt-0.5 text-xs text-neutral-500 group-hover:text-violet-700'
+const itemTitle =
+  'text-sm font-bold text-neutral-900 group-hover:text-violet-700'
+const itemSubtitle =
+  'mt-0.5 text-xs text-neutral-500 group-hover:text-violet-700'
 
 export default function DropdownTestPage() {
   const [openBasic, setOpenBasic] = useState(false)
@@ -37,7 +40,8 @@ export default function DropdownTestPage() {
   const currentSort = SORT_OPTIONS.some((o) => o.value === sortParam)
     ? (sortParam as (typeof SORT_OPTIONS)[number]['value'])
     : 'recent'
-  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === currentSort)?.label ?? '최신순'
+  const currentSortLabel =
+    SORT_OPTIONS.find((o) => o.value === currentSort)?.label ?? '최신순'
 
   // 정렬 드롭다운: URL이 바뀌면(항목 선택 시) 드롭다운 닫기
   useEffect(() => {
@@ -47,7 +51,9 @@ export default function DropdownTestPage() {
   return (
     <div className="min-h-screen bg-neutral-50 py-12">
       <div className="mx-auto max-w-4xl px-4">
-        <h1 className="mb-2 text-2xl font-bold text-neutral-900">드롭다운 스타일 테스트</h1>
+        <h1 className="mb-2 text-2xl font-bold text-neutral-900">
+          드롭다운 스타일 테스트
+        </h1>
         <p className="mb-10 text-neutral-600">
           공통 Dropdown 컴포넌트의 스타일 종류별 사용 예시입니다.
         </p>
@@ -73,7 +79,11 @@ export default function DropdownTestPage() {
                 <DropdownMenu
                   className={`${dropdownMenuDefault} ${dropdownMenuPositionLeft} min-w-[200px]`}
                 >
-                  <DropdownItem href="#" defaultClassName={dropdownItemDefault} hoverClassName={dropdownItemHover}>
+                  <DropdownItem
+                    href="#"
+                    defaultClassName={dropdownItemDefault}
+                    hoverClassName={dropdownItemHover}
+                  >
                     전체 향
                   </DropdownItem>
                   <DropdownItem
@@ -132,7 +142,9 @@ export default function DropdownTestPage() {
                     dividerAbove
                   >
                     <span className={itemTitle}>퀴즈 기반 추천</span>
-                    <p className={itemSubtitle}>몇 가지 질문으로 맞춤 향 추천</p>
+                    <p className={itemSubtitle}>
+                      몇 가지 질문으로 맞춤 향 추천
+                    </p>
                   </DropdownItem>
                 </DropdownMenu>
               )}
@@ -174,7 +186,6 @@ export default function DropdownTestPage() {
             </div>
           </section>
         </div>
-
       </div>
     </div>
   )

@@ -8,9 +8,21 @@ export const headerNavLinks = {
     { label: '조합 상품 리스트', href: '/products/combo' },
   ],
   findMyScent: [
-    { title: '취향 추천 테스트', subtitle: '취향 정보 기반 향기 추천', href: '/find-my-scent/taste-test' },
-    { title: '웰니스 케어 진단', subtitle: '건강 정보 기반 아로마 테라피', href: '/find-my-scent/wellness' },
-    { title: 'AI 비주얼 분석', subtitle: '사진 기반 향기 추천', href: '/find-my-scent/ai-visual' },
+    {
+      title: '취향 추천 테스트',
+      subtitle: '취향 정보 기반 향기 추천',
+      href: '/find-my-scent/taste-test',
+    },
+    {
+      title: '웰니스 케어 진단',
+      subtitle: '건강 정보 기반 아로마 테라피',
+      href: '/find-my-scent/wellness',
+    },
+    {
+      title: 'AI 비주얼 분석',
+      subtitle: '사진 기반 향기 추천',
+      href: '/find-my-scent/ai-visual',
+    },
   ],
   profile: [
     { label: '내 정보 수정', href: '/profile', icon: 'pencil' },

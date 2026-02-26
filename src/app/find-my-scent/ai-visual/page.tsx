@@ -4,7 +4,9 @@ export default function AIVisualPage() {
       <h1 className="mb-6 text-2xl font-semibold text-neutral-900">
         AI 비주얼 분석
       </h1>
-      <p className="text-neutral-600">AI 비주얼 분석 콘텐츠가 여기에 표시됩니다.</p>
+      <p className="text-neutral-600">
+        AI 비주얼 분석 콘텐츠가 여기에 표시됩니다.
+      </p>
     </div>
   )
 }

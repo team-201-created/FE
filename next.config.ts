@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
   // --webpack 플래그로 빌드할 때 사용
   webpack(config) {
     const fileLoaderRule = config.module.rules.find(
-      (rule: { test?: RegExp }) => rule?.test instanceof RegExp && rule.test.test('.svg')
+      (rule: { test?: RegExp }) =>
+        rule?.test instanceof RegExp && rule.test.test('.svg')
     ) as { exclude?: RegExp } | undefined
     if (fileLoaderRule) fileLoaderRule.exclude = /\.svg$/i
     config.module.rules.push({

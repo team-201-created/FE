@@ -33,7 +33,14 @@ export const dropdownItemWithCheck = 'flex items-center justify-between gap-2'
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 12l5 5L20 7" />
     </svg>
   )
@@ -48,7 +55,11 @@ export function DropdownMenu({
   className: string
   role?: 'menu'
 }) {
-  return <ul className={className} role={role}>{children}</ul>
+  return (
+    <ul className={className} role={role}>
+      {children}
+    </ul>
+  )
 }
 
 const checkIconClass = 'size-4 shrink-0 text-violet-600'
@@ -75,7 +86,12 @@ export function DropdownItem({
 
   return (
     <li role="none" className={dividerAbove ? dropdownDivider : undefined}>
-      <Link href={href} className={linkClassName} role="menuitem" aria-current={selected ? 'true' : undefined}>
+      <Link
+        href={href}
+        className={linkClassName}
+        role="menuitem"
+        aria-current={selected ? 'true' : undefined}
+      >
         {selected ? (
           <>
             <span className="min-w-0">{children}</span>
