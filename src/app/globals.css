@@ -1,1 +1,56 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+@theme {
+  
+  /* 향조 색 */
+  --color-base: #FEE685;
+  --color-base-bg: #FFFBEB;
+
+  --color-citrus: #FFF085;
+  --color-citrus-bg: #FEF9C2;
+
+  --color-aromatic: #008236;
+  --color-aromatic-bg: #F0FDF4;
+
+  --color-woody: #973C00;
+  --color-woody-bg: #FEF3C6;
+
+  --color-floral: #A3004C;
+  --color-floral-bg: #FCE7F3;
+
+  --color-oriental: #6E11B0;
+  --color-oriental-bg: #F3E8FF;
+
+  --color-animalic: #C10007;
+  --color-animalic-bg: #FEF2F2;
+
+  /* 그라데이션 색상들 */
+  --color-logo: linear-gradient(90deg, #FF73C7 28%, #9400FF 100%);
+  --color-icon-primary: linear-gradient(-45deg, #AD46FF 0%, #F6339A 100%);
+  --color-icon-secondary: linear-gradient(-45deg, #FFA8DA 0%, #F6339A 100%);
+  --color-icon-tertiary: linear-gradient(0deg, #9400FF 0%, #FF73C3 100%);
+
+  --color-main: linear-gradient(90deg, #BFDBFF 0%, #FFB5FB 100%);
+
+  /* 일반 색상들 */
+  --color-box-bg: #FBF0FF;
+  --color-white: #FFFFFF;
+  --color-gray-light: #DDDDDD;
+  --color-gray-white: #F5F5F5;
+  --color-gray-secondary: #99A1AF;
+
+  --color-purple-primary: #9400FF;
+  --color-gray: #909090;
+  --color-black-primary: #414141;
+  --color-black-secondary: #364153;
+
+  --color-danger: #FB2C36;
+  --color-success: #00C950;
+  --color-kakao: #FEE500;
+
+  --background-gray-bg: #F2F2F2;
+}
+
+body {
+  background-color: var(--background-gray-bg);
+}
