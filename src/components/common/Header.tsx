@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {
   DropdownMenu,
   DropdownItem,
@@ -12,6 +12,13 @@ import {
   dropdownItemHover,
 } from '@/components/common/Dropdown'
 import { headerNavLinks } from '@/constants/headerNavLinks'
+import CloseIcon from '@/assets/icons/close.svg'
+import OpenIcon from '@/assets/icons/open.svg'
+import ProfileIcon from '@/assets/icons/profile.svg'
+import PenIcon from '@/assets/icons/pen.svg'
+import HeartIcon from '@/assets/icons/heart.svg'
+import AdminIcon from '@/assets/icons/admin.svg'
+import ExitIcon from '@/assets/icons/exit.svg'
 
 const styles = {
   header: 'sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur',
@@ -21,6 +28,7 @@ const styles = {
   navItemWrapper: 'relative',
   navTab: 'inline-flex items-center gap-0.5 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-violet-50 hover:text-violet-800',
   chevronWrap: 'ml-0.5 shrink-0',
+  findMyScentItem: 'block w-full px-4 py-3 text-left group',
   findMyScentTitle: 'text-sm font-bold text-neutral-900 group-hover:text-violet-700',
   findMyScentSubtitle: 'mt-0.5 text-xs text-neutral-500 group-hover:text-violet-700',
   rightMenu: 'flex items-center gap-3',
@@ -31,19 +39,33 @@ const styles = {
   profileItemDefault: 'flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-800',
 } as const
 
+const menuClassNames = {
+  perfume: `${dropdownMenuDefault} ${dropdownMenuPositionLeft} min-w-[200px]`,
+  findMyScent: `${dropdownMenuDefault} ${dropdownMenuPositionLeft} min-w-[280px]`,
+} as const
+
+const PROFILE_ICON_CLASS = 'size-4 shrink-0'
+const profileDropdownIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  pencil: PenIcon,
+  heart: HeartIcon,
+  gear: AdminIcon,
+  logout: ExitIcon,
+}
+
+function ProfileDropdownIcon({ type }: { type: string }) {
+  const IconComponent = profileDropdownIcons[type]
+  if (!IconComponent) return null
+  return <IconComponent className={PROFILE_ICON_CLASS} />
+}
+
 export function Header() {
   const [openPerfume, setOpenPerfume] = useState(false)
   const [openFindMyScent, setOpenFindMyScent] = useState(false)
   const [openProfile, setOpenProfile] = useState(false)
-
-  const chevronSrc = (isOpen: boolean) => (isOpen ? '/close.svg' : '/open.svg')
-
   const profileWrapRef = useRef<HTMLDivElement>(null)
 
-  const handlePerfumeEnter = () => setOpenPerfume(true)
-  const handlePerfumeLeave = () => setOpenPerfume(false)
-  const handleFindMyScentEnter = () => setOpenFindMyScent(true)
-  const handleFindMyScentLeave = () => setOpenFindMyScent(false)
+  const togglePerfume = () => setOpenPerfume((prev) => !prev)
+  const toggleFindMyScent = () => setOpenFindMyScent((prev) => !prev)
   const toggleProfile = () => setOpenProfile((prev) => !prev)
 
   useEffect(() => {
@@ -63,11 +85,11 @@ export function Header() {
     }
   }, [openProfile])
 
-  const perfumeMenuClassName = `${dropdownMenuDefault} ${dropdownMenuPositionLeft} min-w-[200px]`
-  const findMyScentMenuClassName = `${dropdownMenuDefault} ${dropdownMenuPositionLeft} min-w-[280px]`
+  const Chevron = (isOpen: boolean) =>
+    isOpen ? <CloseIcon className="size-4" /> : <OpenIcon className="size-4" />
 
-  const renderPerfumeDropdown = () => (
-    <DropdownMenu className={perfumeMenuClassName}>
+  const perfumeDropdown = openPerfume ? (
+    <DropdownMenu className={menuClassNames.perfume}>
       {headerNavLinks.perfume.map((item, index) => (
         <DropdownItem
           key={item.href}
@@ -80,15 +102,15 @@ export function Header() {
         </DropdownItem>
       ))}
     </DropdownMenu>
-  )
+  ) : null
 
-  const renderFindMyScentDropdown = () => (
-    <DropdownMenu className={findMyScentMenuClassName}>
+  const findMyScentDropdown = openFindMyScent ? (
+    <DropdownMenu className={menuClassNames.findMyScent}>
       {headerNavLinks.findMyScent.map((item, index) => (
         <DropdownItem
           key={item.href}
           href={item.href}
-          defaultClassName="block w-full px-4 py-3 text-left group"
+          defaultClassName={styles.findMyScentItem}
           hoverClassName={dropdownItemHover}
           dividerAbove={index > 0}
         >
@@ -97,9 +119,9 @@ export function Header() {
         </DropdownItem>
       ))}
     </DropdownMenu>
-  )
+  ) : null
 
-  const renderProfileList = () => (
+  const profileDropdown = openProfile ? (
     <DropdownMenu className={dropdownMenuProfile}>
       {headerNavLinks.profile.map((item) => (
         <DropdownItem
@@ -113,17 +135,7 @@ export function Header() {
         </DropdownItem>
       ))}
     </DropdownMenu>
-  )
-
-  const chevronImg = (isOpen: boolean) => (
-    <img
-      src={chevronSrc(isOpen)}
-      alt=""
-      width={16}
-      height={16}
-      className="size-4"
-    />
-  )
+  ) : null
 
   return (
     <header className={styles.header}>
@@ -133,42 +145,36 @@ export function Header() {
         </Link>
 
         <nav className={styles.nav} aria-label="메인 메뉴">
-          <div
-            className={styles.navItemWrapper}
-            onMouseEnter={handlePerfumeEnter}
-            onMouseLeave={handlePerfumeLeave}
-          >
+          <div className={styles.navItemWrapper}>
             <button
               type="button"
               className={styles.navTab}
               aria-expanded={openPerfume}
               aria-haspopup="true"
+              onClick={togglePerfume}
             >
               향
               <span className={styles.chevronWrap} aria-hidden>
-                {chevronImg(openPerfume)}
+                {Chevron(openPerfume)}
               </span>
             </button>
-            {openPerfume && renderPerfumeDropdown()}
+            {perfumeDropdown}
           </div>
 
-          <div
-            className={styles.navItemWrapper}
-            onMouseEnter={handleFindMyScentEnter}
-            onMouseLeave={handleFindMyScentLeave}
-          >
+          <div className={styles.navItemWrapper}>
             <button
               type="button"
               className={styles.navTab}
               aria-expanded={openFindMyScent}
               aria-haspopup="true"
+              onClick={toggleFindMyScent}
             >
               나의 향기 찾기
               <span className={styles.chevronWrap} aria-hidden>
-                {chevronImg(openFindMyScent)}
+                {Chevron(openFindMyScent)}
               </span>
             </button>
-            {openFindMyScent && renderFindMyScentDropdown()}
+            {findMyScentDropdown}
           </div>
         </nav>
 
@@ -189,45 +195,12 @@ export function Header() {
               aria-haspopup="true"
               onClick={toggleProfile}
             >
-              <img src="/profile.svg" alt="" width={36} height={36} className="size-9" />
+              <ProfileIcon className="size-9" aria-hidden />
             </button>
-            {openProfile && renderProfileList()}
+            {profileDropdown}
           </div>
         </div>
       </div>
     </header>
   )
-}
-
-function ProfileDropdownIcon({ type }: { type: string }) {
-  const iconClass = 'size-4 shrink-0'
-  switch (type) {
-    case 'pencil':
-      return (
-        <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-        </svg>
-      )
-    case 'heart':
-      return (
-        <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      )
-    case 'gear':
-      return (
-        <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      )
-    case 'logout':
-      return (
-        <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-      )
-    default:
-      return null
-  }
 }
