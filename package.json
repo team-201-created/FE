@@ -10,7 +10,6 @@
     "lint:fix": "eslint src --fix",
     "preview": "vite preview",
     "prepare": "husky",
-    "postinstall": "husky install",
     "format": "prettier --cache --write .",
     "commit": "cz"
   },
@@ -28,6 +27,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9",
@@ -41,6 +42,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "typescript-eslint": "^8.56.1"
