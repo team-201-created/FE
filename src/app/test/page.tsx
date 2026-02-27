@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, usePathname } from 'next/navigation'
 import {
   DropdownMenu,
@@ -10,6 +10,8 @@ import {
   dropdownItemDefault,
   dropdownItemHover,
 } from '@/components/common/Dropdown'
+import Modal from '@/components/common/Modal'
+import Input from '@/components/common/Input'
 
 const SORT_OPTIONS = [
   { value: 'recent', label: '최신순' },
@@ -23,17 +25,21 @@ const card = 'rounded-xl border border-neutral-200 bg-white p-6 shadow-sm'
 const triggerButton =
   'inline-flex items-center gap-1 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50'
 
-// 제목+부제목용 스타일
 const itemWithSubtitle = 'block w-full px-4 py-3 text-left group'
 const itemTitle =
   'text-sm font-bold text-neutral-900 group-hover:text-violet-700'
 const itemSubtitle =
   'mt-0.5 text-xs text-neutral-500 group-hover:text-violet-700'
 
-export default function DropdownTestPage() {
+function TestPageContent() {
   const [openBasic, setOpenBasic] = useState(false)
   const [openWithSubtitle, setOpenWithSubtitle] = useState(false)
   const [openWithCheck, setOpenWithCheck] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+
+  // Input 전용 상태
+  const [inputValue, setInputValue] = useState('')
+
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const sortParam = searchParams.get('sort')
@@ -43,19 +49,20 @@ export default function DropdownTestPage() {
   const currentSortLabel =
     SORT_OPTIONS.find((o) => o.value === currentSort)?.label ?? '최신순'
 
-  // 정렬 드롭다운: URL이 바뀌면(항목 선택 시) 드롭다운 닫기
-  useEffect(() => {
+  const [prevSort, setPrevSort] = useState(currentSort)
+  if (currentSort !== prevSort) {
+    setPrevSort(currentSort)
     setOpenWithCheck(false)
-  }, [currentSort])
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 py-12">
       <div className="mx-auto max-w-4xl px-4">
         <h1 className="mb-2 text-2xl font-bold text-neutral-900">
-          드롭다운 스타일 테스트
+          UI 컴포넌트 테스트
         </h1>
         <p className="mb-10 text-neutral-600">
-          공통 Dropdown 컴포넌트의 스타일 종류별 사용 예시입니다.
+          공통 컴포넌트들의 통합 테스트 페이지입니다.
         </p>
 
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
@@ -185,8 +192,44 @@ export default function DropdownTestPage() {
               )}
             </div>
           </section>
+          {/* 인풋 섹션 추가 */}
+          <section className={card}>
+            <h2 className={sectionTitle}>5. 인풋 테스트</h2>
+            <p className="mb-4 text-sm text-neutral-600">
+              공통 인풋 컴포넌트 예시입니다.
+            </p>
+            <div className="flex flex-col gap-4">
+              <Input
+                label="기본"
+                placeholder="이름을 입력하세요"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                helperText="실명을 입력해 주세요."
+              />
+              <Input
+                label="에러"
+                status="error"
+                defaultValue="testtest"
+                helperText="올바른 이메일 형식이 아닙니다."
+              />
+              <Input
+                label="성공"
+                status="success"
+                defaultValue="test@naver.com"
+                helperText="올바른 이메일 형식이 아닙니다."
+              />
+            </div>
+          </section>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function TestPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TestPageContent />
+    </Suspense>
   )
 }
