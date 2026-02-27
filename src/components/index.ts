@@ -1,5 +1,5 @@
-export { Header } from './Header'
-export { Footer } from './Footer'
+export { Header } from '@/components/common/Header'
+export { Footer } from '@/components/common/Footer'
 export {
   DropdownMenu,
   DropdownItem,
@@ -10,4 +10,4 @@ export {
   dropdownItemDefault,
   dropdownItemHover,
   dropdownDivider,
-} from './Dropdown'
+} from '@/components/common/Dropdown'
