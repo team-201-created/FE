@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Header } from '@/components/common/Header'
 import { Footer } from '@/components/common/Footer'
+import { MockProvider } from '@/app/MockProvider'
 import './globals.css'
 
 const pretendard = localFont({
@@ -26,9 +27,11 @@ export default function RootLayout({
       <body
         className={`${pretendard.variable} flex min-h-screen flex-col antialiased`}
       >
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <MockProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </MockProvider>
       </body>
     </html>
   )
