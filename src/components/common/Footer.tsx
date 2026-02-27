@@ -4,7 +4,7 @@ const styles = {
   footer: 'border-t border-neutral-200 bg-white',
   container: 'mx-auto max-w-6xl px-4 py-12 sm:px-6',
   grid: 'grid grid-cols-1 gap-10 md:grid-cols-3',
-  logo: 'text-xl font-bold tracking-tight bg-gradient-to-r from-violet-600 via-purple-500 to-pink-500 bg-clip-text text-transparent',
+  logo: 'block h-6 w-auto',
   description: 'mt-3 text-sm leading-relaxed text-neutral-600',
   snsWrap: 'mt-4 flex gap-2',
   snsIcon: 'size-10 shrink-0',
@@ -24,7 +24,13 @@ export function Footer() {
       <div className={styles.container}>
         <div className={styles.grid}>
           <div>
-            <p className={styles.logo}>DeepScent</p>
+            <img
+              src="/logo.svg"
+              alt="DeepScent"
+              className={styles.logo}
+              width={189}
+              height={29}
+            />
             <p className={styles.description}>
               디지털 조향 솔루션으로 당신만의 향기를 찾아보세요.
               <br />
