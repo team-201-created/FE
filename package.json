@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "preview": "vite preview",
     "prepare": "husky",
     "format": "prettier --cache --write .",
     "commit": "cz"
