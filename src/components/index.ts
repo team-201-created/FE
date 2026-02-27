@@ -1,13 +1,7 @@
 export { Header } from '@/components/common/Header'
 export { Footer } from '@/components/common/Footer'
-export {
-  DropdownMenu,
-  DropdownItem,
-  dropdownMenuDefault,
-  dropdownMenuPositionLeft,
-  dropdownMenuPositionRight,
-  dropdownMenuProfile,
-  dropdownItemDefault,
-  dropdownItemHover,
-  dropdownDivider,
+export { Dropdown } from '@/components/common/Dropdown'
+export type {
+  DropdownItemProp,
+  DropdownVariant,
 } from '@/components/common/Dropdown'
