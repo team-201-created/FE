@@ -6,23 +6,12 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       '*.svg': {
-        loaders: [{ loader: '@svgr/webpack', options: { icon: true } }],
+        loaders: [
+          { loader: require.resolve('@svgr/webpack'), options: { icon: true } },
+        ],
         as: '*.js',
       },
     },
-  },
-  // --webpack 플래그로 빌드할 때 사용
-  webpack(config) {
-    const fileLoaderRule = config.module.rules.find(
-      (rule: { test?: RegExp }) =>
-        rule?.test instanceof RegExp && rule.test.test('.svg')
-    ) as { exclude?: RegExp } | undefined
-    if (fileLoaderRule) fileLoaderRule.exclude = /\.svg$/i
-    config.module.rules.push({
-      test: /\.svg$/i,
-      use: [{ loader: '@svgr/webpack', options: { icon: true } }],
-    })
-    return config
   },
 }
 
