@@ -4,7 +4,6 @@ about: 버그가 발생하였을때 해결을 위한 이슈 템플릿입니다.
 title: 'fix: '
 labels: bug
 assignees: ''
-
 ---
 
 ## 🐞 버그 설명
