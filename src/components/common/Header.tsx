@@ -5,14 +5,13 @@ import { Dropdown } from '@/components/common/Dropdown'
 import { headerNavLinks } from '@/constants/headerNavLinks'
 import CloseIcon from '@/assets/icons/close.svg'
 import OpenIcon from '@/assets/icons/open.svg'
-import ProfileIcon from '@/assets/icons/profile.svg'
 
 const styles = {
   header:
     'sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur',
   container:
     'mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6',
-  logo: 'text-xl font-bold tracking-tight bg-gradient-to-r from-violet-600 via-purple-500 to-pink-500 bg-clip-text text-transparent transition-transform hover:scale-[1.02]',
+  logo: 'flex items-center transition-transform hover:scale-[1.02]',
   nav: 'flex items-center gap-1',
   navItemWrapper: 'relative',
   rightMenu: 'flex items-center gap-3',
@@ -25,8 +24,14 @@ export function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <Link href="/" className={styles.logo}>
-          DeepScent
+        <Link href="/" className={styles.logo} aria-label="DeepScent 홈">
+          <img
+            src="/logo.svg"
+            alt="DeepScent"
+            className="h-7 w-auto"
+            width={189}
+            height={29}
+          />
         </Link>
 
         <nav className={styles.nav} aria-label="메인 메뉴">
@@ -90,7 +95,16 @@ export function Header() {
             회원가입
           </Link>
           <Dropdown
-            trigger={<ProfileIcon className="size-9" aria-hidden />}
+            trigger={
+              <img
+                src="/profile.svg"
+                alt=""
+                width={36}
+                height={36}
+                className="size-9"
+                aria-hidden
+              />
+            }
             items={headerNavLinks.profile.map(({ href, label, icon }) => ({
               href,
               label,
