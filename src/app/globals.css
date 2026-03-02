@@ -53,6 +53,19 @@
 
   --background-gray-bg: #f2f2f2;
   --background-light-bg: #f6efe3;
+  /* 상태 배지 색상 */
+  --color-status-success-bg: #f0fdf4;
+  --color-status-success-text: #008236;
+  --color-status-danger-bg: #fef2f2;
+  --color-status-danger-text: #fb2c36;
+  --color-status-info-bg: #eff6ff;
+  --color-status-info-text: #2563eb;
+  --color-status-neutral-bg: #f9fafb;
+  --color-status-neutral-text: #6b7280;
+  --color-status-warning-bg: #fffbeb;
+  --color-status-warning-text: #d97706;
+  --color-status-purple-bg: #f5f3ff;
+  --color-status-purple-text: #7c3aed;
 }
 
 body {
