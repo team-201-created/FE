@@ -1,9 +1,10 @@
 'use client'
 
 import { cn } from '@/lib/cn'
+import { AdminTableHeader } from '@/constants/admin'
 
 interface AdminTableProps {
-  headers: { label: string; align?: 'left' | 'center' | 'right' }[]
+  headers: AdminTableHeader[]
   children: React.ReactNode
 }
 

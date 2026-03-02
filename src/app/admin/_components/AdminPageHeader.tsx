@@ -15,7 +15,7 @@ export const AdminPageHeader = ({
   buttonText,
   onButtonClick,
 }: AdminPageHeaderProps) => (
-  <div className="mb-8 flex items-center justify-between">
+  <div className="mb-4 flex items-center justify-between">
     <h2 className="text-black-primary text-xl font-bold">{title}</h2>
     {buttonText && (
       <Button
