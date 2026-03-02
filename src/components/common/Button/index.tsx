@@ -22,6 +22,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={cn(
+        'cursor-pointer',
         buttonVariants({
           color: disabled ? 'disabled' : color,
           size,
