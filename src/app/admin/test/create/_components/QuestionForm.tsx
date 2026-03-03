@@ -243,12 +243,17 @@ export const QuestionForm = ({
                   <AdminSelect
                     width="w-[171px]"
                     options={availableOptions}
-                    value={option.answer_option_text}
-                    onChange={(val: string) =>
+                    value={option.answer_option_key}
+                    onChange={(val: string) => {
+                      const selectedPreset = availableOptions.find(
+                        (o) => o.value === val
+                      )
                       onUpdateOption(option.answer_option_key, {
-                        answer_option_text: val,
+                        answer_option_key: val,
+                        answer_option_text:
+                          selectedPreset?.label || option.answer_option_text,
                       })
-                    }
+                    }}
                   />
                 </div>
                 <button

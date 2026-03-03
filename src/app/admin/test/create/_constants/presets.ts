@@ -518,7 +518,7 @@ export const STANDARD_OPTIONS: Record<
       if (q.options.length > 0 && !acc[q.question_key]) {
         acc[q.question_key] = q.options.map((o) => ({
           label: o.answer_option_text,
-          value: o.answer_option_text,
+          value: o.answer_option_key,
         }))
       }
       return acc
