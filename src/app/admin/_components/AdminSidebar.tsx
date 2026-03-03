@@ -31,7 +31,7 @@ export function AdminSidebar() {
       <nav className="rounded-2xl bg-white p-4 shadow-md">
         <ul className="flex flex-col gap-2">
           {ADMIN_SIDEBAR_NAV_LINKS.map((item) => {
-            const isSidebarActive = pathname === item.href
+            const isSidebarActive = pathname.startsWith(item.href)
             return (
               <li key={item.href}>
                 <Link

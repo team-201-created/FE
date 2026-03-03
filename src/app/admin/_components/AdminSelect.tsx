@@ -97,7 +97,7 @@ export const AdminSelect = ({
                 aria-selected={opt.value === value}
                 className={cn(
                   'hover:bg-gray-light hover:text-black-primary w-full cursor-pointer px-4 py-3 text-left text-sm transition-colors',
-                  opt.value === value ? 'font-bold' : ''
+                  opt.value === value ? 'bg-gray-light font-bold' : ''
                 )}
                 onClick={() => handleSelect(opt.value)}
               >
