@@ -5,7 +5,7 @@ export const buttonVariants = cva(
   {
     variants: {
       color: {
-        primary: 'bg-main text-black-primary',
+        primary: 'bg-black-primary text-white',
         secondary: 'bg-white text-black-secondary',
         tertiary: 'bg-gray-white text-black-secondary border border-gray-light',
         quaternary: 'bg-white text-purple-primary border border-purple-primary',
@@ -14,8 +14,10 @@ export const buttonVariants = cva(
         success: 'bg-success text-white',
         kakao: 'bg-kakao text-black-primary',
         disabled: 'bg-gray-light text-gray-secondary',
+        none: '',
       },
       size: {
+        w32h32: 'w-[32px] h-[32px]',
         w78h42: 'w-[78px] h-[42px]',
         w80h40: 'w-[80px] h-[40px]',
         w104h48: 'w-[104px] h-[48px]',
@@ -35,12 +37,14 @@ export const buttonVariants = cva(
         w735h52: 'w-[735px] h-[52px]',
         w1086h56: 'w-[1086px] h-[56px]',
         w1482h48: 'w-[1482px] h-[48px]',
+        none: '',
       },
       rounded: {
         sm: 'rounded-[10px]',
         md: 'rounded-[14px]',
         lg: 'rounded-[16px]',
         full: 'rounded-full',
+        none: '',
       },
     },
     defaultVariants: {
