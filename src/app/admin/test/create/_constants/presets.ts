@@ -11,21 +11,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 1,
       options: [
         {
+          key: 'calm',
           answer_option_key: 'calm',
           answer_option_text: '차분',
           sort_order: 1,
         },
         {
+          key: 'vital',
           answer_option_key: 'vital',
           answer_option_text: '활기',
           sort_order: 2,
         },
         {
+          key: 'cozy',
           answer_option_key: 'cozy',
           answer_option_text: '포근',
           sort_order: 3,
         },
         {
+          key: 'focused',
           answer_option_key: 'focused',
           answer_option_text: '집중',
           sort_order: 4,
@@ -41,21 +45,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 2,
       options: [
         {
+          key: 'spring',
           answer_option_key: 'spring',
           answer_option_text: '봄',
           sort_order: 1,
         },
         {
+          key: 'summer',
           answer_option_key: 'summer',
           answer_option_text: '여름',
           sort_order: 2,
         },
         {
+          key: 'autumn',
           answer_option_key: 'autumn',
           answer_option_text: '가을',
           sort_order: 3,
         },
         {
+          key: 'winter',
           answer_option_key: 'winter',
           answer_option_text: '겨울',
           sort_order: 4,
@@ -71,17 +79,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 3,
       options: [
         {
+          key: 'forest',
           answer_option_key: 'forest',
           answer_option_text: '숲',
           sort_order: 1,
         },
-        { answer_option_key: 'sea', answer_option_text: '바다', sort_order: 2 },
         {
+          key: 'sea',
+          answer_option_key: 'sea',
+          answer_option_text: '바다',
+          sort_order: 2,
+        },
+        {
+          key: 'city',
           answer_option_key: 'city',
           answer_option_text: '도시',
           sort_order: 3,
         },
         {
+          key: 'village',
           answer_option_key: 'village',
           answer_option_text: '시골',
           sort_order: 4,
@@ -96,13 +112,20 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       is_required: true,
       sort_order: 4,
       options: [
-        { answer_option_key: 'male', answer_option_text: '남', sort_order: 1 },
         {
+          key: 'male',
+          answer_option_key: 'male',
+          answer_option_text: '남',
+          sort_order: 1,
+        },
+        {
+          key: 'female',
           answer_option_key: 'female',
           answer_option_text: '여',
           sort_order: 2,
         },
         {
+          key: 'neutral',
           answer_option_key: 'neutral',
           answer_option_text: '중성',
           sort_order: 3,
@@ -118,26 +141,31 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 5,
       options: [
         {
+          key: 'teen',
           answer_option_key: 'teen',
           answer_option_text: '10대',
           sort_order: 1,
         },
         {
+          key: 'twenties',
           answer_option_key: 'twenties',
           answer_option_text: '20대',
           sort_order: 2,
         },
         {
+          key: 'thirties',
           answer_option_key: 'thirties',
           answer_option_text: '30대',
           sort_order: 3,
         },
         {
+          key: 'forties',
           answer_option_key: 'forties',
           answer_option_text: '40대',
           sort_order: 4,
         },
         {
+          key: 'fifties',
           answer_option_key: 'fifties',
           answer_option_text: '50대',
           sort_order: 5,
@@ -153,31 +181,37 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 6,
       options: [
         {
+          key: 'citrus',
           answer_option_key: 'citrus',
           answer_option_text: '시트러스',
           sort_order: 1,
         },
         {
+          key: 'aromatic',
           answer_option_key: 'aromatic',
           answer_option_text: '아로마틱',
           sort_order: 2,
         },
         {
+          key: 'oriental',
           answer_option_key: 'oriental',
           answer_option_text: '오리엔탈',
           sort_order: 3,
         },
         {
+          key: 'woody',
           answer_option_key: 'woody',
           answer_option_text: '우디',
           sort_order: 4,
         },
         {
+          key: 'animalic',
           answer_option_key: 'animalic',
           answer_option_text: '애니멀릭',
           sort_order: 5,
         },
         {
+          key: 'floral',
           answer_option_key: 'floral',
           answer_option_text: '플로럴',
           sort_order: 6,
@@ -193,31 +227,37 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 7,
       options: [
         {
+          key: 'citrus',
           answer_option_key: 'citrus',
           answer_option_text: '시트러스',
           sort_order: 1,
         },
         {
+          key: 'aromatic',
           answer_option_key: 'aromatic',
           answer_option_text: '아로마틱',
           sort_order: 2,
         },
         {
+          key: 'oriental',
           answer_option_key: 'oriental',
           answer_option_text: '오리엔탈',
           sort_order: 3,
         },
         {
+          key: 'woody',
           answer_option_key: 'woody',
           answer_option_text: '우디',
           sort_order: 4,
         },
         {
+          key: 'animalic',
           answer_option_key: 'animalic',
           answer_option_text: '애니멀릭',
           sort_order: 5,
         },
         {
+          key: 'floral',
           answer_option_key: 'floral',
           answer_option_text: '플로럴',
           sort_order: 6,
@@ -233,11 +273,13 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 8,
       options: [
         {
+          key: 'diffuser',
           answer_option_key: 'diffuser',
           answer_option_text: '디퓨저',
           sort_order: 1,
         },
         {
+          key: 'perfume',
           answer_option_key: 'perfume',
           answer_option_text: '향수',
           sort_order: 2,
@@ -255,21 +297,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 1,
       options: [
         {
+          key: 'sleep-well',
           answer_option_key: 'sleep-well',
           answer_option_text: '잘잔다',
           sort_order: 1,
         },
         {
+          key: 'wake-often',
           answer_option_key: 'wake-often',
           answer_option_text: '자주 깬다',
           sort_order: 2,
         },
         {
+          key: 'hard-to-fall-asleep',
           answer_option_key: 'hard-to-fall-asleep',
           answer_option_text: '잠들기 어렵다',
           sort_order: 3,
         },
         {
+          key: 'always-tired',
           answer_option_key: 'always-tired',
           answer_option_text: '항상 피곤하다',
           sort_order: 4,
@@ -285,21 +331,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 2,
       options: [
         {
+          key: 'none',
           answer_option_key: 'none',
           answer_option_text: '거의 없다',
           sort_order: 1,
         },
         {
+          key: 'sometimes',
           answer_option_key: 'sometimes',
           answer_option_text: '가끔 느낀다',
           sort_order: 2,
         },
         {
+          key: 'often',
           answer_option_key: 'often',
           answer_option_text: '자주 느낀다',
           sort_order: 3,
         },
         {
+          key: 'always',
           answer_option_key: 'always',
           answer_option_text: '항상 느낀다',
           sort_order: 4,
@@ -315,21 +365,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 3,
       options: [
         {
+          key: 'none',
           answer_option_key: 'none',
           answer_option_text: '거의 없다',
           sort_order: 1,
         },
         {
+          key: 'sometimes',
           answer_option_key: 'sometimes',
           answer_option_text: '가끔 느낀다',
           sort_order: 2,
         },
         {
+          key: 'often',
           answer_option_key: 'often',
           answer_option_text: '자주 느낀다',
           sort_order: 3,
         },
         {
+          key: 'always',
           answer_option_key: 'always',
           answer_option_text: '항상 느낀다',
           sort_order: 4,
@@ -345,21 +399,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 4,
       options: [
         {
+          key: 'focus-good',
           answer_option_key: 'focus-good',
           answer_option_text: '잘 집중한다',
           sort_order: 1,
         },
         {
+          key: 'distract-sometimes',
           answer_option_key: 'distract-sometimes',
           answer_option_text: '가끔 산만하다',
           sort_order: 2,
         },
         {
+          key: 'distract-often',
           answer_option_key: 'distract-often',
           answer_option_text: '자주 산만하다',
           sort_order: 3,
         },
         {
+          key: 'focus-very-hard',
           answer_option_key: 'focus-very-hard',
           answer_option_text: '집중이 매우 어렵다',
           sort_order: 4,
@@ -375,21 +433,25 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 5,
       options: [
         {
+          key: 'relax-stress',
           answer_option_key: 'relax-stress',
           answer_option_text: '스트레스 완화',
           sort_order: 1,
         },
         {
+          key: 'improve-sleep',
           answer_option_key: 'improve-sleep',
           answer_option_text: '수면개선',
           sort_order: 2,
         },
         {
+          key: 'relieve-anxiety',
           answer_option_key: 'relieve-anxiety',
           answer_option_text: '불안해소',
           sort_order: 3,
         },
         {
+          key: 'improve-focus',
           answer_option_key: 'improve-focus',
           answer_option_text: '집중력 향상',
           sort_order: 4,
@@ -405,11 +467,13 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 6,
       options: [
         {
+          key: 'diffuser',
           answer_option_key: 'diffuser',
           answer_option_text: '디퓨저',
           sort_order: 1,
         },
         {
+          key: 'perfume',
           answer_option_key: 'perfume',
           answer_option_text: '향수',
           sort_order: 2,
@@ -436,11 +500,13 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 2,
       options: [
         {
+          key: 'diffuser',
           answer_option_key: 'diffuser',
           answer_option_text: '디퓨저',
           sort_order: 1,
         },
         {
+          key: 'perfume',
           answer_option_key: 'perfume',
           answer_option_text: '향수',
           sort_order: 2,
@@ -467,11 +533,13 @@ export const DEFAULT_TEMPLATES: Record<string, Question[]> = {
       sort_order: 2,
       options: [
         {
+          key: 'diffuser',
           answer_option_key: 'diffuser',
           answer_option_text: '디퓨저',
           sort_order: 1,
         },
         {
+          key: 'perfume',
           answer_option_key: 'perfume',
           answer_option_text: '향수',
           sort_order: 2,

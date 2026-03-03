@@ -16,6 +16,10 @@ export const useTestCreate = () => {
       ...q,
       key: `${q.question_key}-${Date.now()}`, // 임시 키 생성
       sort_order: idx + 1,
+      options: q.options.map((o) => ({
+        ...o,
+        key: `${o.answer_option_key}-${Date.now()}`, // 마찬가지 임시 키 생성
+      })),
     })),
   }))
 
@@ -111,6 +115,7 @@ export const useTestCreate = () => {
   const addOption = (qKey: string) => {
     modifyQuestionOptions(qKey, (options) => {
       const newOption: Option = {
+        key: generateUid('opt'),
         answer_option_key: generateUid('opt'),
         answer_option_text: '',
         sort_order: options.length + 1,
@@ -119,22 +124,20 @@ export const useTestCreate = () => {
     })
   }
 
-  const removeOption = (qKey: string, optKey: string) => {
+  const removeOption = (qKey: string, optUid: string) => {
     modifyQuestionOptions(qKey, (options) => {
-      const filtered = options.filter((o) => o.answer_option_key !== optKey)
+      const filtered = options.filter((o) => o.key !== optUid)
       return filtered.map((o, idx) => ({ ...o, sort_order: idx + 1 }))
     })
   }
 
   const updateOption = (
     qKey: string,
-    optKey: string,
+    optUid: string,
     updates: Partial<Option>
   ) => {
     modifyQuestionOptions(qKey, (options) =>
-      options.map((o) =>
-        o.answer_option_key === optKey ? { ...o, ...updates } : o
-      )
+      options.map((o) => (o.key === optUid ? { ...o, ...updates } : o))
     )
   }
 

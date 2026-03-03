@@ -1,4 +1,5 @@
 export interface Option {
+  key: string // 내부 체크용 키
   answer_option_key: string
   answer_option_text: string
   sort_order: number

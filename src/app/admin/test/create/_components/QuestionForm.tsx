@@ -16,8 +16,8 @@ interface QuestionFormProps {
   onUpdate: (updates: Partial<Question>) => void
   onRemove: () => void
   onAddOption: () => void
-  onRemoveOption: (optKey: string) => void
-  onUpdateOption: (optKey: string, updates: Partial<Option>) => void
+  onRemoveOption: (optUid: string) => void
+  onUpdateOption: (optUid: string, updates: Partial<Option>) => void
   onReorderOptions: (options: Option[]) => void
 }
 
@@ -204,7 +204,7 @@ export const QuestionForm = ({
           >
             {question.options.map((option, oIdx) => (
               <Reorder.Item
-                key={option.answer_option_key}
+                key={option.key}
                 value={option}
                 className="flex items-center gap-3 bg-white"
                 initial={false}
@@ -233,7 +233,7 @@ export const QuestionForm = ({
                     type="text"
                     value={option.answer_option_text}
                     onChange={(e) =>
-                      onUpdateOption(option.answer_option_key, {
+                      onUpdateOption(option.key, {
                         answer_option_text: e.target.value,
                       })
                     }
@@ -245,19 +245,14 @@ export const QuestionForm = ({
                     options={availableOptions}
                     value={option.answer_option_key}
                     onChange={(val: string) => {
-                      const selectedPreset = availableOptions.find(
-                        (o) => o.value === val
-                      )
-                      onUpdateOption(option.answer_option_key, {
+                      onUpdateOption(option.key, {
                         answer_option_key: val,
-                        answer_option_text:
-                          selectedPreset?.label || option.answer_option_text,
                       })
                     }}
                   />
                 </div>
                 <button
-                  onClick={() => onRemoveOption(option.answer_option_key)}
+                  onClick={() => onRemoveOption(option.key)}
                   className="hover:text-danger cursor-pointer text-gray-300"
                 >
                   <TrashIcon width={16} height={16} />
