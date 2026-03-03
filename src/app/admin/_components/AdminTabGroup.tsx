@@ -9,6 +9,8 @@ interface AdminTabGroupProps {
   activeTab: string
   onChange: (id: string) => void
   className?: string
+  /** 탭들을 부모 너비에 맞춰 균등하게 배분할지 여부임 */
+  fullWidth?: boolean
 }
 
 /**
@@ -19,9 +21,10 @@ export const AdminTabGroup = ({
   activeTab,
   onChange,
   className,
+  fullWidth = false,
 }: AdminTabGroupProps) => {
   return (
-    <div className={cn('flex gap-4 pb-4', className)}>
+    <div className={cn('flex gap-4 pb-4', fullWidth && 'w-full', className)}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
         return (
@@ -30,9 +33,10 @@ export const AdminTabGroup = ({
             onClick={() => onChange(tab.id)}
             className={cn(
               'cursor-pointer rounded-xl text-sm font-semibold transition-all',
+              fullWidth && 'flex-1',
               isActive
                 ? 'bg-black-primary text-white'
-                : 'bg-gray-light text-black-primary border-none shadow-none'
+                : 'bg-gray-light text-black-primary border-none shadow-none hover:bg-neutral-200'
             )}
           >
             {tab.label}
