@@ -12,6 +12,7 @@ import {
 import { TEST_MOCK_DATA, TEST_TABLE_HEADERS, TestData } from '@/constants/admin'
 import PenIcon from '@/assets/icons/pen.svg'
 import Button from '@/components/common/Button'
+import { useRouter } from 'next/navigation'
 
 const getStatusStyles = (status: TestData['status']) => {
   switch (status) {
@@ -25,18 +26,25 @@ const getStatusStyles = (status: TestData['status']) => {
 
 const getTypeStyles = (type: TestData['type']) => {
   switch (type) {
-    case '취향':
+    case 'PREFERENCE':
       return 'bg-status-purple-bg text-status-purple-text'
-    case '건강':
+    case 'HEALTH':
     default:
       return 'bg-status-info-bg text-status-info-text'
   }
 }
 
 export default function TestAdminPage() {
+  const router = useRouter()
+
   return (
     <AdminListCard>
-      <AdminPageHeader title="테스트 목록" buttonText="테스트 등록" />
+      <AdminPageHeader
+        title="테스트 목록"
+        buttonText="테스트 등록"
+        buttonIcon="plus"
+        onButtonClick={() => router.push('/admin/test/create')}
+      />
 
       <AdminFilterBar
         searchPlaceholder="테스트명 검색"
