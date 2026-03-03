@@ -6,10 +6,6 @@ export const buttonVariants = cva(
     variants: {
       color: {
         primary: 'bg-black-primary text-white',
-        secondary: 'bg-white text-black-secondary',
-        tertiary: 'bg-gray-white text-black-secondary border border-gray-light',
-        quaternary: 'bg-white text-purple-primary border border-purple-primary',
-        quinary: 'bg-white text-black-secondary border border-gray-light',
         danger: 'bg-danger text-white',
         success: 'bg-success text-white',
         kakao: 'bg-kakao text-black-primary',
