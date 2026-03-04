@@ -3,6 +3,7 @@ import { mockSinglesItems, mockSinglesPageMeta } from './data/singles'
 import { mockCombinationsItems, mockCombinationsPageMeta } from './data/combo'
 import { mockElementDetails } from './data/singlesDetails'
 import { mockBlendDetails } from './data/comboDetails'
+import { adminTestsHandler } from './handlers/adminTestHandlers'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/singles
@@ -103,4 +104,5 @@ export const handlers = [
   combinationsHandler,
   elementDetailHandler,
   blendDetailHandler,
+  adminTestsHandler,
 ]
