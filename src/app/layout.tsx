@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Header } from '@/components/common/Header'
 import { Footer } from '@/components/common/Footer'
-import { MockProvider } from '@/app/MockProvider'
+import { MockProvider } from '@/mocks/MockProvider'
 import './globals.css'
 
 const pretendard = localFont({
