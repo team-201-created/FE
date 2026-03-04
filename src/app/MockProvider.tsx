@@ -11,7 +11,12 @@ export function MockProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!useMock) return
     import('@/mocks/browser')
-      .then(({ worker }) => worker.start({ quiet: true }))
+      .then(({ worker }) =>
+        worker.start({
+          quiet: true,
+          onUnhandledRequest: 'bypass',
+        })
+      )
       .then(() => setReady(true))
   }, [])
 
