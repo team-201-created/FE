@@ -2,14 +2,13 @@
 
 import Image from 'next/image'
 import { cn } from '@/lib/cn'
-import { SCENT_FAMILIES } from '@/constants/productFilters'
-import { ACCORD_LABEL_STYLES } from '@/constants/accordLabelStyles'
+import {
+  getAccordLabels,
+  ACCORD_LABEL_PILL_SM_CLASS,
+  SCENT_NOTE_LINE_CLASS,
+} from '@/constants/accordLabelStyles'
 import { Lens } from '@/components/magicui/lens'
 import { ShineBorder } from '../magicui/shine-border'
-
-const scentFamilyMap = Object.fromEntries(
-  SCENT_FAMILIES.map((f) => [f.id, f])
-) as Record<string, (typeof SCENT_FAMILIES)[number]>
 
 export type ProductCardProps = {
   variant: 'single' | 'combo'
@@ -34,9 +33,9 @@ export function ProductCard({
   priority = false,
 }: ProductCardProps) {
   const accordIds: string[] =
-    variant === 'combo' && scentFamilyIds?.length // 조합 카드에서만 사용. 여러 향조 라벨을 표시 (없으면 scentFamilyId 1개만 표시)
+    variant === 'combo' && scentFamilyIds?.length
       ? scentFamilyIds
-      : [scentFamilyId] // 단품 카드에서는 scentFamilyId 1개만 표시
+      : [scentFamilyId]
 
   return (
     <ShineBorder
@@ -63,29 +62,23 @@ export function ProductCard({
             {name}
           </h3>
           <div className="flex flex-wrap gap-1">
-            {accordIds.map((id) => {
-              const family = scentFamilyMap[id] ?? scentFamilyMap.woody
-              const style =
-                ACCORD_LABEL_STYLES[family.colorClass] ??
-                ACCORD_LABEL_STYLES.woody
-              return (
-                <span
-                  key={id}
-                  className="inline-block rounded-full border px-2 py-0.5 text-xs font-medium"
-                  style={{
-                    backgroundColor: style.bg,
-                    borderColor: style.border,
-                    color: style.text,
-                    borderWidth: 1,
-                  }}
-                >
-                  {family.label}
-                </span>
-              )
-            })}
+            {getAccordLabels(accordIds).map(({ id, label, style }) => (
+              <span
+                key={id}
+                className={ACCORD_LABEL_PILL_SM_CLASS}
+                style={{
+                  backgroundColor: style.bg,
+                  borderColor: style.border,
+                  color: style.text,
+                  borderWidth: 1,
+                }}
+              >
+                {label}
+              </span>
+            ))}
           </div>
           {variant === 'combo' && scentNotes.length > 0 && (
-            <p className="mt-2 line-clamp-1 px-1.5 text-xs text-neutral-500">
+            <p className={cn(SCENT_NOTE_LINE_CLASS, 'mt-2 px-1.5')}>
               {scentNotes.join(' ')}
             </p>
           )}

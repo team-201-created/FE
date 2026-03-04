@@ -1,14 +1,8 @@
-/**
- * 향조(Accord) 라벨 공통 스타일
- * - ProductCard, ProductDetailModal 등에서 재사용
- * - colorClass는 @/constants/productFilters SCENT_FAMILIES.colorClass와 매칭
- */
-export type AccordLabelStyle = {
-  bg: string
-  border: string
-  text: string
-}
+import { SCENT_FAMILIES } from '@/constants/productFilters'
 
+export type AccordLabelStyle = { bg: string; border: string; text: string }
+
+// 향조 라벨 스타일
 export const ACCORD_LABEL_STYLES: Record<string, AccordLabelStyle> = {
   floral: { bg: '#fce7f3', border: '#fccee8', text: '#a3004c' },
   citrus: { bg: '#fffde5', border: '#fff085', text: '#894b00' },
@@ -18,3 +12,39 @@ export const ACCORD_LABEL_STYLES: Record<string, AccordLabelStyle> = {
   animalic: { bg: '#fef2f2', border: '#ffc9c9', text: '#ef0009' },
   woody: { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c' },
 }
+
+// 향조 라벨 매핑
+const familyMap = Object.fromEntries(
+  SCENT_FAMILIES.map((f) => [f.id, f])
+) as Record<string, (typeof SCENT_FAMILIES)[number]>
+
+// 향조 라벨 타입
+export type AccordLabel = { id: string; label: string; style: AccordLabelStyle }
+
+// 향조 라벨 조회 (주어진 라벨 외 id는 base 스타일 사용)
+export const getAccordLabel = (id: string): AccordLabel => {
+  const family = familyMap[id]
+  if (family) {
+    const style =
+      ACCORD_LABEL_STYLES[family.colorClass] ?? ACCORD_LABEL_STYLES.base
+    return { id, label: family.label, style }
+  }
+  return { id, label: id, style: ACCORD_LABEL_STYLES.base }
+}
+
+// 향조 라벨 여러 개 조회
+export const getAccordLabels = (ids: string[]): AccordLabel[] =>
+  ids.map(getAccordLabel)
+
+// 향조 라벨 스타일 클래스
+export const ACCORD_LABEL_PILL_SM_CLASS =
+  'inline-block rounded-full border px-2 py-0.5 text-xs font-medium'
+
+// 향조 라벨 스타일 클래스
+export const ACCORD_LABEL_PILL_MD_CLASS =
+  'inline-block rounded-full border px-3 py-1 text-sm font-medium'
+
+// 향기 노트 스타일 클래스 (카드 한 줄 / 모달 pill)
+export const SCENT_NOTE_LINE_CLASS = 'line-clamp-1 text-xs text-neutral-500'
+export const SCENT_NOTE_PILL_CLASS =
+  'rounded-lg bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700'
