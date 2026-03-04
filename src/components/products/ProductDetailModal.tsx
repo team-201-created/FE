@@ -3,8 +3,11 @@
 import React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { SCENT_FAMILIES } from '@/constants/productFilters'
-import { ACCORD_LABEL_STYLES } from '@/constants/accordLabelStyles'
+import {
+  getAccordLabels,
+  ACCORD_LABEL_PILL_MD_CLASS,
+  SCENT_NOTE_PILL_CLASS,
+} from '@/constants/accordLabelStyles'
 import Button from '@/components/common/Button'
 import { buttonVariants } from '@/components/common/Button/Button.variants'
 import { cn } from '@/lib/cn'
@@ -47,10 +50,7 @@ const styles = {
   dividerLine: 'bg-neutral-200 h-px flex-1',
   dividerIcon: 'text-neutral-400',
 
-  // ── 섹션·칩 (향조 pill, 향기 노트 pill)
   section: 'flex flex-col gap-2',
-  accordPill: 'inline-block rounded-full border px-3 py-1 text-sm font-medium',
-  notePill: 'rounded-lg bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700',
   noteEmpty: 'text-neutral-400 text-sm',
 } as const
 
@@ -68,11 +68,6 @@ const testButtonProps = {
   className:
     'rounded-lg shadow-sm w-full h-10 flex items-center justify-between px-4 py-2.5 text-sm bg-neutral-100 text-neutral-800 border-2 border-transparent transition-all duration-200 hover:border-[var(--color-purple-primary)] hover:text-[var(--color-purple-primary)] active:scale-[0.98]',
 }
-
-// ─── 타입 ─────────────────────────────────────────────────────────────────
-const scentFamilyMap = Object.fromEntries(
-  SCENT_FAMILIES.map((f) => [f.id, f])
-) as Record<string, (typeof SCENT_FAMILIES)[number]>
 
 export type ProductDetailModalProduct = {
   name: string
@@ -112,13 +107,7 @@ export function ProductDetailModal({
 
   /** 연관 추천 상품 보러가기: 상세의 product_link */
   const productLink = product?.productLink?.trim() ?? ''
-  const accordLabels =
-    product?.scentFamilyIds.map((id) => {
-      const family = scentFamilyMap[id] ?? scentFamilyMap.woody
-      const style =
-        ACCORD_LABEL_STYLES[family.colorClass] ?? ACCORD_LABEL_STYLES.woody
-      return { id, label: family.label, style }
-    }) ?? []
+  const accordLabels = product ? getAccordLabels(product.scentFamilyIds) : []
 
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
@@ -199,20 +188,22 @@ export function ProductDetailModal({
               <div className={styles.section}>
                 <p className={styles.subTitle}>향조</p>
                 <div className="flex flex-wrap gap-2">
-                  {accordLabels.map(({ id, label, style }) => (
-                    <span
-                      key={id}
-                      className={styles.accordPill}
-                      style={{
-                        backgroundColor: style.bg,
-                        borderColor: style.border,
-                        color: style.text,
-                        borderWidth: 1,
-                      }}
-                    >
-                      {label}
-                    </span>
-                  ))}
+                  {getAccordLabels(product.scentFamilyIds).map(
+                    ({ id, label, style }) => (
+                      <span
+                        key={id}
+                        className={ACCORD_LABEL_PILL_MD_CLASS}
+                        style={{
+                          backgroundColor: style.bg,
+                          borderColor: style.border,
+                          color: style.text,
+                          borderWidth: 1,
+                        }}
+                      >
+                        {label}
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
 
@@ -220,17 +211,17 @@ export function ProductDetailModal({
                 <>
                   <div className={styles.section}>
                     <p className={styles.subTitle}>향기 노트</p>
-                    <div className="flex flex-wrap gap-2">
-                      {product.noteLabels.length > 0 ? (
-                        product.noteLabels.map((note) => (
-                          <span key={note} className={styles.notePill}>
+                    {product.noteLabels.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {product.noteLabels.map((note) => (
+                          <span key={note} className={SCENT_NOTE_PILL_CLASS}>
                             {note}
                           </span>
-                        ))
-                      ) : (
-                        <span className={styles.noteEmpty}>-</span>
-                      )}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className={styles.noteEmpty}>-</span>
+                    )}
                   </div>
 
                   <div className="mt-2">
