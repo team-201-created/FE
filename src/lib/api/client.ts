@@ -92,3 +92,48 @@ export async function fetchCombinations(
   if (!res.ok) throw new Error(`Combinations API error: ${res.status}`)
   return res.json()
 }
+
+// ─── 상세 조회 (단품 / 조합) ─────────────────────────────────────────────
+
+export type ElementDetailResponse = {
+  success: boolean
+  data: {
+    id: number
+    name: string
+    image_url: string
+    description: string
+    accord_option: { id: number; name: string }
+    product_link: string
+  }
+}
+
+export type BlendDetailResponse = {
+  success: boolean
+  data: {
+    id: number
+    name: string
+    image_url: string
+    description: string
+    theme_option: { id: number; name: string }
+    accord_options: Array<{ id: number; name: string }>
+    product_link: string
+  }
+}
+
+export async function fetchElementDetail(
+  elementId: number
+): Promise<ElementDetailResponse> {
+  const url = `${getBaseUrl()}/api/v1/scents/elements/${elementId}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Element detail API error: ${res.status}`)
+  return res.json()
+}
+
+export async function fetchBlendDetail(
+  blendId: number
+): Promise<BlendDetailResponse> {
+  const url = `${getBaseUrl()}/api/v1/scents/blends/${blendId}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Blend detail API error: ${res.status}`)
+  return res.json()
+}
