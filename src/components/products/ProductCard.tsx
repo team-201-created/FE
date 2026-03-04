@@ -1,6 +1,9 @@
 'use client'
 
+import Image from 'next/image'
+import { cn } from '@/lib/cn'
 import { SCENT_FAMILIES } from '@/constants/productFilters'
+import { ACCORD_LABEL_STYLES } from '@/constants/accordLabelStyles'
 import { Lens } from '@/components/magicui/lens'
 import { ShineBorder } from '../magicui/shine-border'
 
@@ -8,26 +11,16 @@ const scentFamilyMap = Object.fromEntries(
   SCENT_FAMILIES.map((f) => [f.id, f])
 ) as Record<string, (typeof SCENT_FAMILIES)[number]>
 
-/** 카드 향조 라벨 스타일 (bg, border, text) */
-const LABEL_STYLES: Record<
-  string,
-  { bg: string; border: string; text: string }
-> = {
-  floral: { bg: '#fce7f3', border: '#fccee8', text: '#a3004c' },
-  citrus: { bg: '#fffde5', border: '#fff085', text: '#894b00' },
-  oriental: { bg: '#f3e8ff', border: '#d9b5ff', text: '#6e11b0' },
-  aromatic: { bg: '#f0fdf4', border: '#b9f8cf', text: '#008236' },
-  base: { bg: '#747474', border: '#d8d8d8', text: '#e9e9e9' },
-  animalic: { bg: '#fef2f2', border: '#ffc9c9', text: '#ef0009' },
-  woody: { bg: '#856544', border: '#502c14', text: '#ffffff' },
-}
-
 export type ProductCardProps = {
   variant: 'single' | 'combo'
   name: string
   imageUrl: string
   scentFamilyId: string
+  scentFamilyIds?: string[]
   scentNotes?: string[]
+  onClick?: () => void
+  /** 첫 화면 LCP 이미지일 때 true (로딩 우선순위 부여) */
+  priority?: boolean
 }
 
 export function ProductCard({
@@ -35,44 +28,64 @@ export function ProductCard({
   name,
   imageUrl,
   scentFamilyId,
+  scentFamilyIds,
   scentNotes = [],
+  onClick,
+  priority = false,
 }: ProductCardProps) {
-  const family = scentFamilyMap[scentFamilyId] ?? scentFamilyMap.woody
-  const labelStyle = LABEL_STYLES[family.colorClass] ?? LABEL_STYLES.woody
+  const accordIds: string[] =
+    variant === 'combo' && scentFamilyIds?.length // 조합 카드에서만 사용. 여러 향조 라벨을 표시 (없으면 scentFamilyId 1개만 표시)
+      ? scentFamilyIds
+      : [scentFamilyId] // 단품 카드에서는 scentFamilyId 1개만 표시
 
   return (
     <ShineBorder
-      className="rounded-2xl"
+      className={cn('rounded-2xl', onClick && 'cursor-pointer')}
+      onClick={onClick}
       shineColor={['#A07CFE', '#FE8FB5', '#FFBE7B']}
-      shineSize={1.5}
+      borderWidth={2}
     >
-      <article className="overflow-hidden rounded-2xl bg-white shadow-sm">
-        <div className="aspect-square w-full overflow-hidden rounded-t-2xl bg-neutral-100">
+      <article className="rounded-2xl bg-white shadow-md">
+        <div className="aspect-square w-full overflow-hidden rounded-t-2xl">
           <Lens className="h-full w-full">
-            <img
+            <Image
               src={imageUrl}
               alt={name}
-              className="block h-full w-full rounded-[20px_20px_0_0] object-cover p-1"
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="block rounded-[20px_20px_0_0] object-contain p-1"
+              priority={priority}
             />
           </Lens>
         </div>
         <div className="p-3">
-          <h3 className="mb-1.5 line-clamp-2 text-sm font-extrabold text-neutral-800">
+          <h3 className="mb-3 text-base font-extrabold text-[--color-black-primary]">
             {name}
           </h3>
-          <span
-            className="inline-block rounded-full border px-2 py-0.5 text-xs font-medium"
-            style={{
-              backgroundColor: labelStyle.bg,
-              borderColor: labelStyle.border,
-              color: labelStyle.text,
-              borderWidth: 1,
-            }}
-          >
-            {family.label}
-          </span>
+          <div className="flex flex-wrap gap-1">
+            {accordIds.map((id) => {
+              const family = scentFamilyMap[id] ?? scentFamilyMap.woody
+              const style =
+                ACCORD_LABEL_STYLES[family.colorClass] ??
+                ACCORD_LABEL_STYLES.woody
+              return (
+                <span
+                  key={id}
+                  className="inline-block rounded-full border px-2 py-0.5 text-xs font-medium"
+                  style={{
+                    backgroundColor: style.bg,
+                    borderColor: style.border,
+                    color: style.text,
+                    borderWidth: 1,
+                  }}
+                >
+                  {family.label}
+                </span>
+              )
+            })}
+          </div>
           {variant === 'combo' && scentNotes.length > 0 && (
-            <p className="mt-1.5 line-clamp-1 text-xs text-neutral-500">
+            <p className="mt-2 line-clamp-1 px-1.5 text-xs text-neutral-500">
               {scentNotes.join(' ')}
             </p>
           )}

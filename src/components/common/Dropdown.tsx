@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/cn'
 import PenIcon from '@/assets/icons/pen.svg'
@@ -90,15 +90,11 @@ export function Dropdown({
   'aria-label'?: string
 }) {
   const [open, setOpen] = useState(false)
-  const backdropRef = useRef<HTMLDivElement>(null)
-
-  const toggle = () => {
-    setOpen((prev) => {
-      if (!prev) setTimeout(() => backdropRef.current?.focus(), 0)
-      return !prev
-    })
-  }
   const close = () => setOpen(false)
+  const toggle = () => setOpen((prev) => !prev)
+  const onEscape = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') close()
+  }
 
   const isTriggerFn = typeof trigger === 'function'
   const triggerContent = isTriggerFn
@@ -169,30 +165,26 @@ export function Dropdown({
   return (
     <div className="relative">
       {open && (
-        <div
-          ref={backdropRef}
-          className="fixed inset-0 z-40"
-          aria-hidden
-          tabIndex={-1}
-          onClick={close}
-          onKeyDown={(e) => e.key === 'Escape' && close()}
-        />
+        <div className="fixed inset-0 z-[60]" aria-hidden onClick={close} />
       )}
-      <button
-        type="button"
-        className={buttonClass}
-        aria-expanded={open}
-        aria-haspopup="true"
-        aria-label={ariaLabel}
-        onClick={toggle}
-      >
-        {triggerContent}
-      </button>
-      {open && (
-        <ul className={menuClassName} role="menu">
-          {items.map((item, index) => renderItem(item, index))}
-        </ul>
-      )}
+      <div className={cn('relative', open && 'z-[70]')}>
+        <button
+          type="button"
+          className={buttonClass}
+          aria-expanded={open}
+          aria-haspopup="true"
+          aria-label={ariaLabel}
+          onClick={toggle}
+          onKeyDown={onEscape}
+        >
+          {triggerContent}
+        </button>
+        {open && (
+          <ul className={menuClassName} role="menu" onKeyDown={onEscape}>
+            {items.map((item, index) => renderItem(item, index))}
+          </ul>
+        )}
+      </div>
     </div>
   )
 }

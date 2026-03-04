@@ -3,12 +3,15 @@
 import { use, useState } from 'react'
 import { SearchFilterBar } from '@/components/products/SearchFilterBar'
 import { ProductCard } from '@/components/products/ProductCard'
+import { ProductDetailModal } from '@/components/products/ProductDetailModal'
+import type { ProductDetailModalProduct } from '@/components/products/ProductDetailModal'
 import {
   fetchCombinations,
+  fetchBlendDetail,
   accordNameToScentFamilyId,
   themeNameToNoteLabel,
   type CombinationsResponse,
-} from '@/lib/api/client'
+} from '@/lib/api/productsClient'
 
 let combinationsPromise: Promise<CombinationsResponse> | null = null
 function getCombinationsPromise() {
@@ -22,8 +25,47 @@ export default function ProductsComboPage() {
   const [search, setSearch] = useState('')
   const [selectedScentIds, setSelectedScentIds] = useState<string[]>([])
   const [selectedNotes, setSelectedNotes] = useState<string[]>([])
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalProduct, setModalProduct] =
+    useState<ProductDetailModalProduct | null>(null)
+  const [modalLoading, setModalLoading] = useState(false)
+  const [modalError, setModalError] = useState<string | null>(null)
   const res = use(getCombinationsPromise())
   const items = res.data.items
+
+  const openDetailModal = async (blendId: number) => {
+    setModalOpen(true)
+    setModalProduct(null)
+    setModalError(null)
+    setModalLoading(true)
+    try {
+      const { data } = await fetchBlendDetail(blendId)
+      const scentFamilyIds = data.accord_options.map(
+        (a) => accordNameToScentFamilyId[a.name] ?? 'woody'
+      )
+      const themeNote = themeNameToNoteLabel[data.theme_option.name]
+      setModalProduct({
+        name: data.name,
+        imageUrl: data.image_url,
+        scentFamilyIds,
+        noteLabels: themeNote ? [themeNote] : [],
+        oneLineDescription: data.description,
+        productLink: data.product_link,
+      })
+    } catch (e) {
+      setModalError(
+        e instanceof Error ? e.message : '상세 조회에 실패했습니다.'
+      )
+    } finally {
+      setModalLoading(false)
+    }
+  }
+
+  const closeDetailModal = () => {
+    setModalOpen(false)
+    setModalProduct(null)
+    setModalError(null)
+  }
 
   const toggleScent = (id: string) => {
     setSelectedScentIds((prev) =>
@@ -66,27 +108,37 @@ export default function ProductsComboPage() {
         />
       </div>
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {filtered.map((item) => {
-          const primaryAccord = item.accord_options[0]
-          const scentFamilyId = primaryAccord
-            ? (accordNameToScentFamilyId[primaryAccord.name] ?? 'woody')
-            : 'woody'
+        {filtered.map((item, index) => {
+          const scentFamilyIds = item.accord_options.map(
+            (a) => accordNameToScentFamilyId[a.name] ?? 'woody'
+          )
           const themeNote = themeNameToNoteLabel[item.theme_option.name]
           const scentNotes = themeNote ? [themeNote] : []
-
           return (
             <li key={item.id}>
               <ProductCard
                 variant="combo"
                 name={item.name}
                 imageUrl={item.image_url}
-                scentFamilyId={scentFamilyId}
+                scentFamilyId={scentFamilyIds[0] ?? 'woody'}
+                scentFamilyIds={scentFamilyIds}
                 scentNotes={scentNotes}
+                onClick={() => openDetailModal(item.id)}
+                priority={index === 0}
               />
             </li>
           )
         })}
       </ul>
+
+      <ProductDetailModal
+        isOpen={modalOpen}
+        onClose={closeDetailModal}
+        product={modalProduct}
+        isLoading={modalLoading}
+        errorMessage={modalError}
+        showRecommendationLink
+      />
     </>
   )
 }

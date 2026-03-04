@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Dropdown } from '@/components/common/Dropdown'
 import { headerNavLinks } from '@/constants/headerNavLinks'
 import CloseIcon from '@/assets/icons/close.svg'
@@ -11,6 +12,7 @@ const styles = {
     'sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur',
   container:
     'mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6',
+  leftGroup: 'flex items-center gap-6',
   logo: 'flex items-center transition-transform hover:scale-[1.02]',
   nav: 'flex items-center gap-1',
   navItemWrapper: 'relative',
@@ -24,67 +26,69 @@ export function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <Link href="/" className={styles.logo} aria-label="DeepScent 홈">
-          <img
-            src="/logo.svg"
-            alt="DeepScent"
-            className="h-7 w-auto"
-            width={189}
-            height={29}
-          />
-        </Link>
-
-        <nav className={styles.nav} aria-label="메인 메뉴">
-          <div className={styles.navItemWrapper}>
-            <Dropdown
-              trigger={(isOpen) => (
-                <>
-                  향
-                  <span className={styles.chevronWrap} aria-hidden>
-                    {isOpen ? (
-                      <CloseIcon className="size-4" />
-                    ) : (
-                      <OpenIcon className="size-4" />
-                    )}
-                  </span>
-                </>
-              )}
-              items={headerNavLinks.perfume.map(({ label, href }) => ({
-                href,
-                label,
-              }))}
-              variant="default"
-              menuMinWidth="min-w-[180px]"
+        <div className={styles.leftGroup}>
+          <Link href="/" className={styles.logo} aria-label="DeepScent 홈">
+            <Image
+              src="/logo.svg"
+              alt="DeepScent"
+              width={189}
+              height={29}
+              className="h-7 w-auto"
             />
-          </div>
+          </Link>
 
-          <div className={styles.navItemWrapper}>
-            <Dropdown
-              trigger={(isOpen) => (
-                <>
-                  나의 향기 찾기
-                  <span className={styles.chevronWrap} aria-hidden>
-                    {isOpen ? (
-                      <CloseIcon className="size-4" />
-                    ) : (
-                      <OpenIcon className="size-4" />
-                    )}
-                  </span>
-                </>
-              )}
-              items={headerNavLinks.findMyScent.map(
-                ({ href, title, subtitle }) => ({
+          <nav className={styles.nav} aria-label="메인 메뉴">
+            <div className={styles.navItemWrapper}>
+              <Dropdown
+                trigger={(isOpen) => (
+                  <>
+                    향
+                    <span className={styles.chevronWrap} aria-hidden>
+                      {isOpen ? (
+                        <CloseIcon className="size-4" />
+                      ) : (
+                        <OpenIcon className="size-4" />
+                      )}
+                    </span>
+                  </>
+                )}
+                items={headerNavLinks.perfume.map(({ label, href }) => ({
                   href,
-                  label: title,
-                  title,
-                  subtitle,
-                })
-              )}
-              variant="withSubtitle"
-              menuMinWidth="min-w-[280px]"
-            />
-          </div>
-        </nav>
+                  label,
+                }))}
+                variant="default"
+                menuMinWidth="min-w-[180px]"
+              />
+            </div>
+
+            <div className={styles.navItemWrapper}>
+              <Dropdown
+                trigger={(isOpen) => (
+                  <>
+                    나의 향기 찾기
+                    <span className={styles.chevronWrap} aria-hidden>
+                      {isOpen ? (
+                        <CloseIcon className="size-4" />
+                      ) : (
+                        <OpenIcon className="size-4" />
+                      )}
+                    </span>
+                  </>
+                )}
+                items={headerNavLinks.findMyScent.map(
+                  ({ href, title, subtitle }) => ({
+                    href,
+                    label: title,
+                    title,
+                    subtitle,
+                  })
+                )}
+                variant="withSubtitle"
+                menuMinWidth="min-w-[280px]"
+              />
+            </div>
+          </nav>
+        </div>
 
         <div className={styles.rightMenu}>
           <Link href="/login" className={styles.rightLink}>
@@ -96,7 +100,7 @@ export function Header() {
           </Link>
           <Dropdown
             trigger={
-              <img
+              <Image
                 src="/profile.svg"
                 alt=""
                 width={36}
