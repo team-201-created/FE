@@ -4,7 +4,6 @@ import {
   mockCombinationsItems,
   mockCombinationsPageMeta,
 } from './data/combinations'
-import { adminTestsHandler } from './handlers/adminTestHandlers'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/singles
@@ -66,4 +65,4 @@ export const combinationsHandler = http.get(
   }
 )
 
-export const handlers = [singlesHandler, combinationsHandler, adminTestsHandler]
+export const handlers = [singlesHandler, combinationsHandler]
