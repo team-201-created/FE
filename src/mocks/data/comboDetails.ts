@@ -13,7 +13,7 @@ export const mockBlendDetails = [
       { id: 304, name: '우디' },
       { id: 307, name: '머스크' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
   {
     id: 12,
@@ -25,7 +25,7 @@ export const mockBlendDetails = [
       { id: 304, name: '우디' },
       { id: 303, name: '아로마틱' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
   {
     id: 13,
@@ -37,7 +37,7 @@ export const mockBlendDetails = [
       { id: 302, name: '시트러스' },
       { id: 301, name: '베이스' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
   {
     id: 14,
@@ -49,7 +49,7 @@ export const mockBlendDetails = [
       { id: 303, name: '아로마틱' },
       { id: 304, name: '우디' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
   {
     id: 15,
@@ -61,7 +61,7 @@ export const mockBlendDetails = [
       { id: 305, name: '플로럴' },
       { id: 306, name: '오리엔탈' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
   {
     id: 16,
@@ -73,7 +73,7 @@ export const mockBlendDetails = [
       { id: 302, name: '시트러스' },
       { id: 303, name: '아로마틱' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
   {
     id: 17,
@@ -85,6 +85,6 @@ export const mockBlendDetails = [
       { id: 304, name: '우디' },
       { id: 302, name: '시트러스' },
     ],
-    product_link: 'https://www.naver.com',
+    product_link: 'https://www.coupang.com',
   },
 ] as const

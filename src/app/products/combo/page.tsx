@@ -108,7 +108,7 @@ export default function ProductsComboPage() {
         />
       </div>
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {filtered.map((item) => {
+        {filtered.map((item, index) => {
           const scentFamilyIds = item.accord_options.map(
             (a) => accordNameToScentFamilyId[a.name] ?? 'woody'
           )
@@ -124,6 +124,7 @@ export default function ProductsComboPage() {
                 scentFamilyIds={scentFamilyIds}
                 scentNotes={scentNotes}
                 onClick={() => openDetailModal(item.id)}
+                priority={index === 0}
               />
             </li>
           )

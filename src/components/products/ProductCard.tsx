@@ -19,6 +19,8 @@ export type ProductCardProps = {
   scentFamilyIds?: string[]
   scentNotes?: string[]
   onClick?: () => void
+  /** 첫 화면 LCP 이미지일 때 true (로딩 우선순위 부여) */
+  priority?: boolean
 }
 
 export function ProductCard({
@@ -28,7 +30,8 @@ export function ProductCard({
   scentFamilyId,
   scentFamilyIds,
   scentNotes = [],
-  onClick, // 카드 클릭 시 상세 모달 열기용
+  onClick,
+  priority = false,
 }: ProductCardProps) {
   const accordIds: string[] =
     variant === 'combo' && scentFamilyIds?.length // 조합 카드에서만 사용. 여러 향조 라벨을 표시 (없으면 scentFamilyId 1개만 표시)
@@ -51,6 +54,7 @@ export function ProductCard({
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="block rounded-[20px_20px_0_0] object-contain p-1"
+              priority={priority}
             />
           </Lens>
         </div>

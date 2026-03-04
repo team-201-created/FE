@@ -91,7 +91,7 @@ export default function SingleContent() {
         />
       </div>
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {filtered.map((item) => {
+        {filtered.map((item, index) => {
           const scentFamilyId =
             accordNameToScentFamilyId[item.accord_option.name] ?? 'woody'
           return (
@@ -102,6 +102,7 @@ export default function SingleContent() {
                 imageUrl={item.image_url}
                 scentFamilyId={scentFamilyId}
                 onClick={() => openDetailModal(item.id)}
+                priority={index === 0}
               />
             </li>
           )

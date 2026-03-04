@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { SCENT_FAMILIES } from '@/constants/productFilters'
 import { ACCORD_LABEL_STYLES } from '@/constants/accordLabelStyles'
 import Button from '@/components/common/Button'
+import { buttonVariants } from '@/components/common/Button/Button.variants'
+import { cn } from '@/lib/cn'
 
 // ─── 스타일 ─────────────────────────────────────────────────────────────────
 const styles = {
@@ -53,20 +55,18 @@ const styles = {
 } as const
 
 // ─── 버튼 공통 props  ─────────────────────────────────────
-const linkButtonProps = {
-  type: 'button' as const,
-  color: 'primary' as const,
-  size: 'none' as const,
-  rounded: 'sm' as const,
-  className: 'w-full h-10',
-}
+/** 연관 추천 상품 보러가기: 링크로 열기 때문에 <a>에 적용하는 클래스 */
+const linkButtonClassName = cn(
+  buttonVariants({ color: 'primary', size: 'none', rounded: 'sm' }),
+  'w-full h-10 border-2 border-transparent transition-all duration-200 hover:bg-[#7c3aed] hover:border-[var(--color-purple-primary)] hover:text-white hover:shadow-[0_4px_14px_rgba(148,0,255,0.4)] active:scale-[0.98] inline-flex items-center justify-center'
+)
 const testButtonProps = {
   type: 'button' as const,
-  color: 'quinary' as const,
+  color: 'none' as const,
   size: 'none' as const,
   rounded: 'lg' as const,
   className:
-    'w-full h-10 flex items-center justify-between px-4 py-2.5 text-sm',
+    'rounded-lg shadow-sm w-full h-10 flex items-center justify-between px-4 py-2.5 text-sm bg-neutral-100 text-neutral-800 border-2 border-transparent transition-all duration-200 hover:border-[var(--color-purple-primary)] hover:text-[var(--color-purple-primary)] active:scale-[0.98]',
 }
 
 // ─── 타입 ─────────────────────────────────────────────────────────────────
@@ -110,7 +110,8 @@ export function ProductDetailModal({
     e.target === e.currentTarget && onClose()
   const handleModalClick = (e: React.MouseEvent) => e.stopPropagation()
 
-  const linkHref = product?.productLink ?? '#'
+  /** 연관 추천 상품 보러가기: 상세의 product_link */
+  const productLink = product?.productLink?.trim() ?? ''
   const accordLabels =
     product?.scentFamilyIds.map((id) => {
       const family = scentFamilyMap[id] ?? scentFamilyMap.woody
@@ -125,10 +126,10 @@ export function ProductDetailModal({
         <Button
           type="button"
           onClick={onClose}
-          color="secondary"
+          color="none"
           size="none"
           rounded="full"
-          className="absolute top-5 right-5 z-10 size-10 min-h-10 min-w-10 p-0 shadow-md hover:bg-neutral-100"
+          className="absolute top-5 right-5 z-10 size-7 min-h-10 min-w-10 p-0 transition-colors duration-200 hover:bg-neutral-100 hover:shadow-lg active:scale-95"
           aria-label="모달 닫기"
         >
           <Image
@@ -233,14 +234,14 @@ export function ProductDetailModal({
                   </div>
 
                   <div className="mt-2">
-                    <Button
-                      {...linkButtonProps}
-                      onClick={() =>
-                        window.open(linkHref, '_blank', 'noopener,noreferrer')
-                      }
+                    <a
+                      href={productLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={linkButtonClassName}
                     >
                       → 연관 추천 상품 보러가기
-                    </Button>
+                    </a>
                   </div>
 
                   {accordLabels.length > 0 && (

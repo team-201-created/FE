@@ -1,6 +1,8 @@
 import { http, HttpResponse } from 'msw'
 import { mockSinglesItems, mockSinglesPageMeta } from './data/singles'
 import { mockCombinationsItems, mockCombinationsPageMeta } from './data/combo'
+import { mockElementDetails } from './data/singlesDetails'
+import { mockBlendDetails } from './data/comboDetails'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/singles
@@ -62,4 +64,43 @@ export const combinationsHandler = http.get(
   }
 )
 
-export const handlers = [singlesHandler, combinationsHandler]
+/**
+ * 단품 상세 조회 GET /api/v1/scents/elements/:elementId
+ */
+export const elementDetailHandler = http.get(
+  '/api/v1/scents/elements/:elementId',
+  ({ params }) => {
+    const id = Number(params.elementId)
+    const found = mockElementDetails.find((item) => item.id === id)
+    if (!found)
+      return HttpResponse.json(
+        { success: false, message: 'Not found' },
+        { status: 404 }
+      )
+    return HttpResponse.json({ success: true, data: found })
+  }
+)
+
+/**
+ * 조합 상세 조회 GET /api/v1/scents/blends/:blendId
+ */
+export const blendDetailHandler = http.get(
+  '/api/v1/scents/blends/:blendId',
+  ({ params }) => {
+    const id = Number(params.blendId)
+    const found = mockBlendDetails.find((item) => item.id === id)
+    if (!found)
+      return HttpResponse.json(
+        { success: false, message: 'Not found' },
+        { status: 404 }
+      )
+    return HttpResponse.json({ success: true, data: found })
+  }
+)
+
+export const handlers = [
+  singlesHandler,
+  combinationsHandler,
+  elementDetailHandler,
+  blendDetailHandler,
+]
