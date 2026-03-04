@@ -5,9 +5,10 @@ import {
   STANDARD_OPTIONS,
   ALL_PRESETS,
   CATEGORIZED_PRESET_OPTIONS,
-} from '../_constants/presets'
-import { Question, Option } from '../_types'
+} from '@/app/admin/test/create/_constants'
+import { Question, Option } from '@/app/admin/test/create/_types'
 import { cn } from '@/lib/cn'
+import { DragHolder } from './DragHolder'
 
 interface QuestionFormProps {
   testType: string
@@ -16,8 +17,8 @@ interface QuestionFormProps {
   onUpdate: (updates: Partial<Question>) => void
   onRemove: () => void
   onAddOption: () => void
-  onRemoveOption: (optUid: string) => void
-  onUpdateOption: (optUid: string, updates: Partial<Option>) => void
+  onRemoveOption: (optKey: string) => void
+  onUpdateOption: (optKey: string, updates: Partial<Option>) => void
   onReorderOptions: (options: Option[]) => void
 }
 
@@ -54,21 +55,16 @@ export const QuestionForm = ({
     }
   }
 
+  const handleSelectionTypeChange = (value: string) => {
+    onUpdate({
+      selection_type: value as Question['selection_type'],
+    })
+  }
+
   return (
     <div className="border-gray-light rounded-[20px] border bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-4">
-        <div className="flex h-10 w-6 cursor-grab items-center justify-center text-gray-300 hover:text-gray-400 active:cursor-grabbing">
-          <svg width="12" height="18" viewBox="0 0 12 18" fill="currentColor">
-            <circle cx="2" cy="2" r="1.5" />
-            <circle cx="2" cy="7" r="1.5" />
-            <circle cx="2" cy="12" r="1.5" />
-            <circle cx="2" cy="17" r="1.5" />
-            <circle cx="6" cy="2" r="1.5" />
-            <circle cx="6" cy="7" r="1.5" />
-            <circle cx="6" cy="12" r="1.5" />
-            <circle cx="6" cy="17" r="1.5" />
-          </svg>
-        </div>
+        <DragHolder />
 
         <div className="bg-black-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white">
           {index + 1}
@@ -94,10 +90,7 @@ export const QuestionForm = ({
         </button>
       </div>
 
-      <div
-        className="mb-6 flex items-center gap-10 pl-10"
-        style={{ marginBottom: '24px' }}
-      >
+      <div className="mb-6 flex items-center gap-10 pl-10">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="text-md text-gray font-bold">유형</span>
@@ -138,7 +131,7 @@ export const QuestionForm = ({
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => onUpdate({ selection_type: opt.value as any })}
+                  onClick={() => handleSelectionTypeChange(opt.value)}
                   className={cn(
                     'cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-bold',
                     question.selection_type === opt.value
@@ -210,23 +203,7 @@ export const QuestionForm = ({
                 initial={false}
                 transition={{ duration: 0 }}
               >
-                <div className="flex h-10 w-6 cursor-grab items-center justify-center text-gray-300 hover:text-gray-400 active:cursor-grabbing">
-                  <svg
-                    width="12"
-                    height="18"
-                    viewBox="0 0 12 18"
-                    fill="currentColor"
-                  >
-                    <circle cx="2" cy="2" r="1.5" />
-                    <circle cx="2" cy="7" r="1.5" />
-                    <circle cx="2" cy="12" r="1.5" />
-                    <circle cx="2" cy="17" r="1.5" />
-                    <circle cx="6" cy="2" r="1.5" />
-                    <circle cx="6" cy="7" r="1.5" />
-                    <circle cx="6" cy="12" r="1.5" />
-                    <circle cx="6" cy="17" r="1.5" />
-                  </svg>
-                </div>
+                <DragHolder />
 
                 <div className="flex flex-1 items-center gap-2">
                   <input

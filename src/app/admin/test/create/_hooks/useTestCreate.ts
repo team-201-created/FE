@@ -5,27 +5,25 @@ import { TestFormData, Question, Option } from '../_types'
 import { DEFAULT_TEMPLATES } from '../_constants/presets'
 
 export const useTestCreate = () => {
-  // UI 전용 상태: 현재 선택된 탭 카테고리 (취향, 건강, 인테리어, OOTD)
   const [uiCategory, setUiCategory] = useState<string>('PREFERENCE')
+
+  const generateUniqueId = (prefix: string) =>
+    `${prefix}-${Math.random().toString(36).substring(2, 9)}`
 
   const [formData, setFormData] = useState<TestFormData>(() => ({
     name: '',
     description: '',
     profiling_type: 'PREFERENCE',
-    questions: DEFAULT_TEMPLATES['PREFERENCE'].map((q, idx) => ({
+    questions: (DEFAULT_TEMPLATES['PREFERENCE'] || []).map((q, idx) => ({
       ...q,
-      key: `${q.question_key}-${Date.now()}`, // 임시 키 생성
+      key: generateUniqueId(q.question_key),
       sort_order: idx + 1,
       options: q.options.map((o) => ({
         ...o,
-        key: `${o.answer_option_key}-${Date.now()}`, // 마찬가지 임시 키 생성
+        key: generateUniqueId(o.answer_option_key),
       })),
     })),
   }))
-
-  // Helper for generating unique keys/ids
-  const generateUid = (prefix: string) =>
-    `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
   const updateField = <K extends keyof TestFormData>(
     key: K,
@@ -34,25 +32,22 @@ export const useTestCreate = () => {
     setFormData((prev) => ({ ...prev, [key]: value }))
   }
 
-  const updateCategory = (category: string) => {
-    setUiCategory(category)
+  const updateCategory = (categoryName: string) => {
+    setUiCategory(categoryName)
 
-    const typeMap: Record<string, string> = {
-      취향: 'PREFERENCE',
-      건강: 'HEALTH',
-      인테리어: 'PREFERENCE',
-      OOTD: 'PREFERENCE',
-    }
-
-    const apiType = typeMap[category] || 'PREFERENCE'
+    const apiType = categoryName
 
     setFormData((prev) => ({
       ...prev,
       profiling_type: apiType,
-      questions: (DEFAULT_TEMPLATES[category] || []).map((q, idx) => ({
+      questions: (DEFAULT_TEMPLATES[categoryName] || []).map((q, idx) => ({
         ...q,
-        key: generateUid(q.question_key),
+        key: generateUniqueId(q.question_key),
         sort_order: idx + 1,
+        options: q.options.map((o) => ({
+          ...o,
+          key: generateUniqueId(o.answer_option_key),
+        })),
       })),
     }))
   }
@@ -60,8 +55,8 @@ export const useTestCreate = () => {
   // --- Question Actions ---
   const addQuestion = () => {
     const newQuestion: Question = {
-      key: generateUid('custom'),
-      question_key: 'custom-type',
+      key: generateUniqueId('mood'),
+      question_key: 'mood',
       question_text: '',
       selection_type: 'SINGLE',
       is_required: true,
@@ -77,6 +72,7 @@ export const useTestCreate = () => {
   const removeQuestion = (qKey: string) => {
     setFormData((prev) => {
       const filtered = prev.questions.filter((q) => q.key !== qKey)
+      // 삭제 후 순서(sort_order) 재정렬
       const reordered = filtered.map((q, idx) => ({
         ...q,
         sort_order: idx + 1,
@@ -115,8 +111,8 @@ export const useTestCreate = () => {
   const addOption = (qKey: string) => {
     modifyQuestionOptions(qKey, (options) => {
       const newOption: Option = {
-        key: generateUid('opt'),
-        answer_option_key: generateUid('opt'),
+        key: generateUniqueId('opt'),
+        answer_option_key: generateUniqueId('opt'),
         answer_option_text: '',
         sort_order: options.length + 1,
       }
@@ -124,20 +120,20 @@ export const useTestCreate = () => {
     })
   }
 
-  const removeOption = (qKey: string, optUid: string) => {
+  const removeOption = (qKey: string, optKey: string) => {
     modifyQuestionOptions(qKey, (options) => {
-      const filtered = options.filter((o) => o.key !== optUid)
+      const filtered = options.filter((o) => o.key !== optKey)
       return filtered.map((o, idx) => ({ ...o, sort_order: idx + 1 }))
     })
   }
 
   const updateOption = (
     qKey: string,
-    optUid: string,
+    optKey: string,
     updates: Partial<Option>
   ) => {
     modifyQuestionOptions(qKey, (options) =>
-      options.map((o) => (o.key === optUid ? { ...o, ...updates } : o))
+      options.map((o) => (o.key === optKey ? { ...o, ...updates } : o))
     )
   }
 
