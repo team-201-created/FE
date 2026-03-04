@@ -8,22 +8,16 @@ import {
   AdminTabGroup,
 } from '@/app/admin/_components'
 import Button from '@/components/common/Button'
-import { useTestCreate } from './_hooks/useTestCreate'
-import { QuestionForm } from './_components/QuestionForm'
-import { Question } from './_types'
-
-const TEST_TYPE_TABS = [
-  { id: 'PREFERENCE', label: '취향' },
-  { id: 'HEALTH', label: '건강' },
-  { id: 'INTERIOR', label: '인테리어' },
-  { id: 'OOTD', label: 'OOTD' },
-]
+import { useTestCreate } from '@/app/admin/test/create/_hooks'
+import { QuestionForm } from '@/app/admin/test/create/_components'
+import { Question } from '@/app/admin/test/create/_types'
+import { TEST_TYPE_TABS } from '@/app/admin/test/create/_constants'
 
 export default function TestCreatePage() {
   const { state, actions } = useTestCreate()
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8">
       <AdminPageHeader
         title="새 테스트 생성"
         leftContent={
@@ -35,19 +29,24 @@ export default function TestCreatePage() {
           </Link>
         }
         rightContent={
-          <Button className="border-gray-light text-black-primary flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm font-bold">
-            미리보기
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              rounded="sm"
+              className="border-gray-light text-black-primary border bg-white font-bold"
+            >
+              미리보기
+            </Button>
+            <Button color="primary" rounded="sm" onClick={actions.handleSave}>
+              저장
+            </Button>
+          </div>
         }
-        buttonText="저장"
-        buttonIcon="save"
-        onButtonClick={actions.handleSave}
-        className="rounded-[20px] bg-white p-8"
+        containerClassName="rounded-[20px] bg-white p-8 m-0"
       />
 
       <AdminListCard>
-        <div className="space-y-10">
-          <div className="space-y-4">
+        <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-4">
             <div className="mb-4">
               <span className="text-black-primary text-lg font-bold">
                 기본 정보
@@ -120,68 +119,72 @@ export default function TestCreatePage() {
         </div>
       </AdminListCard>
 
-      <div className="space-y-6 rounded-[20px] bg-white p-8">
-        <div className="flex items-end justify-between px-2">
-          <h3 className="text-black-primary text-xl font-bold">테스트 질문</h3>
-          <Button
-            onClick={actions.question.add}
-            color="primary"
-            className="flex items-center gap-2 rounded-xl border-none bg-violet-100 px-6 py-2.5 font-bold text-violet-700 shadow-sm hover:bg-violet-200"
-          >
-            질문 추가
-          </Button>
-        </div>
-
-        {state.formData.questions.length === 0 ? (
-          <div className="border-gray-light flex min-h-[160px] flex-col items-center justify-center rounded-[20px] border-2 border-dashed bg-gray-50/30 text-center">
-            <p className="text-sm text-gray-400">
-              아직 추가된 질문이 없습니다.
-            </p>
-            <p className="mt-1 text-xs text-gray-400 opacity-70">
-              위의 질문 추가 버튼을 클릭하여 질문을 만들어보세요.
-            </p>
+      <AdminListCard>
+        <div className="space-y-6">
+          <div className="flex items-end justify-between px-2">
+            <h3 className="text-black-primary text-xl font-bold">
+              테스트 질문
+            </h3>
+            <Button
+              onClick={actions.question.add}
+              color="primary"
+              className="flex items-center gap-2 rounded-xl border-none bg-violet-100 px-6 py-2.5 font-bold text-violet-700 shadow-sm hover:bg-violet-200"
+            >
+              질문 추가
+            </Button>
           </div>
-        ) : (
-          <Reorder.Group
-            axis="y"
-            values={state.formData.questions}
-            onReorder={actions.question.reorder}
-            className="flex flex-col gap-6"
-          >
-            {state.formData.questions.map(
-              (question: Question, index: number) => (
-                <Reorder.Item
-                  key={question.key}
-                  value={question}
-                  className="cursor-default"
-                  initial={false}
-                  transition={{ duration: 0 }}
-                >
-                  <QuestionForm
-                    testType={state.uiCategory}
-                    question={question}
-                    index={index}
-                    onUpdate={(updates) =>
-                      actions.question.update(question.key, updates)
-                    }
-                    onRemove={() => actions.question.remove(question.key)}
-                    onAddOption={() => actions.option.add(question.key)}
-                    onRemoveOption={(optKey) =>
-                      actions.option.remove(question.key, optKey)
-                    }
-                    onUpdateOption={(optKey, updates) =>
-                      actions.option.update(question.key, optKey, updates)
-                    }
-                    onReorderOptions={(newOptions) =>
-                      actions.option.reorder(question.key, newOptions)
-                    }
-                  />
-                </Reorder.Item>
-              )
-            )}
-          </Reorder.Group>
-        )}
-      </div>
+
+          {state.formData.questions.length === 0 ? (
+            <div className="border-gray-light flex min-h-[160px] flex-col items-center justify-center rounded-[20px] border-2 border-dashed bg-gray-50/30 text-center">
+              <p className="text-sm text-gray-400">
+                아직 추가된 질문이 없습니다.
+              </p>
+              <p className="mt-1 text-xs text-gray-400 opacity-70">
+                위의 질문 추가 버튼을 클릭하여 질문을 만들어보세요.
+              </p>
+            </div>
+          ) : (
+            <Reorder.Group
+              axis="y"
+              values={state.formData.questions}
+              onReorder={actions.question.reorder}
+              className="flex flex-col gap-6"
+            >
+              {state.formData.questions.map(
+                (question: Question, index: number) => (
+                  <Reorder.Item
+                    key={question.key}
+                    value={question}
+                    className="cursor-default"
+                    initial={false}
+                    transition={{ duration: 0 }}
+                  >
+                    <QuestionForm
+                      testType={state.uiCategory}
+                      question={question}
+                      index={index}
+                      onUpdate={(updates) =>
+                        actions.question.update(question.key, updates)
+                      }
+                      onRemove={() => actions.question.remove(question.key)}
+                      onAddOption={() => actions.option.add(question.key)}
+                      onRemoveOption={(optKey) =>
+                        actions.option.remove(question.key, optKey)
+                      }
+                      onUpdateOption={(optKey, updates) =>
+                        actions.option.update(question.key, optKey, updates)
+                      }
+                      onReorderOptions={(newOptions) =>
+                        actions.option.reorder(question.key, newOptions)
+                      }
+                    />
+                  </Reorder.Item>
+                )
+              )}
+            </Reorder.Group>
+          )}
+        </div>
+      </AdminListCard>
     </div>
   )
 }
