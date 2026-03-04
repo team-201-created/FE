@@ -11,7 +11,7 @@ import {
   accordNameToScentFamilyId,
   themeNameToNoteLabel,
   type CombinationsResponse,
-} from '@/lib/api/client'
+} from '@/lib/api/productsClient'
 
 let combinationsPromise: Promise<CombinationsResponse> | null = null
 function getCombinationsPromise() {

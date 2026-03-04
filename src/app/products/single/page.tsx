@@ -10,7 +10,7 @@ import {
   fetchElementDetail,
   accordNameToScentFamilyId,
   type SinglesResponse,
-} from '@/lib/api/client'
+} from '@/lib/api/productsClient'
 
 let singlesPromise: Promise<SinglesResponse> | null = null
 function getSinglesPromise() {
