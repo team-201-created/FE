@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { cn } from '@/lib/cn'
 import Button from '@/components/common/Button'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 interface AdminSelectProps {
   options: { label: string; value: string }[]
@@ -23,18 +24,15 @@ export const AdminSelect = ({
   width = 'w-32',
 }: AdminSelectProps) => {
   const [isOpen, setIsOpen] = useState(false)
-  const backdropRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const selectedOption =
     options.find((opt) => opt.value === value) || options[0]
 
-  const toggle = () => {
-    setIsOpen((prev) => {
-      if (!prev) setTimeout(() => backdropRef.current?.focus(), 0)
-      return !prev
-    })
-  }
+  const toggle = () => setIsOpen((prev) => !prev)
   const close = () => setIsOpen(false)
+
+  useOutsideClick(containerRef, close, isOpen)
 
   const handleSelect = (val: string) => {
     onChange?.(val)
@@ -42,17 +40,7 @@ export const AdminSelect = ({
   }
 
   return (
-    <div className={cn('relative', className)}>
-      {isOpen && (
-        <div
-          ref={backdropRef}
-          className="fixed inset-0 z-40 cursor-pointer"
-          tabIndex={-1}
-          onClick={close}
-          onKeyDown={(e) => e.key === 'Escape' && close()}
-        />
-      )}
-
+    <div ref={containerRef} className={cn('relative', className)}>
       <Button
         type="button"
         onClick={toggle}
@@ -84,13 +72,13 @@ export const AdminSelect = ({
       {isOpen && (
         <ul
           className={cn(
-            'absolute top-full left-0 z-50 mt-1 origin-top cursor-pointer overflow-hidden rounded-md border border-neutral-200 bg-white',
+            'absolute mt-1 cursor-pointer overflow-hidden rounded-md border border-neutral-200 bg-white',
             width
           )}
           role="listbox"
         >
           {options.map((opt) => (
-            <li key={opt.value} role="none">
+            <li key={opt.value} role="listitem">
               <button
                 type="button"
                 role="option"
