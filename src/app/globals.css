@@ -27,32 +27,22 @@
   --color-woody-border: #502c14;
   --color-woody-text: #ffffff;
 
-  /* 그라데이션 색상들 */
-  --color-logo: linear-gradient(90deg, #ff73c7 28%, #9400ff 100%);
-  --color-icon-primary: linear-gradient(-45deg, #ad46ff 0%, #f6339a 100%);
-  --color-icon-secondary: linear-gradient(-45deg, #ffa8da 0%, #f6339a 100%);
-  --color-icon-tertiary: linear-gradient(0deg, #9400ff 0%, #ff73c3 100%);
-
-  --color-main: linear-gradient(90deg, #bfdbff 0%, #ffb5fb 100%);
-
   /* 일반 색상들 */
-  --color-box-bg: #fbf0ff;
   --color-white: #ffffff;
   --color-gray-light: #dddddd;
   --color-gray-white: #f5f5f5;
   --color-gray-secondary: #99a1af;
-
   --color-purple-primary: #9400ff;
   --color-gray: #909090;
   --color-black-primary: #414141;
   --color-black-secondary: #364153;
-
   --color-danger: #fb2c36;
   --color-success: #00c950;
   --color-kakao: #fee500;
 
-  --background-gray-bg: #f2f2f2;
+  /* 배경 색상 */
   --background-light-bg: #f6efe3;
+
   /* 상태 배지 색상 */
   --color-status-success-bg: #f0fdf4;
   --color-status-success-text: #008236;
@@ -223,5 +213,12 @@ html {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* 자주 쓰는 flex 정렬 - 전역에서 className="flex-center" 로 사용 */
+@layer utilities {
+  .flex-center {
+    @apply flex items-center justify-center;
   }
 }
