@@ -1,9 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { mockSinglesItems, mockSinglesPageMeta } from './data/singles'
-import {
-  mockCombinationsItems,
-  mockCombinationsPageMeta,
-} from './data/combinations'
+import { mockCombinationsItems, mockCombinationsPageMeta } from './data/combo'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/singles
