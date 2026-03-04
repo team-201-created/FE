@@ -24,12 +24,12 @@ export function Footer() {
       <div className={styles.container}>
         <div className={styles.grid}>
           <div>
-            <img
+            <Image
               src="/logo.svg"
               alt="DeepScent"
-              className={styles.logo}
               width={189}
               height={29}
+              className={styles.logo}
             />
             <p className={styles.description}>
               디지털 조향 솔루션으로 당신만의 향기를 찾아보세요.
