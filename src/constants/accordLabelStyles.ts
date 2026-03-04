@@ -1,3 +1,14 @@
+/**
+ * 향조 라벨 & 향기 노트 스타일
+ *
+ * [향조 라벨]
+ * - getAccordLabels(ids) 로 id 배열 → { id, label, style }[] 변환
+ * - pill: ACCORD_LABEL_PILL_SM_CLASS(카드) / ACCORD_LABEL_PILL_MD_CLASS(모달)
+ * - style.bg, style.border, style.text 를 인라인 style 로 넣어서 렌더
+ *
+ * [향기 노트]
+ * - SCENT_NOTE_LINE_CLASS, pill: SCENT_NOTE_PILL_CLASS
+ */
 import { SCENT_FAMILIES } from '@/constants/productFilters'
 
 export type AccordLabelStyle = { bg: string; border: string; text: string }
@@ -44,7 +55,8 @@ export const ACCORD_LABEL_PILL_SM_CLASS =
 export const ACCORD_LABEL_PILL_MD_CLASS =
   'inline-block rounded-full border px-3 py-1 text-sm font-medium'
 
-// 향기 노트 스타일 클래스 (카드 한 줄 / 모달 pill)
+// 기타 스타일 클래스 (카드 한 줄)
 export const SCENT_NOTE_LINE_CLASS = 'line-clamp-1 text-xs text-neutral-500'
+// 향기 노트 스타일 클래스
 export const SCENT_NOTE_PILL_CLASS =
   'rounded-lg bg-neutral-100 px-3 py-1.5 text-sm text-neutral-700'
