@@ -9,12 +9,12 @@ const TEST_TYPE_CONFIG: Record<
   PREFERENCE: {
     icon: '/taste.svg',
     title: '취향에 어울리는 향기 찾기',
-    subtitle: '취향 정보 기반 향기 추천',
+    subtitle: '취향 정보를 기반으로하여 어울리는 향기를 추천합니다.',
   },
   HEALTH: {
     icon: '/wellness.svg',
     title: '웰니스 케어 진단',
-    subtitle: '건강 정보 기반 아로마 테라피 추천',
+    subtitle: '건강 정보를 기반으로하여 어울리는 향기를 추천합니다.',
   },
 }
 
