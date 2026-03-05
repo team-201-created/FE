@@ -3,7 +3,10 @@
 import { cn } from '@/lib/cn'
 import { AdminTableHeader } from '@/constants/admin'
 import { formatDate, getTypeStyles } from '@/app/admin/test/_utils'
-import { TYPE_LABELS } from '@/app/admin/test/_constants/testListLabels'
+import {
+  PRODUCT_TYPE_LABELS,
+  TYPE_LABELS,
+} from '@/app/admin/test/_constants/testListLabels'
 
 interface AdminTableProps {
   headers: AdminTableHeader[]
@@ -14,7 +17,7 @@ const TABLE_GRID_LAYOUT = 'grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_80px]'
 
 interface AdminTableCellProps {
   slot?: number
-  children: React.ReactNode
+  children?: React.ReactNode
   className?: string
 }
 
@@ -67,7 +70,7 @@ export const AdminTypeCell = ({
         getTypeStyles(type)
       )}
     >
-      {TYPE_LABELS[type] || type}
+      {PRODUCT_TYPE_LABELS[type] || TYPE_LABELS[type] || type}
     </span>
   </AdminTableCell>
 )
@@ -76,10 +79,14 @@ export const AdminTypeCell = ({
 export const AdminStatusCell = ({
   slot,
   status,
+  trueLabel = '발행',
+  falseLabel = '미발행',
   onClick,
 }: {
   slot: number
   status: 'PUBLISHED' | 'UNPUBLISHED'
+  trueLabel?: string
+  falseLabel?: string
   onClick: () => void
 }) => {
   const isPublished = status === 'PUBLISHED'
@@ -101,7 +108,7 @@ export const AdminStatusCell = ({
             isPublished ? 'bg-status-success-text' : 'bg-status-neutral-text'
           )}
         />
-        {isPublished ? '발행' : '미 발행'}
+        {isPublished ? trueLabel : falseLabel}
       </button>
     </AdminTableCell>
   )
