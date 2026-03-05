@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/cn'
 import {
   AdminListCard,
@@ -10,14 +10,17 @@ import {
   AdminTableCell,
   AdminFilterBar,
   AdminTabGroup,
+  AdminDateCell,
+  AdminFirstCell,
+  AdminStatusCell,
+  AdminTypeCell,
 } from '@/app/admin/_components'
-import {
-  RECOMMEND_MOCK_DATA,
-  RECOMMEND_TABLE_HEADERS,
-  RecommendData,
-} from '@/constants/admin'
+import { RECOMMEND_TABLE_HEADERS } from '@/constants/admin'
 import Button from '@/components/common/Button'
-import TrashIcon from '@/assets/icons/trash.svg' // 기존 trash 아이콘이 있다고 가정하거나 혹은 PenIcon 자리 대체
+import TrashIcon from '@/assets/icons/trash.svg'
+import { useRecommendList } from './_hooks'
+import { getTypeFirstTextColor } from '@/app/admin/test/_utils'
+import { TEST_TYPE_TABS } from '@/app/admin/test/create/_constants'
 
 const RECOMMEND_TABS = [
   { id: 'SCENT_MAP', label: '향조합 추천맵' },
@@ -27,9 +30,20 @@ const RECOMMEND_TABS = [
 
 export default function RecommendAdminPage() {
   const [activeTab, setActiveTab] = useState('SCENT_MAP')
+  const { data, handleTogglePublish, getRecommendList } = useRecommendList()
 
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
+
+  // 1. 처음 페이지에 들어왔을 때만 실행 (Mount)
+  useEffect(() => {
+    getRecommendList(activeTab)
+  }, [getRecommendList]) // 초기 로드는 최초 1회만
+  // 2. 사용자가 탭을 클릭했을 때 실행 (Event)
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId)
+    getRecommendList(tabId) // 클릭하는 순간 바로 데이터 요청!
+  }
 
   return (
     <AdminListCard>
@@ -38,49 +52,30 @@ export default function RecommendAdminPage() {
         searchPlaceholder="검색"
         filterOptions={[{ label: '전체', value: 'all' }]}
       />
-
       <AdminTabGroup
         tabs={RECOMMEND_TABS}
         activeTab={activeTab}
-        onChange={setActiveTab}
+        onChange={handleTabChange}
       />
-
       <AdminTable headers={RECOMMEND_TABLE_HEADERS}>
-        {RECOMMEND_MOCK_DATA.map((row: RecommendData) => (
+        {data.map((row) => (
           <AdminTableRow key={row.id}>
-            <AdminTableCell slot={1} className="text-lg font-bold">
-              {row.productCount}
-            </AdminTableCell>
-
-            <AdminTableCell slot={2}>
-              <span
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold transition-colors',
-                  row.status === '노출'
-                    ? 'bg-status-success-bg text-status-success-text'
-                    : 'bg-status-neutral-bg text-status-neutral-text'
-                )}
-              >
-                <div
-                  className={cn(
-                    'h-1.5 w-1.5 rounded-full',
-                    row.status === '노출'
-                      ? 'bg-status-success-text'
-                      : 'bg-status-neutral-text'
-                  )}
-                />
-                {row.status}
+            <AdminFirstCell>
+              <span className={cn(getTypeFirstTextColor(row.input_type))}>
+                {TEST_TYPE_TABS.find((t) => t.id === row.input_type)?.label ||
+                  row.input_type}
               </span>
-            </AdminTableCell>
+            </AdminFirstCell>
 
-            <AdminTableCell slot={4} className="text-gray">
-              {row.createdAt}
-            </AdminTableCell>
+            <AdminTypeCell slot={2} type={row.input_type} />
 
-            <AdminTableCell slot={5} className="text-gray">
-              {row.updatedAt}
-            </AdminTableCell>
-
+            <AdminStatusCell
+              slot={3}
+              status={row.publish_status}
+              onClick={() => handleTogglePublish(row.id, activeTab)}
+            />
+            <AdminDateCell slot={5} date={row.created_at} />
+            <AdminDateCell slot={6} date={row.updated_at} />
             <AdminTableCell slot={7}>
               <Button color="none" size="w32h32" rounded="sm">
                 <TrashIcon

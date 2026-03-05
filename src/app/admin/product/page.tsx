@@ -9,6 +9,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTabGroup,
+  AdminFirstCell,
 } from '@/app/admin/_components'
 import {
   PRODUCT_MOCK_DATA,
@@ -54,7 +55,7 @@ export default function ProductAdminPage() {
       <AdminTable headers={PRODUCT_TABLE_HEADERS}>
         {filteredData.map((row: ProductData) => (
           <AdminTableRow key={row.id}>
-            <AdminTableCell slot={1}>{row.name}</AdminTableCell>
+            <AdminFirstCell>{row.name}</AdminFirstCell>
 
             <AdminTableCell
               slot={2}

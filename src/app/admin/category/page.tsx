@@ -7,6 +7,7 @@ import {
   AdminTable,
   AdminTableRow,
   AdminTableCell,
+  AdminFirstCell,
 } from '@/app/admin/_components'
 import Button from '@/components/common/Button'
 import PenIcon from '@/assets/icons/pen.svg'
@@ -33,7 +34,7 @@ export default function CategoryAdminPage() {
       <AdminTable headers={CATEGORY_TABLE_HEADERS}>
         {CATEGORY_MOCK_DATA.map((row: CategoryData) => (
           <AdminTableRow key={row.id}>
-            <AdminTableCell slot={1}>{row.name}</AdminTableCell>
+            <AdminFirstCell>{row.name}</AdminFirstCell>
 
             <AdminTableCell slot={7} className="flex justify-center">
               <Button color="none" size="w32h32" rounded="sm">

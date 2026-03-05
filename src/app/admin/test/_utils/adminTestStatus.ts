@@ -25,6 +25,36 @@ export const getTypeStyles = (type: string) => {
   }
 }
 
+export const getTypeFirstTextColor = (type: string) => {
+  switch (type) {
+    case 'PREFERENCE':
+      return 'text-status-purple-text'
+    case 'HEALTH':
+      return 'text-status-info-text'
+    case 'INTERIOR':
+      return 'text-status-warning-text'
+    case 'OOTD':
+      return 'text-status-danger-text'
+    default:
+      return 'text-black-secondary'
+  }
+}
+
+export const getTypeRowBgColor = (type: string) => {
+  switch (type) {
+    case 'PREFERENCE':
+      return 'bg-status-purple-bg'
+    case 'HEALTH':
+      return 'bg-status-info-bg'
+    case 'INTERIOR':
+      return 'bg-status-warning-bg'
+    case 'OOTD':
+      return 'bg-status-danger-bg'
+    default:
+      return 'bg-transparent'
+  }
+}
+
 export const formatDate = (dateStr: string) => {
   return dateStr.split('T')[0]
 }
