@@ -4,7 +4,10 @@ import { mockCombinationsItems, mockCombinationsPageMeta } from './data/combo'
 import { mockElementDetails } from './data/singlesDetails'
 import { mockBlendDetails } from './data/comboDetails'
 import { adminTestsHandler } from './handlers/adminTestHandlers'
-import { adminRecommendHandlers } from './handlers/adminRecommendHandlers'
+import {
+  adminScentMapHandlers,
+  adminProductMapHandlers,
+} from './handlers/adminRecommendHandlers'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/singles
@@ -106,5 +109,6 @@ export const handlers = [
   elementDetailHandler,
   blendDetailHandler,
   adminTestsHandler,
-  adminRecommendHandlers,
+  adminScentMapHandlers,
+  adminProductMapHandlers,
 ]

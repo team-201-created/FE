@@ -20,6 +20,10 @@ export const getTypeStyles = (type: string) => {
       return 'bg-status-warning-bg text-status-warning-text'
     case 'OOTD':
       return 'bg-status-danger-bg text-status-danger-text'
+    case 'DIFFUSER':
+      return 'bg-status-info-bg text-status-info-text'
+    case 'PERFUME':
+      return 'bg-status-purple-bg text-status-purple-text'
     default:
       return 'bg-gray-100 text-gray-600'
   }
@@ -35,6 +39,10 @@ export const getTypeFirstTextColor = (type: string) => {
       return 'text-status-warning-text'
     case 'OOTD':
       return 'text-status-danger-text'
+    case 'DIFFUSER':
+      return 'text-status-info-text'
+    case 'PERFUME':
+      return 'text-status-purple-text'
     default:
       return 'text-black-secondary'
   }
@@ -50,6 +58,10 @@ export const getTypeRowBgColor = (type: string) => {
       return 'bg-status-warning-bg'
     case 'OOTD':
       return 'bg-status-danger-bg'
+    case 'DIFFUSER':
+      return 'bg-status-info-bg'
+    case 'PERFUME':
+      return 'bg-status-purple-bg'
     default:
       return 'bg-transparent'
   }

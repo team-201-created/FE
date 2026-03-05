@@ -1,4 +1,4 @@
-export const mockAdminBlendMaps = [
+export const mockAdminScentMaps = [
   {
     id: 1,
     input_type: 'PREFERENCE',
@@ -67,6 +67,89 @@ export const mockAdminBlendMaps = [
     input_type: 'HEALTH',
     publish_status: 'PUBLISHED',
     created_at: '2024-03-10T18:00:00Z',
-    updated_at: '2024-03-10T18:50:00Z',
+    updated_at: '2026-03-10T19:00:00Z',
+  },
+]
+
+export const mockAdminProductMaps = [
+  {
+    id: 1,
+    product_type: 'DIFFUSER',
+    product_count: 48,
+    adoption_status: 'ADOPTED',
+    created_at: '2026-02-15T10:00:00Z',
+    updated_at: '2026-02-20T10:00:00Z',
+  },
+  {
+    id: 2,
+    product_type: 'PERFUME',
+    product_count: 32,
+    adoption_status: 'UNADOPTED',
+    created_at: '2026-02-16T11:00:00Z',
+    updated_at: '2026-02-16T11:00:00Z',
+  },
+  {
+    id: 3,
+    product_type: 'DIFFUSER',
+    product_count: 15,
+    adoption_status: 'ADOPTED',
+    created_at: '2026-02-17T09:00:00Z',
+    updated_at: '2026-02-18T14:30:00Z',
+  },
+  {
+    id: 4,
+    product_type: 'PERFUME',
+    product_count: 120,
+    adoption_status: 'UNADOPTED',
+    created_at: '2026-02-18T15:00:00Z',
+    updated_at: '2026-02-18T15:00:00Z',
+  },
+  {
+    id: 5,
+    product_type: 'DIFFUSER',
+    product_count: 55,
+    adoption_status: 'ADOPTED',
+    created_at: '2026-02-19T10:00:00Z',
+    updated_at: '2026-02-20T11:00:00Z',
+  },
+  {
+    id: 6,
+    product_type: 'PERFUME',
+    product_count: 12,
+    adoption_status: 'ADOPTED',
+    created_at: '2026-02-20T12:00:00Z',
+    updated_at: '2026-02-21T09:00:00Z',
+  },
+  {
+    id: 7,
+    product_type: 'DIFFUSER',
+    product_count: 88,
+    adoption_status: 'UNADOPTED',
+    created_at: '2026-02-21T14:00:00Z',
+    updated_at: '2026-02-21T14:00:00Z',
+  },
+  {
+    id: 8,
+    product_type: 'PERFUME',
+    product_count: 45,
+    adoption_status: 'ADOPTED',
+    created_at: '2026-02-22T16:00:00Z',
+    updated_at: '2026-02-23T10:00:00Z',
+  },
+  {
+    id: 9,
+    product_type: 'DIFFUSER',
+    product_count: 27,
+    adoption_status: 'ADOPTED',
+    created_at: '2026-02-23T08:00:00Z',
+    updated_at: '2026-02-24T12:00:00Z',
+  },
+  {
+    id: 10,
+    product_type: 'PERFUME',
+    product_count: 67,
+    adoption_status: 'UNADOPTED',
+    created_at: '2026-02-24T09:00:00Z',
+    updated_at: '2026-02-24T09:00:00Z',
   },
 ]

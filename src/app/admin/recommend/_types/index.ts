@@ -1,1 +1,2 @@
-export * from './BlendMapTypes'
+export * from './ScentMapTypes'
+export * from './ProductMapTypes'
