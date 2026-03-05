@@ -1,15 +1,15 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/cn'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 import PenIcon from '@/assets/icons/pen.svg'
 import HeartIcon from '@/assets/icons/heart.svg'
 import AdminIcon from '@/assets/icons/admin.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 
 // ─── 타입 ─────────────────────────────────────────────────────────────────
-/** 드롭다운 한 개 항목 (variant에 따라 label만 / title+subtitle / icon+label) */
 export type DropdownItemProp = {
   href: string
   label: string
@@ -19,40 +19,31 @@ export type DropdownItemProp = {
   dividerAbove?: boolean
 }
 
-/** variant: default(단순) | withSubtitle(제목+부제목) | profile(아이콘+라벨) */
 export type DropdownVariant = 'default' | 'withSubtitle' | 'profile'
 
-// ─── 스타일 상수 ─────────────────────────────────────────────────────────
-const style = {
-  default: {
-    // 기본 스타일
-    border: 'border-neutral-200',
-    panelBg: 'bg-white',
-    itemText: 'text-neutral-700',
-  },
-  hover: {
-    // 호버 스타일
-    bg: 'hover:bg-violet-100',
-    text: 'hover:text-violet-700',
-  },
+// ─── 스타일 ─────────────────────────────────────────────────────────────────
+const styles = {
+  wrap: 'relative',
+  backdrop: 'fixed inset-0 z-[60]',
+  inner: 'relative',
+  innerOpen: 'z-[70]',
+  trigger:
+    'inline-flex items-center gap-0.5 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-violet-50 hover:text-violet-800',
+  triggerProfile:
+    'flex size-9 items-center justify-center rounded-full overflow-hidden shrink-0 transition-opacity hover:opacity-90',
+  menu: 'absolute left-0 top-full mt-0.5 rounded-lg border border-neutral-200 bg-white py-2 shadow-lg',
+  item: 'block w-full min-w-0 whitespace-nowrap px-4 py-3 text-left text-sm text-neutral-700 hover:bg-violet-100 hover:text-violet-700',
+  itemSubtitleWrap:
+    'block w-full px-4 py-3 text-left group hover:bg-violet-100 hover:text-violet-700',
+  itemTitle: 'text-sm font-bold text-neutral-900 group-hover:text-violet-700',
+  itemSubtitle: 'mt-0.5 text-xs text-neutral-500 group-hover:text-violet-700',
+  itemProfile:
+    'flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-800 hover:bg-violet-100 hover:text-violet-700',
+  divider: 'border-t border-neutral-200',
+  icon: 'size-4 shrink-0',
 } as const
 
-// ─── 메뉴 스타일 ─────────────────────────────────────────────────────────
-const menuBase = cn(
-  'rounded-lg border py-2 shadow-lg', // 기본 스타일
-  style.default.border, // 테두리 스타일
-  style.default.panelBg // 배경 스타일
-)
-const menuPosition = 'absolute left-0 top-full mt-0.5'
-const itemBase = cn(
-  'block w-full min-w-0 whitespace-nowrap px-4 py-3 text-left text-sm', // 아이템 기본 스타일
-  style.default.itemText // 아이템 텍스트 스타일
-)
-const itemHover = cn(style.hover.bg, style.hover.text)
-const divider = cn('border-t', style.default.border)
-const PROFILE_ICON_CLASS = 'size-4 shrink-0'
-
-const profileIcons: Record<
+const PROFILE_ICONS: Record<
   string,
   React.ComponentType<{ className?: string }>
 > = {
@@ -62,19 +53,81 @@ const profileIcons: Record<
   logout: ExitIcon,
 }
 
-// ─── 통합 드롭다운 (스타일·열기/닫기·백드롭 내장) ─────────────────────────
-const triggerButton =
-  'inline-flex items-center gap-0.5 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-violet-50 hover:text-violet-800'
-const triggerButtonProfile =
-  'flex size-9 items-center justify-center rounded-full overflow-hidden shrink-0 transition-opacity hover:opacity-90'
-const itemWithSubtitle = 'block w-full px-4 py-3 text-left group'
-const itemTitle =
-  'text-sm font-bold text-neutral-900 group-hover:text-violet-700'
-const itemSubtitle =
-  'mt-0.5 text-xs text-neutral-500 group-hover:text-violet-700'
-const itemProfile =
-  'flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-800'
+// ─── 메뉴 아이템 렌더 (variant별) ──────────────────────────────────────────
+type ItemProps = {
+  item: DropdownItemProp
+  index: number
+  variant: DropdownVariant
+  onClose: () => void
+}
 
+function DropdownMenuItem({ item, index, variant, onClose }: ItemProps) {
+  const showDivider = item.dividerAbove ?? index > 0
+
+  if (
+    variant === 'withSubtitle' &&
+    item.title != null &&
+    item.subtitle != null
+  ) {
+    return (
+      <li
+        key={item.href}
+        role="none"
+        className={cn(showDivider && styles.divider)}
+      >
+        <Link
+          href={item.href}
+          className={styles.itemSubtitleWrap}
+          role="menuitem"
+          onClick={onClose}
+        >
+          <span className={styles.itemTitle}>{item.title}</span>
+          <p className={styles.itemSubtitle}>{item.subtitle}</p>
+        </Link>
+      </li>
+    )
+  }
+
+  if (variant === 'profile' && item.icon) {
+    const Icon = PROFILE_ICONS[item.icon]
+    return (
+      <li
+        key={item.href}
+        role="none"
+        className={cn(showDivider && styles.divider)}
+      >
+        <Link
+          href={item.href}
+          className={styles.itemProfile}
+          role="menuitem"
+          onClick={onClose}
+        >
+          {Icon && <Icon className={styles.icon} />}
+          {item.label}
+        </Link>
+      </li>
+    )
+  }
+
+  return (
+    <li
+      key={item.href}
+      role="none"
+      className={cn(showDivider && styles.divider)}
+    >
+      <Link
+        href={item.href}
+        className={styles.item}
+        role="menuitem"
+        onClick={onClose}
+      >
+        {item.label}
+      </Link>
+    </li>
+  )
+}
+
+// ─── 드롭다운 ───────────────────────────────────────────────────────────────
 export function Dropdown({
   trigger,
   items,
@@ -82,7 +135,6 @@ export function Dropdown({
   menuMinWidth,
   'aria-label': ariaLabel,
 }: {
-  /** 버튼 내용. (isOpen) => ReactNode 이면 열림 상태에 따라 아이콘 등 변경 가능 */
   trigger: React.ReactNode | ((isOpen: boolean) => React.ReactNode)
   items: DropdownItemProp[]
   variant?: DropdownVariant
@@ -90,98 +142,46 @@ export function Dropdown({
   'aria-label'?: string
 }) {
   const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
   const close = () => setOpen(false)
   const toggle = () => setOpen((prev) => !prev)
-  const onEscape = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') close()
-  }
+  const handleKeyDown = (e: React.KeyboardEvent) =>
+    e.key === 'Escape' && close()
 
-  const isTriggerFn = typeof trigger === 'function'
-  const triggerContent = isTriggerFn
-    ? (trigger as (isOpen: boolean) => React.ReactNode)(open)
-    : trigger
+  useOutsideClick(ref, close, open)
 
-  const menuClassName = cn(menuBase, menuPosition, menuMinWidth)
-
-  const renderItem = (item: DropdownItemProp, index: number) => {
-    const dividerAbove = item.dividerAbove ?? index > 0
-    const baseItemClass = cn(itemBase, itemHover)
-
-    if (
-      variant === 'withSubtitle' &&
-      item.title != null &&
-      item.subtitle != null
-    ) {
-      return (
-        <li key={item.href} role="none" className={cn(dividerAbove && divider)}>
-          <Link
-            href={item.href}
-            className={cn(itemWithSubtitle, itemHover)}
-            role="menuitem"
-            onClick={close}
-          >
-            <span className={itemTitle}>{item.title}</span>
-            <p className={itemSubtitle}>{item.subtitle}</p>
-          </Link>
-        </li>
-      )
-    }
-
-    if (variant === 'profile' && item.icon) {
-      const Icon = profileIcons[item.icon]
-      return (
-        <li key={item.href} role="none" className={cn(dividerAbove && divider)}>
-          <Link
-            href={item.href}
-            className={cn(itemProfile, itemHover)}
-            role="menuitem"
-            onClick={close}
-          >
-            {Icon ? <Icon className={PROFILE_ICON_CLASS} /> : null}
-            {item.label}
-          </Link>
-        </li>
-      )
-    }
-
-    // default
-    return (
-      <li key={item.href} role="none" className={cn(dividerAbove && divider)}>
-        <Link
-          href={item.href}
-          className={baseItemClass}
-          role="menuitem"
-          onClick={close}
-        >
-          {item.label}
-        </Link>
-      </li>
-    )
-  }
-
-  const isProfileTrigger = variant === 'profile'
-  const buttonClass = isProfileTrigger ? triggerButtonProfile : triggerButton
+  const triggerContent = typeof trigger === 'function' ? trigger(open) : trigger
+  const triggerClass =
+    variant === 'profile' ? styles.triggerProfile : styles.trigger
+  const menuClass = cn(styles.menu, menuMinWidth)
 
   return (
-    <div className="relative">
-      {open && (
-        <div className="fixed inset-0 z-[60]" aria-hidden onClick={close} />
-      )}
-      <div className={cn('relative', open && 'z-[70]')}>
+    <div className={styles.wrap} ref={ref}>
+      {open && <div className={styles.backdrop} aria-hidden onClick={close} />}
+      <div className={cn(styles.inner, open && styles.innerOpen)}>
         <button
           type="button"
-          className={buttonClass}
+          className={triggerClass}
           aria-expanded={open}
           aria-haspopup="true"
           aria-label={ariaLabel}
           onClick={toggle}
-          onKeyDown={onEscape}
+          onKeyDown={handleKeyDown}
         >
           {triggerContent}
         </button>
         {open && (
-          <ul className={menuClassName} role="menu" onKeyDown={onEscape}>
-            {items.map((item, index) => renderItem(item, index))}
+          <ul className={menuClass} role="menu" onKeyDown={handleKeyDown}>
+            {items.map((item, index) => (
+              <DropdownMenuItem
+                key={item.href}
+                item={item}
+                index={index}
+                variant={variant}
+                onClose={close}
+              />
+            ))}
           </ul>
         )}
       </div>
