@@ -6,7 +6,7 @@ type TestProgressBarProps = {
 const styles = {
   wrap: 'flex w-full items-center gap-3',
   label: 'shrink-0 text-sm font-medium text-[var(--color-black-primary)]',
-  track: 'min-w-0 flex-1 rounded-full bg-neutral-200',
+  track: 'min-w-0 flex-1 rounded-full bg-[var(--color-white)]',
   fill: 'h-2 rounded-full bg-[var(--color-black-primary)] transition-[width] duration-300',
   percent: 'shrink-0 text-sm text-neutral-500',
 } as const
