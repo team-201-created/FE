@@ -1,4 +1,4 @@
-import { PaginatedApiResponse } from './RecommendData'
+import { RecommendApiResponse } from './RecommendData'
 
 export interface ProductMapsItemResponse {
   id: number
@@ -9,4 +9,4 @@ export interface ProductMapsItemResponse {
 }
 
 export type ProductMapsListResponse =
-  PaginatedApiResponse<ProductMapsItemResponse>
+  RecommendApiResponse<ProductMapsItemResponse>

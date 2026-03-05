@@ -1,4 +1,9 @@
-import { RecommendTabId } from '@/app/admin/recommend/_types'
+import {
+  BlendMapsListResponse,
+  ProductMapsListResponse,
+  ProductPoolsListResponse,
+  RecommendTabId,
+} from '@/app/admin/recommend/_types'
 
 export type FetchOptions = {
   page?: number
@@ -7,48 +12,62 @@ export type FetchOptions = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
+interface RecommendResponseMap {
+  'blend-maps': BlendMapsListResponse
+  'product-pools': ProductPoolsListResponse
+  'product-maps': ProductMapsListResponse
+}
+
 // 추천 관리 받아오기
 async function fetchAdminRecommendData<T>(
   endpoint: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  try {
-    const params = new URLSearchParams()
-    if (options.page != null) params.set('page', String(options.page))
-    if (options.size != null) params.set('size', String(options.size))
-    const qs = params.toString()
-    const url = `${BASE_URL}/api/v1/admin/matches/${endpoint}${qs ? `?${qs}` : ''}`
+  const params = new URLSearchParams()
+  if (options.page != null) params.set('page', String(options.page))
+  if (options.size != null) params.set('size', String(options.size))
+  const qs = params.toString()
+  const url = `${BASE_URL}/api/v1/admin/matches/${endpoint}${qs ? `?${qs}` : ''}`
 
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`실패: ${res.status}`)
-    return res.json()
-  } catch (err) {
-    console.error(`${endpoint}에서 API 에러`, err)
-    return createEmptyData()
-  }
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`실패: ${res.status}`)
+  return res.json()
 }
 
 // 빈 값
-const createEmptyData = (): any => ({
-  success: true,
-  data: {
-    content: [],
-    page: 1,
-    size: 10,
-    total_elements: 0,
-    total_pages: 0,
-  },
-})
+const createEmptyData = <T extends RecommendTabId>(
+  _tabId: T
+): RecommendResponseMap[T] =>
+  ({
+    success: true,
+    data: {
+      content: [],
+      page: 1,
+      size: 10,
+      total_elements: 0,
+      total_pages: 0,
+    },
+  }) as RecommendResponseMap[T]
 
-// 탭 ID가 곧 엔드포인트이므로 탭 ID를 주면 알아서 가져오는 함수
-export const fetchAdminRecommendList = (
-  tabId: RecommendTabId,
+// 탭 ID를 넣으면 매핑된 타입을 자동으로 추론하여 반환
+export const fetchAdminRecommendList = async <T extends RecommendTabId>(
+  tabId: T,
   options?: FetchOptions
-) => fetchAdminRecommendData<any>(tabId, options)
+): Promise<RecommendResponseMap[T]> => {
+  try {
+    return await fetchAdminRecommendData<RecommendResponseMap[T]>(
+      tabId,
+      options
+    )
+  } catch (err) {
+    console.error(`${tabId}에서 API 에러`, err)
+    return createEmptyData(tabId)
+  }
+}
 
 // 탭별 API 함수 모음
 export const RECOMMEND_API = {
-  get: (tabId: RecommendTabId, options?: FetchOptions) =>
+  get: <T extends RecommendTabId>(tabId: T, options?: FetchOptions) =>
     fetchAdminRecommendList(tabId, options),
 
   blendMaps: (options?: FetchOptions) =>

@@ -1,4 +1,4 @@
-import { PaginatedApiResponse } from './RecommendData'
+import { RecommendApiResponse } from './RecommendData'
 
 export interface BlendMapsItemResponse {
   id: number
@@ -8,4 +8,4 @@ export interface BlendMapsItemResponse {
   updated_at: string
 }
 
-export type BlendMapsListResponse = PaginatedApiResponse<BlendMapsItemResponse>
+export type BlendMapsListResponse = RecommendApiResponse<BlendMapsItemResponse>

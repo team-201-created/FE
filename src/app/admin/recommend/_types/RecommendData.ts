@@ -1,4 +1,4 @@
-export interface PaginationData<T> {
+export interface RecommendPaginationData<T> {
   content: T[]
   page: number
   size: number
@@ -6,12 +6,10 @@ export interface PaginationData<T> {
   total_pages: number
 }
 
-export interface ApiResponse<T> {
+export interface RecommendApiResponse<T> {
   success: boolean
-  data: T
+  data: RecommendPaginationData<T>
 }
-
-export type PaginatedApiResponse<T> = ApiResponse<PaginationData<T>>
 
 export const RECOMMEND_TABS = [
   { id: 'blend-maps', label: '향조합 추천맵' },
