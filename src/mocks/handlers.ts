@@ -5,8 +5,9 @@ import { mockElementDetails } from './data/singlesDetails'
 import { mockBlendDetails } from './data/comboDetails'
 import { adminTestsHandler } from './handlers/adminTestHandlers'
 import {
-  adminScentMapHandlers,
-  adminProductMapHandlers,
+  adminBlendMapsHandlers,
+  adminProductPoolsHandlers,
+  adminProductMapsHandlers,
 } from './handlers/adminRecommendHandlers'
 import {
   mockProfilingFormPREFERENCE,
@@ -130,7 +131,7 @@ export const handlers = [
   elementDetailHandler,
   blendDetailHandler,
   adminTestsHandler,
-  adminScentMapHandlers,
-  adminProductMapHandlers,
-  profilingFormActiveHandler,
+  adminBlendMapsHandlers,
+  adminProductPoolsHandlers,
+  adminProductMapsHandlers,
 ]
