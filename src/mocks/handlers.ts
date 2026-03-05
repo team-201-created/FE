@@ -1,10 +1,14 @@
 import { http, HttpResponse } from 'msw'
-import { mockSinglesItems, mockSinglesPageMeta } from './data/singles'
-import { mockCombinationsItems, mockCombinationsPageMeta } from './data/combo'
+import { mockSinglesItems } from './data/singles'
+import { mockCombinationsItems } from './data/combo'
 import { mockElementDetails } from './data/singlesDetails'
 import { mockBlendDetails } from './data/comboDetails'
 import { adminTestsHandler } from './handlers/adminTestHandlers'
 import { adminRecommendHandlers } from './handlers/adminRecommendHandlers'
+import {
+  mockProfilingFormPREFERENCE,
+  mockProfilingFormHEALTH,
+} from './data/profilingForms'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/singles
@@ -100,6 +104,23 @@ export const blendDetailHandler = http.get(
   }
 )
 
+/**
+ * 향기 성향 테스트 항목 조회 GET /api/v1/profilings/forms/active
+ * Query: profiling_type (required) PREFERENCE | HEALTH
+ */
+export const profilingFormActiveHandler = http.get(
+  '/api/v1/profilings/forms/active',
+  ({ request }) => {
+    const url = new URL(request.url)
+    const profilingType = url.searchParams.get('profiling_type')
+    const form =
+      profilingType === 'HEALTH'
+        ? mockProfilingFormHEALTH
+        : mockProfilingFormPREFERENCE
+    return HttpResponse.json({ success: true, data: form })
+  }
+)
+
 export const handlers = [
   singlesHandler,
   combinationsHandler,
@@ -107,4 +128,5 @@ export const handlers = [
   blendDetailHandler,
   adminTestsHandler,
   adminRecommendHandlers,
+  profilingFormActiveHandler,
 ]
