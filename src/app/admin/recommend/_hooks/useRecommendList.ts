@@ -1,15 +1,15 @@
 import { useCallback, useState } from 'react'
-import { BlendMapItemResponse } from '@/app/admin/recommend/_types'
-import { fetchAdminBlendMaps } from '@/app/admin/recommend/_api'
+import { ScentMapItemResponse } from '@/app/admin/recommend/_types'
+import { fetchAdminScentMaps } from '@/app/admin/recommend/_api'
 
 export const useRecommendList = () => {
-  const [data, setData] = useState<BlendMapItemResponse[]>([])
+  const [data, setData] = useState<ScentMapItemResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   const getRecommendList = useCallback(async (tabId: string) => {
     if (tabId === 'SCENT_MAP') {
       setIsLoading(true)
-      const response = await fetchAdminBlendMaps()
+      const response = await fetchAdminScentMaps()
       if (response.success) {
         setData(response.data.content)
       }
