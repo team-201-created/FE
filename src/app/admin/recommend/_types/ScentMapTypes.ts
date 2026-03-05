@@ -1,4 +1,4 @@
-export interface BlendMapItemResponse {
+export interface ScentMapItemResponse {
   id: number
   input_type: string
   publish_status: 'PUBLISHED' | 'UNPUBLISHED'
@@ -6,10 +6,10 @@ export interface BlendMapItemResponse {
   updated_at: string
 }
 
-export interface BlendMapListResponse {
+export interface ScentMapListResponse {
   success: boolean
   data: {
-    content: BlendMapItemResponse[]
+    content: ScentMapItemResponse[]
     page: number
     size: number
     total_elements: number
