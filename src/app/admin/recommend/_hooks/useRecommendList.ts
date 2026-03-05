@@ -1,28 +1,16 @@
 import { useCallback, useState } from 'react'
-import {
-  ScentMapItemResponse,
-  ProductMapItemResponse,
-} from '@/app/admin/recommend/_types'
-import {
-  fetchAdminScentMaps,
-  fetchAdminProductMaps,
-} from '@/app/admin/recommend/_api'
+import { ScentMapItemResponse } from '@/app/admin/recommend/_types'
+import { fetchAdminScentMaps } from '@/app/admin/recommend/_api'
 
 export const useRecommendList = () => {
-  const [data, setData] = useState<
-    (ScentMapItemResponse | ProductMapItemResponse)[]
-  >([])
+  const [data, setData] = useState<ScentMapItemResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   const getRecommendList = useCallback(async (tabId: string) => {
     setIsLoading(true)
     if (tabId === 'SCENT_MAP') {
+      setIsLoading(true)
       const response = await fetchAdminScentMaps()
-      if (response.success) {
-        setData(response.data.content)
-      }
-    } else if (tabId === 'PRODUCT_MAP') {
-      const response = await fetchAdminProductMaps()
       if (response.success) {
         setData(response.data.content)
       }
