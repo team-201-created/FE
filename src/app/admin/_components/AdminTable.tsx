@@ -2,6 +2,8 @@
 
 import { cn } from '@/lib/cn'
 import { AdminTableHeader } from '@/constants/admin'
+import { formatDate, getTypeStyles } from '@/app/admin/test/_utils'
+import { TYPE_LABELS } from '@/app/admin/test/_constants/testListLabels'
 
 interface AdminTableProps {
   headers: AdminTableHeader[]
@@ -11,12 +13,12 @@ interface AdminTableProps {
 const TABLE_GRID_LAYOUT = 'grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_80px]'
 
 interface AdminTableCellProps {
-  slot: number
+  slot?: number
   children: React.ReactNode
   className?: string
 }
 
-// 슬롯 번호(1~7)에 따른 그리드 위치를 지정
+// 슬롯 번호(2~7)에 따른 그리드 위치를 지정
 export const AdminTableCell = ({
   slot,
   children,
@@ -24,16 +26,98 @@ export const AdminTableCell = ({
 }: AdminTableCellProps) => (
   <div
     style={{ gridColumn: slot }}
+    className={cn('p-4 text-center text-[14px]', className)}
+  >
+    {children}
+  </div>
+)
+
+// 첫 번째 열 Cell
+export const AdminFirstCell = ({
+  children,
+  className,
+}: AdminTableCellProps) => (
+  <div
+    style={{ gridColumn: 1 }}
     className={cn(
-      'p-4',
-      slot === 1
-        ? 'text-black-primary px-6 text-left text-[16px] font-bold'
-        : 'text-center text-[14px]',
+      'text-black-primary p-4 px-6 text-left text-[16px] font-bold',
       className
     )}
   >
     {children}
   </div>
+)
+
+export const AdminTypeCell = ({
+  slot,
+  type,
+  className,
+}: {
+  slot: number
+  type: string
+  className?: string
+}) => (
+  <AdminTableCell
+    slot={slot}
+    className={cn('text-gray text-[13px]', className)}
+  >
+    <span
+      className={cn(
+        'inline-flex rounded-lg px-2.5 py-1 text-[11px] font-bold transition-colors',
+        getTypeStyles(type)
+      )}
+    >
+      {TYPE_LABELS[type] || type}
+    </span>
+  </AdminTableCell>
+)
+
+// 발행/미발행 Cell
+export const AdminStatusCell = ({
+  slot,
+  status,
+  onClick,
+}: {
+  slot: number
+  status: 'PUBLISHED' | 'UNPUBLISHED'
+  onClick: () => void
+}) => {
+  const isPublished = status === 'PUBLISHED'
+  return (
+    <AdminTableCell slot={slot}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+          'inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold',
+          isPublished
+            ? 'bg-status-success-bg text-status-success-text'
+            : 'bg-status-neutral-bg text-status-neutral-text'
+        )}
+      >
+        <div
+          className={cn(
+            'h-1.5 w-1.5 rounded-full',
+            isPublished ? 'bg-status-success-text' : 'bg-status-neutral-text'
+          )}
+        />
+        {isPublished ? '발행' : '미 발행'}
+      </button>
+    </AdminTableCell>
+  )
+}
+
+// 생성일시 or 수정일시 Cell
+export const AdminDateCell = ({
+  slot,
+  date,
+}: {
+  slot: number
+  date: string
+}) => (
+  <AdminTableCell slot={slot} className="text-gray text-[13px]">
+    {formatDate(date)}
+  </AdminTableCell>
 )
 
 // 테이블 행(Row)
@@ -46,7 +130,7 @@ export const AdminTableRow = ({
 }) => (
   <div
     className={cn(
-      'border-gray-white grid h-full items-center border-b transition-colors hover:bg-neutral-50/50',
+      'border-gray-white grid h-full cursor-pointer items-center border-b',
       TABLE_GRID_LAYOUT,
       className
     )}

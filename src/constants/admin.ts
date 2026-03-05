@@ -67,11 +67,11 @@ export const CATEGORY_TABLE_HEADERS: AdminTableHeader[] = [
 
 export const RECOMMEND_TABLE_HEADERS: AdminTableHeader[] = [
   { label: '포합 제품수' },
+  { label: '유형' },
   { label: '노출 상태' },
   { label: '' },
   { label: '생성일시' },
   { label: '수정일시' },
-  { label: '' },
   { label: '작업' },
 ]
 
