@@ -10,25 +10,30 @@ import {
 } from '@/app/admin/_components'
 import Button from '@/components/common/Button'
 import TrashIcon from '@/assets/icons/trash.svg'
-import { ScentMapItemResponse } from '@/app/admin/recommend/_types'
+import {
+  ProductPoolsItemResponse,
+  RecommendTabProps,
+} from '@/app/admin/recommend/_types'
 
-interface ScentMapTabProps {
-  data: ScentMapItemResponse[]
-  onTogglePublish: (id: number) => void
-}
-
-export const ScentMapTab = ({ data, onTogglePublish }: ScentMapTabProps) => {
+export const ProductPoolsTab = ({
+  data,
+  onTogglePublish,
+}: RecommendTabProps<ProductPoolsItemResponse>) => {
   return (
     <>
       {data.map((row) => (
         <AdminTableRow key={row.id}>
-          <AdminFirstCell>{row.id}</AdminFirstCell>
+          <AdminFirstCell>{row.product_count}개</AdminFirstCell>
 
-          <AdminTypeCell slot={2} type={row.input_type} />
+          <AdminTypeCell slot={2} type={row.product_type} />
 
           <AdminStatusCell
             slot={3}
-            status={row.publish_status}
+            status={
+              row.adoption_status === 'ADOPTED' ? 'PUBLISHED' : 'UNPUBLISHED'
+            }
+            trueLabel="채택"
+            falseLabel="미채택"
             onClick={() => onTogglePublish(row.id)}
           />
 

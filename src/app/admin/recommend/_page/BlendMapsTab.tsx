@@ -10,32 +10,26 @@ import {
 } from '@/app/admin/_components'
 import Button from '@/components/common/Button'
 import TrashIcon from '@/assets/icons/trash.svg'
-import { ProductMapItemResponse } from '@/app/admin/recommend/_types'
+import {
+  BlendMapsItemResponse,
+  RecommendTabProps,
+} from '@/app/admin/recommend/_types'
 
-interface ProductMapTabProps {
-  data: ProductMapItemResponse[]
-  onTogglePublish: (id: number) => void
-}
-
-export const ProductMapTab = ({
+export const BlendMapsTab = ({
   data,
   onTogglePublish,
-}: ProductMapTabProps) => {
+}: RecommendTabProps<BlendMapsItemResponse>) => {
   return (
     <>
       {data.map((row) => (
         <AdminTableRow key={row.id}>
-          <AdminFirstCell>{row.product_count}개</AdminFirstCell>
+          <AdminFirstCell>{row.id}</AdminFirstCell>
 
-          <AdminTypeCell slot={2} type={row.product_type} />
+          <AdminTypeCell slot={2} type={row.input_type} />
 
           <AdminStatusCell
             slot={3}
-            status={
-              row.adoption_status === 'ADOPTED' ? 'PUBLISHED' : 'UNPUBLISHED'
-            }
-            trueLabel="채택"
-            falseLabel="미채택"
+            status={row.publish_status}
             onClick={() => onTogglePublish(row.id)}
           />
 

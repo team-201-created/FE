@@ -1,2 +1,3 @@
-export * from './ScentMapTab'
-export * from './ProductMapTab'
+export * from './BlendMapsTab'
+export * from './ProductPoolsTab'
+export * from './ProductMapsTab'

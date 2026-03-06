@@ -1,72 +1,38 @@
-'use client'
+import { Suspense } from 'react'
+import { RECOMMEND_API } from './_api'
+import { RecommendTabId, RecommendListItem } from './_types'
+import RecommendAdminContent from './_page/RecommendAdminContent'
 
-import { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import {
-  AdminListCard,
-  AdminPageHeader,
-  AdminTable,
-  AdminFilterBar,
-  AdminTabGroup,
-} from '@/app/admin/_components'
-import { RECOMMEND_TABLE_HEADERS } from '@/constants/admin'
-import { useRecommendList } from './_hooks'
-import {
-  ScentMapItemResponse,
-  ProductMapItemResponse,
-} from '@/app/admin/recommend/_types'
-import { ScentMapTab, ProductMapTab } from '@/app/admin/recommend/_page'
+interface PageProps {
+  searchParams: Promise<{ tab?: string }>
+}
 
-const RECOMMEND_TABS = [
-  { id: 'SCENT_MAP', label: '향조합 추천맵' },
-  { id: 'PRODUCT_MAP', label: '제품 후보군' },
-  { id: 'PRODUCT_CANDIDATES', label: '제품 추천맵' },
-]
-
-export default function RecommendAdminPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const activeTab = searchParams.get('tab') || 'SCENT_MAP'
-
-  const { data, handleTogglePublish, getRecommendList } = useRecommendList()
-
-  const activeTabLabel =
-    RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
-
-  useEffect(() => {
-    getRecommendList(activeTab)
-  }, [getRecommendList, activeTab])
-
-  const handleTabChange = (tabId: string) => {
-    router.push(`/admin/recommend?tab=${tabId}`, { scroll: false })
+async function getRecommendData(
+  activeTab: RecommendTabId
+): Promise<RecommendListItem[]> {
+  try {
+    const response = await RECOMMEND_API.get(activeTab)
+    return response?.success ? response.data.content : []
+  } catch (error) {
+    console.error('데이터 불러오기 실패', error)
+    return []
   }
+}
 
+export default async function RecommendAdminPage({ searchParams }: PageProps) {
+  const params = await searchParams
+
+  // 넘겨줄 데이터 먼저 받아오기
+  const activeTab = (params.tab as RecommendTabId) || 'blend-maps'
+  const recommendData = await getRecommendData(activeTab)
+
+  // TODO: fallback UI 처리해주기
   return (
-    <AdminListCard>
-      <AdminPageHeader title={`${activeTabLabel} 목록`} buttonText={'등록'} />
-      <AdminFilterBar
-        searchPlaceholder="검색"
-        filterOptions={[{ label: '전체', value: 'all' }]}
-      />
-      <AdminTabGroup
-        tabs={RECOMMEND_TABS}
+    <Suspense fallback={<div>목록 조회 중... </div>}>
+      <RecommendAdminContent
+        recommendData={recommendData}
         activeTab={activeTab}
-        onChange={handleTabChange}
       />
-      <AdminTable headers={RECOMMEND_TABLE_HEADERS}>
-        {activeTab === 'SCENT_MAP' && (
-          <ScentMapTab
-            data={data as ScentMapItemResponse[]}
-            onTogglePublish={(id: number) => handleTogglePublish(id, activeTab)}
-          />
-        )}
-        {activeTab === 'PRODUCT_MAP' && (
-          <ProductMapTab
-            data={data as ProductMapItemResponse[]}
-            onTogglePublish={(id: number) => handleTogglePublish(id, activeTab)}
-          />
-        )}
-      </AdminTable>
-    </AdminListCard>
+    </Suspense>
   )
 }

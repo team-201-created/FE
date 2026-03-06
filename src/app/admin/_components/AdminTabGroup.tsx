@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn'
 import Button from '@/components/common/Button'
 
 interface AdminTabGroupProps {
-  tabs: { id: string; label: string }[]
+  tabs: readonly { id: string; label: string }[]
   activeTab: string
   onChange: (id: string) => void
   className?: string

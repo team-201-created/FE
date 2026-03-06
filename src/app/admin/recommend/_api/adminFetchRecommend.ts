@@ -1,6 +1,8 @@
 import {
-  ScentMapListResponse,
-  ProductMapListResponse,
+  BlendMapsListResponse,
+  ProductMapsListResponse,
+  ProductPoolsListResponse,
+  RecommendTabId,
 } from '@/app/admin/recommend/_types'
 
 export type FetchOptions = {
@@ -8,62 +10,70 @@ export type FetchOptions = {
   size?: number
 }
 
-const DEFAULT_EMPTY_SCENT_MAPS_DATA: ScentMapListResponse = {
-  success: true,
-  data: {
-    content: [],
-    page: 1,
-    size: 10,
-    total_elements: 0,
-    total_pages: 0,
-  },
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+
+interface RecommendResponseMap {
+  'blend-maps': BlendMapsListResponse
+  'product-pools': ProductPoolsListResponse
+  'product-maps': ProductMapsListResponse
 }
 
-const DEFAULT_EMPTY_PRODUCT_MAPS_DATA: ProductMapListResponse = {
-  success: true,
-  data: {
-    content: [],
-    page: 1,
-    size: 10,
-    total_elements: 0,
-    total_pages: 0,
-  },
-}
-
-export async function fetchAdminScentMaps(
+// 추천 관리 받아오기
+async function fetchAdminRecommendData<T>(
+  endpoint: string,
   options: FetchOptions = {}
-): Promise<ScentMapListResponse> {
-  try {
-    const params = new URLSearchParams()
-    if (options.page != null) params.set('page', String(options.page))
-    if (options.size != null) params.set('size', String(options.size))
-    const qs = params.toString()
-    const url = `/api/v1/admin/matches/blend-maps${qs ? `?${qs}` : ''}`
+): Promise<T> {
+  const params = new URLSearchParams()
+  if (options.page != null) params.set('page', String(options.page))
+  if (options.size != null) params.set('size', String(options.size))
+  const qs = params.toString()
+  const url = `${BASE_URL}/api/v1/admin/matches/${endpoint}${qs ? `?${qs}` : ''}`
 
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`API 호출 실패 ${res.status}`)
-    return res.json()
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`실패: ${res.status}`)
+  return res.json()
+}
+
+// 빈 값
+const createEmptyData = <T extends RecommendTabId>(
+  _tabId: T
+): RecommendResponseMap[T] =>
+  ({
+    success: true,
+    data: {
+      content: [],
+      page: 1,
+      size: 10,
+      total_elements: 0,
+      total_pages: 0,
+    },
+  }) as RecommendResponseMap[T]
+
+// 탭 ID를 넣으면 매핑된 타입을 자동으로 추론하여 반환
+export const fetchAdminRecommendList = async <T extends RecommendTabId>(
+  tabId: T,
+  options?: FetchOptions
+): Promise<RecommendResponseMap[T]> => {
+  try {
+    return await fetchAdminRecommendData<RecommendResponseMap[T]>(
+      tabId,
+      options
+    )
   } catch (err) {
-    console.error('API 호출 실패', err)
-    return DEFAULT_EMPTY_SCENT_MAPS_DATA
+    console.error(`${tabId}에서 API 에러`, err)
+    return createEmptyData(tabId)
   }
 }
 
-export async function fetchAdminProductMaps(
-  options: FetchOptions = {}
-): Promise<ProductMapListResponse> {
-  try {
-    const params = new URLSearchParams()
-    if (options.page != null) params.set('page', String(options.page))
-    if (options.size != null) params.set('size', String(options.size))
-    const qs = params.toString()
-    const url = `/api/v1/admin/matches/product-pools${qs ? `?${qs}` : ''}`
+// 탭별 API 함수 모음
+export const RECOMMEND_API = {
+  get: <T extends RecommendTabId>(tabId: T, options?: FetchOptions) =>
+    fetchAdminRecommendList(tabId, options),
 
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`API 호출 실패 ${res.status}`)
-    return res.json()
-  } catch (err) {
-    console.error('API 호출 실패', err)
-    return DEFAULT_EMPTY_PRODUCT_MAPS_DATA
-  }
+  blendMaps: (options?: FetchOptions) =>
+    fetchAdminRecommendList('blend-maps', options),
+  productPools: (options?: FetchOptions) =>
+    fetchAdminRecommendList('product-pools', options),
+  productMaps: (options?: FetchOptions) =>
+    fetchAdminRecommendList('product-maps', options),
 }

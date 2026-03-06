@@ -65,15 +65,41 @@ export const CATEGORY_TABLE_HEADERS: AdminTableHeader[] = [
   { label: '작업' },
 ]
 
-export const RECOMMEND_TABLE_HEADERS: AdminTableHeader[] = [
-  { label: '포합 제품수' },
-  { label: '유형' },
+export const BLEND_MAPS_HEADERS: AdminTableHeader[] = [
+  { label: 'ID' },
+  { label: '입력 유형' },
   { label: '노출 상태' },
   { label: '' },
   { label: '생성일시' },
   { label: '수정일시' },
   { label: '작업' },
 ]
+
+export const PRODUCT_POOLS_HEADERS: AdminTableHeader[] = [
+  { label: '제품 개수' },
+  { label: '제품 유형' },
+  { label: '채택 상태' },
+  { label: '' },
+  { label: '생성일시' },
+  { label: '수정일시' },
+  { label: '작업' },
+]
+
+export const PRODUCT_MAPS_HEADERS: AdminTableHeader[] = [
+  { label: 'ID' },
+  { label: '' },
+  { label: '노출 상태' },
+  { label: '' },
+  { label: '생성일시' },
+  { label: '수정일시' },
+  { label: '작업' },
+]
+
+export const RECOMMEND_TAB_HEADERS: Record<string, AdminTableHeader[]> = {
+  'blend-maps': BLEND_MAPS_HEADERS,
+  'product-pools': PRODUCT_POOLS_HEADERS,
+  'product-maps': PRODUCT_MAPS_HEADERS,
+}
 
 export const TEST_MOCK_DATA: TestData[] = [
   {

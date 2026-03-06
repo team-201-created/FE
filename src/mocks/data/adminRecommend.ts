@@ -1,4 +1,4 @@
-export const mockAdminScentMaps = [
+export const mockAdminBlendMaps = [
   {
     id: 1,
     input_type: 'PREFERENCE',
@@ -71,7 +71,7 @@ export const mockAdminScentMaps = [
   },
 ]
 
-export const mockAdminProductMaps = [
+export const mockAdminProductPools = [
   {
     id: 1,
     product_type: 'DIFFUSER',
@@ -149,6 +149,79 @@ export const mockAdminProductMaps = [
     product_type: 'PERFUME',
     product_count: 67,
     adoption_status: 'UNADOPTED',
+    created_at: '2026-02-24T09:00:00Z',
+    updated_at: '2026-02-24T09:00:00Z',
+  },
+]
+
+export const mockAdminProductMaps = [
+  {
+    id: 1,
+    product_pool_id: 1,
+    publish_status: 'PUBLISHED',
+    created_at: '2026-02-15T10:00:00Z',
+    updated_at: '2026-02-20T10:00:00Z',
+  },
+  {
+    id: 2,
+    product_pool_id: 2,
+    publish_status: 'UNPUBLISHED',
+    created_at: '2026-02-16T11:00:00Z',
+    updated_at: '2026-02-16T11:00:00Z',
+  },
+  {
+    id: 3,
+    product_pool_id: 3,
+    publish_status: 'PUBLISHED',
+    created_at: '2026-02-17T09:00:00Z',
+    updated_at: '2026-02-18T14:30:00Z',
+  },
+  {
+    id: 4,
+    product_pool_id: 4,
+    publish_status: 'UNPUBLISHED',
+    created_at: '2026-02-18T15:00:00Z',
+    updated_at: '2026-02-18T15:00:00Z',
+  },
+  {
+    id: 5,
+    product_pool_id: 5,
+    publish_status: 'PUBLISHED',
+    created_at: '2026-02-19T10:00:00Z',
+    updated_at: '2026-02-20T11:00:00Z',
+  },
+  {
+    id: 6,
+    product_pool_id: 6,
+    publish_status: 'PUBLISHED',
+    created_at: '2026-02-20T12:00:00Z',
+    updated_at: '2026-02-21T09:00:00Z',
+  },
+  {
+    id: 7,
+    product_pool_id: 7,
+    publish_status: 'UNPUBLISHED',
+    created_at: '2026-02-21T14:00:00Z',
+    updated_at: '2026-02-21T14:00:00Z',
+  },
+  {
+    id: 8,
+    product_pool_id: 8,
+    publish_status: 'PUBLISHED',
+    created_at: '2026-02-22T16:00:00Z',
+    updated_at: '2026-02-23T10:00:00Z',
+  },
+  {
+    id: 9,
+    product_pool_id: 9,
+    publish_status: 'PUBLISHED',
+    created_at: '2026-02-23T08:00:00Z',
+    updated_at: '2026-02-24T12:00:00Z',
+  },
+  {
+    id: 10,
+    product_pool_id: 10,
+    publish_status: 'UNPUBLISHED',
     created_at: '2026-02-24T09:00:00Z',
     updated_at: '2026-02-24T09:00:00Z',
   },
