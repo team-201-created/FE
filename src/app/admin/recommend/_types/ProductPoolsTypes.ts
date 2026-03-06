@@ -11,3 +11,20 @@ export interface ProductPoolsItemResponse {
 
 export type ProductPoolsListResponse =
   RecommendApiResponse<ProductPoolsItemResponse>
+
+export interface ProductPoolsFormProps {
+  formData: {
+    crawl_source: string
+    crawl_count: number
+    crawl_sort: string
+    product_type: string
+    crawl_config: {
+      min_price: number
+      max_price: number
+      min_rating: number
+      min_review_count: number
+    }
+  }
+  onFieldChange: (key: string, value: any) => void
+  onConfigChange: (key: string, value: any) => void
+}

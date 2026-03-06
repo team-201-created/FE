@@ -9,3 +9,8 @@ export interface BlendMapsItemResponse {
 }
 
 export type BlendMapsListResponse = RecommendApiResponse<BlendMapsItemResponse>
+
+export interface BlendMapsFormProps {
+  value: string
+  onChange: (val: string) => void
+}
