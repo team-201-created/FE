@@ -94,10 +94,6 @@ export function Header() {
           <Link href="/login" className={styles.rightLink}>
             로그인
           </Link>
-          <span className={styles.divider} aria-hidden />
-          <Link href="/signup" className={styles.rightLink}>
-            회원가입
-          </Link>
           <Dropdown
             trigger={
               <Image
