@@ -8,6 +8,7 @@ import {
 export type FetchOptions = {
   page?: number
   size?: number
+  adoption_status?: string
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
@@ -26,6 +27,8 @@ async function fetchAdminRecommendData<T>(
   const params = new URLSearchParams()
   if (options.page != null) params.set('page', String(options.page))
   if (options.size != null) params.set('size', String(options.size))
+  if (options.adoption_status != null)
+    params.set('adoption_status', options.adoption_status)
   const qs = params.toString()
   const url = `${BASE_URL}/api/v1/admin/matches/${endpoint}${qs ? `?${qs}` : ''}`
 
