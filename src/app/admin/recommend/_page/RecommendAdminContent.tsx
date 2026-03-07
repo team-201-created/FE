@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   AdminListCard,
@@ -19,6 +20,7 @@ import {
   BlendMapsTab,
   ProductPoolsTab,
   ProductMapsTab,
+  RecommendPostModal,
 } from '@/app/admin/recommend/_page'
 
 const TAB_COMPONENTS: Record<
@@ -40,6 +42,7 @@ export default function RecommendAdminContent({
   activeTab,
 }: RecommendAdminContentProps) {
   const router = useRouter()
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false)
 
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
@@ -59,25 +62,37 @@ export default function RecommendAdminContent({
   const ActiveTabContent = TAB_COMPONENTS[activeTab]
 
   return (
-    <AdminListCard>
-      <AdminPageHeader title={`${activeTabLabel} 목록`} buttonText={'등록'} />
-      <AdminFilterBar
-        searchPlaceholder="검색"
-        filterOptions={[{ label: '전체', value: 'all' }]}
-      />
-      <AdminTabGroup
-        tabs={RECOMMEND_TABS}
+    <>
+      <AdminListCard>
+        <AdminPageHeader
+          title={`${activeTabLabel} 목록`}
+          buttonText={'등록'}
+          onButtonClick={() => setIsPostModalOpen(true)}
+        />
+        <AdminFilterBar
+          searchPlaceholder="검색"
+          filterOptions={[{ label: '전체', value: 'all' }]}
+        />
+        <AdminTabGroup
+          tabs={RECOMMEND_TABS}
+          activeTab={activeTab}
+          onChange={handleTabChange}
+        />
+        <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
+          {ActiveTabContent && (
+            <ActiveTabContent
+              data={recommendData}
+              onTogglePublish={handleTogglePublish}
+            />
+          )}
+        </AdminTable>
+      </AdminListCard>
+
+      <RecommendPostModal
+        isOpen={isPostModalOpen}
+        onClose={() => setIsPostModalOpen(false)}
         activeTab={activeTab}
-        onChange={handleTabChange}
       />
-      <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
-        {ActiveTabContent && (
-          <ActiveTabContent
-            data={recommendData}
-            onTogglePublish={handleTogglePublish}
-          />
-        )}
-      </AdminTable>
-    </AdminListCard>
+    </>
   )
 }

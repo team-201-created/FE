@@ -6,7 +6,7 @@ import Button from '@/components/common/Button'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 interface AdminSelectProps {
-  options: { label: string; value: string }[]
+  options: { label: string; value: string; secondaryLabel?: string }[]
   value?: string
   onChange?: (value: string) => void
   className?: string
@@ -45,12 +45,12 @@ export const AdminSelect = ({
         type="button"
         onClick={toggle}
         className={cn(
-          'border-gray-light text-black-primary flex h-12 cursor-pointer items-center justify-between rounded-xl border-2 bg-white px-4 font-medium transition-all',
+          'border-gray-light text-black-primary flex h-12 cursor-pointer items-center justify-between rounded-xl border-2 bg-white px-4 font-medium transition-all active:scale-100',
           width,
-          isOpen && 'border-violet-300'
+          isOpen && 'border-black-primary'
         )}
       >
-        <span>{selectedOption?.label}</span>
+        <span className="truncate">{selectedOption?.label}</span>
         <svg
           width="16"
           height="16"
@@ -61,7 +61,7 @@ export const AdminSelect = ({
           strokeLinecap="round"
           strokeLinejoin="round"
           className={cn(
-            'transition-transform duration-200',
+            'ml-2 shrink-0 transition-transform duration-200',
             isOpen && 'rotate-180'
           )}
         >
@@ -72,7 +72,7 @@ export const AdminSelect = ({
       {isOpen && (
         <ul
           className={cn(
-            'absolute mt-1 cursor-pointer overflow-hidden rounded-md border border-neutral-200 bg-white',
+            'absolute z-10 mt-1 max-h-60 cursor-pointer overflow-y-auto rounded-md border border-neutral-200 bg-white shadow-lg',
             width
           )}
           role="listbox"
@@ -84,12 +84,17 @@ export const AdminSelect = ({
                 role="option"
                 aria-selected={opt.value === value}
                 className={cn(
-                  'hover:bg-gray-light hover:text-black-primary w-full cursor-pointer px-4 py-3 text-left text-sm transition-colors',
+                  'hover:bg-gray-light hover:text-black-primary flex w-full cursor-pointer items-center justify-between px-4 py-3 text-left text-sm transition-colors',
                   opt.value === value ? 'bg-gray-light font-bold' : ''
                 )}
                 onClick={() => handleSelect(opt.value)}
               >
-                {opt.label}
+                <span>{opt.label}</span>
+                {opt.secondaryLabel && (
+                  <span className="ml-2 text-[12px] font-normal text-gray-400">
+                    {opt.secondaryLabel}
+                  </span>
+                )}
               </button>
             </li>
           ))}

@@ -38,10 +38,19 @@ export const adminProductPoolsHandlers = http.get(
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1)
     const size = Number(url.searchParams.get('size') ?? 10)
+    const adoptionStatus = url.searchParams.get('adoption_status')
+
+    // 상태 필터링 적용
+    let filteredData = mockAdminProductPools
+    if (adoptionStatus) {
+      filteredData = mockAdminProductPools.filter(
+        (item) => item.adoption_status === adoptionStatus
+      )
+    }
 
     const start = (page - 1) * size
-    const content = mockAdminProductPools.slice(start, start + size)
-    const total_elements = mockAdminProductPools.length
+    const content = filteredData.slice(start, start + size)
+    const total_elements = filteredData.length
     const total_pages = Math.ceil(total_elements / size) || 1
 
     return HttpResponse.json({

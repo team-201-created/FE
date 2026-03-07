@@ -1,4 +1,5 @@
 import { RecommendApiResponse } from './RecommendData'
+import { ProductPoolsListResponse } from './ProductPoolsTypes'
 
 export interface ProductMapsItemResponse {
   id: number
@@ -10,3 +11,9 @@ export interface ProductMapsItemResponse {
 
 export type ProductMapsListResponse =
   RecommendApiResponse<ProductMapsItemResponse>
+
+export interface ProductMapsFormProps {
+  value: number
+  onChange: (val: number) => void
+  poolsPromise: Promise<ProductPoolsListResponse>
+}
