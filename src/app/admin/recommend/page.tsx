@@ -1,38 +1,32 @@
-import { Suspense } from 'react'
 import { RECOMMEND_API } from './_api'
-import { RecommendTabId, RecommendListItem } from './_types'
+import { RecommendTabId } from './_types'
 import RecommendAdminContent from './_page/RecommendAdminContent'
 
 interface PageProps {
   searchParams: Promise<{ tab?: string }>
 }
 
-async function getRecommendData(
-  activeTab: RecommendTabId
-): Promise<RecommendListItem[]> {
-  try {
-    const response = await RECOMMEND_API.get(activeTab)
-    return response?.success ? response.data.content : []
-  } catch (error) {
-    console.error('데이터 불러오기 실패', error)
-    return []
-  }
-}
+const VALID_TABS: RecommendTabId[] = [
+  'blend-maps',
+  'product-pools',
+  'product-maps',
+]
 
 export default async function RecommendAdminPage({ searchParams }: PageProps) {
   const params = await searchParams
+  const rawTab = params.tab as string
 
-  // 넘겨줄 데이터 먼저 받아오기
-  const activeTab = (params.tab as RecommendTabId) || 'blend-maps'
-  const recommendData = await getRecommendData(activeTab)
+  // 유효한 탭인지 검사하고 아니면 기본값으로 고정
+  const activeTab = VALID_TABS.includes(rawTab as RecommendTabId)
+    ? (rawTab as RecommendTabId)
+    : 'blend-maps'
 
-  // TODO: fallback UI 처리해주기
+  const recommendDataPromise = RECOMMEND_API.get(activeTab)
+
   return (
-    <Suspense fallback={<div>목록 조회 중... </div>}>
-      <RecommendAdminContent
-        recommendData={recommendData}
-        activeTab={activeTab}
-      />
-    </Suspense>
+    <RecommendAdminContent
+      recommendDataPromise={recommendDataPromise}
+      activeTab={activeTab}
+    />
   )
 }
