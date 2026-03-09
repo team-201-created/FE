@@ -25,9 +25,14 @@ export const headerNavLinks = {
     },
   ],
   profile: [
-    { label: '내 정보 수정', href: '/profile', icon: 'pencil' },
+    {
+      label: '내 정보 수정',
+      href: '',
+      icon: 'pencil',
+      onClick: 'openProfileModal',
+    },
     { label: '향기 저장소', href: '/profile/storage', icon: 'heart' },
     { label: '관리자 페이지', href: '/admin', icon: 'gear' },
-    { label: '로그아웃', href: '/login', icon: 'logout' },
+    { label: '로그아웃', href: '', icon: 'logout', onClick: 'logout' },
   ],
 } as const
