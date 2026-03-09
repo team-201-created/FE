@@ -2,8 +2,13 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Dropdown } from '@/components/common/Dropdown'
 import { headerNavLinks } from '@/constants/headerNavLinks'
+import ProfileModal from '@/app/profile/profileModal/profileModal'
+import NicknameModal from '@/app/profile/profileModal/NicknameModal'
+import WithdrawModal from '@/app/profile/profileModal/WithdrawModal'
 import CloseIcon from '@/assets/icons/close.svg'
 import OpenIcon from '@/assets/icons/open.svg'
 
@@ -21,101 +26,139 @@ const styles = {
   divider: 'h-3.5 w-px bg-neutral-300 shrink-0',
   chevronWrap: 'ml-0.5 shrink-0',
 } as const
-
 export function Header() {
+  const [activeModal, setActiveModal] = useState<
+    null | 'profile' | 'nickname' | 'withdraw'
+  >(null)
+  const router = useRouter()
+
+  const openProfileModal = () => setActiveModal('profile')
+  const openNicknameModal = () => setActiveModal('nickname')
+  const openWithdrawModal = () => setActiveModal('withdraw')
+  const closeModal = () => setActiveModal(null)
+  const logout = () => {
+    // TODO: 실제 로그아웃 로직 구현
+    router.push('/login')
+  }
+
+  const handleProfileMenu = (action: string | undefined) => {
+    if (action === 'openProfileModal') openProfileModal()
+    if (action === 'logout') logout()
+  }
+
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
-        <div className={styles.leftGroup}>
-          <Link href="/" className={styles.logo} aria-label="DeepScent 홈">
-            <Image
-              src="/logo.svg"
-              alt="DeepScent"
-              width={189}
-              height={29}
-              className="h-7 w-auto"
-            />
-          </Link>
-
-          <nav className={styles.nav} aria-label="메인 메뉴">
-            <div className={styles.navItemWrapper}>
-              <Dropdown
-                trigger={(isOpen) => (
-                  <>
-                    향
-                    <span className={styles.chevronWrap} aria-hidden>
-                      {isOpen ? (
-                        <CloseIcon className="size-4" />
-                      ) : (
-                        <OpenIcon className="size-4" />
-                      )}
-                    </span>
-                  </>
-                )}
-                items={headerNavLinks.perfume.map(({ label, href }) => ({
-                  href,
-                  label,
-                }))}
-                variant="default"
-                menuMinWidth="min-w-[180px]"
-              />
-            </div>
-
-            <div className={styles.navItemWrapper}>
-              <Dropdown
-                trigger={(isOpen) => (
-                  <>
-                    나의 향기 찾기
-                    <span className={styles.chevronWrap} aria-hidden>
-                      {isOpen ? (
-                        <CloseIcon className="size-4" />
-                      ) : (
-                        <OpenIcon className="size-4" />
-                      )}
-                    </span>
-                  </>
-                )}
-                items={headerNavLinks.findMyScent.map(
-                  ({ href, title, subtitle }) => ({
-                    href,
-                    label: title,
-                    title,
-                    subtitle,
-                  })
-                )}
-                variant="withSubtitle"
-                menuMinWidth="min-w-[280px]"
-              />
-            </div>
-          </nav>
-        </div>
-
-        <div className={styles.rightMenu}>
-          <Link href="/login" className={styles.rightLink}>
-            로그인
-          </Link>
-          <Dropdown
-            trigger={
+    <>
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <div className={styles.leftGroup}>
+            <Link href="/" className={styles.logo} aria-label="DeepScent 홈">
               <Image
-                src="/profile.svg"
-                alt=""
-                width={36}
-                height={36}
-                className="size-9"
-                aria-hidden
+                src="/logo.svg"
+                alt="DeepScent"
+                width={189}
+                height={29}
+                className="h-7 w-auto"
               />
-            }
-            items={headerNavLinks.profile.map(({ href, label, icon }) => ({
-              href,
-              label,
-              icon,
-            }))}
-            variant="profile"
-            menuMinWidth="min-w-[200px]"
-            aria-label="프로필 메뉴"
-          />
+            </Link>
+
+            <nav className={styles.nav} aria-label="메인 메뉴">
+              <div className={styles.navItemWrapper}>
+                <Dropdown
+                  trigger={(isOpen) => (
+                    <>
+                      향
+                      <span className={styles.chevronWrap} aria-hidden>
+                        {isOpen ? (
+                          <CloseIcon className="size-4" />
+                        ) : (
+                          <OpenIcon className="size-4" />
+                        )}
+                      </span>
+                    </>
+                  )}
+                  items={headerNavLinks.perfume.map(({ label, href }) => ({
+                    href,
+                    label,
+                  }))}
+                  variant="default"
+                  menuMinWidth="min-w-[180px]"
+                />
+              </div>
+
+              <div className={styles.navItemWrapper}>
+                <Dropdown
+                  trigger={(isOpen) => (
+                    <>
+                      나의 향기 찾기
+                      <span className={styles.chevronWrap} aria-hidden>
+                        {isOpen ? (
+                          <CloseIcon className="size-4" />
+                        ) : (
+                          <OpenIcon className="size-4" />
+                        )}
+                      </span>
+                    </>
+                  )}
+                  items={headerNavLinks.findMyScent.map(
+                    ({ href, title, subtitle }) => ({
+                      href,
+                      label: title,
+                      title,
+                      subtitle,
+                    })
+                  )}
+                  variant="withSubtitle"
+                  menuMinWidth="min-w-[280px]"
+                />
+              </div>
+            </nav>
+          </div>
+
+          <div className={styles.rightMenu}>
+            <Link href="/login" className={styles.rightLink}>
+              로그인
+            </Link>
+            <Dropdown
+              trigger={
+                <Image
+                  src="/profile.svg"
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="size-9"
+                  aria-hidden
+                />
+              }
+              items={headerNavLinks.profile}
+              variant="profile"
+              menuMinWidth="min-w-[200px]"
+              aria-label="프로필 메뉴"
+              onProfileAction={handleProfileMenu}
+            />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      {/* activeModal 상태에 따라 모달 렌더링 */}
+      {activeModal === 'profile' && (
+        <ProfileModal
+          isOpen
+          onClose={closeModal}
+          onNicknameClick={() => {
+            closeModal()
+            openNicknameModal()
+          }}
+          onWithdrawClick={() => {
+            closeModal()
+            openWithdrawModal()
+          }}
+        />
+      )}
+      {activeModal === 'nickname' && (
+        <NicknameModal isOpen onClose={closeModal} />
+      )}
+      {activeModal === 'withdraw' && (
+        <WithdrawModal isOpen onClose={closeModal} />
+      )}
+    </>
   )
 }
