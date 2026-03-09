@@ -5,81 +5,49 @@ import { VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 import { modalVariants } from './Modal.variants'
 import { useModal } from './useModal'
+import ModalCloseIcon from '@/assets/icons/modalClose.svg'
 
-// --- Types ---
 export interface ModalProps extends VariantProps<typeof modalVariants> {
   isOpen: boolean
   onClose: () => void
-  outsideCloseEnabled?: boolean
-  ignoreRefs?: Array<React.RefObject<HTMLElement | null>>
   showCloseButton?: boolean
   children: React.ReactNode
-  overlayClassName?: string
-  className?: string
 }
 
-// --- Main Modal Component ---
 export function Modal({
   isOpen,
   onClose,
-  outsideCloseEnabled = true,
-  ignoreRefs = [],
   showCloseButton = true,
   children,
   size,
   rounded,
-  className,
-  overlayClassName,
 }: ModalProps) {
   const { modalRef } = useModal({
     isOpen,
     onClose,
-    outsideCloseEnabled,
-    ignoreRefs,
   })
 
   if (!isOpen) return null
 
   return (
     <div
-      className={cn(
-        'fixed inset-0 z-[100] flex items-center justify-center bg-black/50',
-        overlayClassName
-      )}
+      ref={modalRef}
+      className={cn(modalVariants({ size, rounded }), 'overflow-hidden')}
     >
-      <div
-        ref={modalRef}
-        className={cn(modalVariants({ size, rounded }), className)}
-      >
-        {showCloseButton && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="hover:bg-gray-white text-black-secondary absolute top-5 right-5 z-[110] rounded-md p-1 transition-colors"
-            aria-label="Close modal"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        )}
-        {children}
-      </div>
+      {showCloseButton && (
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-black-secondary absolute top-5 right-5 cursor-pointer rounded-md p-1"
+          aria-label="Close modal"
+        >
+          <ModalCloseIcon width={24} height={24} />
+        </button>
+      )}
+      {children}
     </div>
   )
 }
-
-// --- Sub Components ---
 
 Modal.Header = function ModalHeader({
   children,

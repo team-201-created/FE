@@ -1,15 +1,14 @@
 import React, { useState, Suspense, useMemo } from 'react'
-import Modal from '@/components/common/Modal'
+import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
 import { RecommendTabId, RECOMMEND_TABS } from '@/app/admin/recommend/_types'
 import { RECOMMEND_API } from '@/app/admin/recommend/_api'
 import { BlendMapsForm } from './BlendMapsForm'
 import { ProductPoolsForm } from './ProductPoolsForm'
 import { ProductMapsForm } from './ProductMapsForm'
+import { useModalStore } from '@/store/useModalStore'
 
 interface RecommendPostModalProps {
-  isOpen: boolean
-  onClose: () => void
   activeTab: RecommendTabId
 }
 
@@ -20,11 +19,9 @@ const ProductMapsFormFallback = () => (
   </div>
 )
 
-export const RecommendPostModal = ({
-  isOpen,
-  onClose,
-  activeTab,
-}: RecommendPostModalProps) => {
+export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
+  const { closeModal } = useModalStore()
+
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
 
@@ -50,12 +47,12 @@ export const RecommendPostModal = ({
   })
 
   const poolsPromise = useMemo(() => {
-    if (!isOpen || activeTab !== 'product-maps') return null
+    if (activeTab !== 'product-maps') return null
     return RECOMMEND_API.productPools({
       size: 20,
       adoption_status: 'ADOPTED',
     })
-  }, [isOpen, activeTab])
+  }, [activeTab])
 
   // 일반 필드 업데이트
   const handleChange = (key: string, value: any) => {
@@ -88,7 +85,7 @@ export const RecommendPostModal = ({
     }
 
     console.log(`[${activeTab}] 등록 데이터 TEST : `, submitData)
-    onClose()
+    closeModal()
   }
 
   const renderContent = () => {
@@ -126,14 +123,14 @@ export const RecommendPostModal = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen onClose={closeModal} size="md">
       <Modal.Header>{activeTabLabel} 등록</Modal.Header>
       <Modal.Content>{renderContent()}</Modal.Content>
       <Modal.Footer className="flex justify-end gap-2 text-[16px]">
         <Button
           color="none"
           className="border-gray-light border"
-          onClick={onClose}
+          onClick={closeModal}
         >
           취소
         </Button>

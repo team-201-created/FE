@@ -1,23 +1,12 @@
 import { useRef, useEffect } from 'react'
-import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 interface UseModalProps {
   isOpen: boolean
   onClose: () => void
-  outsideCloseEnabled?: boolean
-  ignoreRefs?: Array<React.RefObject<HTMLElement | null>>
 }
 
-export function useModal({
-  isOpen,
-  onClose,
-  outsideCloseEnabled = true,
-  ignoreRefs = [],
-}: UseModalProps) {
+export function useModal({ isOpen, onClose }: UseModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
-
-  // 외부 클릭 감지
-  useOutsideClick(modalRef, onClose, isOpen && outsideCloseEnabled, ignoreRefs)
 
   // 바디 스크롤 차단
   useEffect(() => {

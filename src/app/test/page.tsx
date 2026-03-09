@@ -3,7 +3,6 @@
 import { useState, Suspense } from 'react'
 import { useSearchParams, usePathname } from 'next/navigation'
 import { Dropdown } from '@/components/common/Dropdown'
-import Modal from '@/components/common/Modal'
 import Input from '@/components/common/Input'
 
 const SORT_OPTIONS = [
