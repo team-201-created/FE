@@ -3,6 +3,7 @@ import localFont from 'next/font/local'
 import { Header } from '@/components/common/Header'
 import { Footer } from '@/components/common/Footer'
 import { MockProvider } from '@/mocks/MockProvider'
+import { GlobalModal } from '@/components/common/Modal/GlobalModal'
 import './globals.css'
 
 const pretendard = localFont({
@@ -31,6 +32,8 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <div id="modal-root" />
+          <GlobalModal />
         </MockProvider>
       </body>
     </html>
