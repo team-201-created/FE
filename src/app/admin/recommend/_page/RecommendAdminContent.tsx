@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, use, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   AdminListCard,
@@ -12,9 +12,10 @@ import {
 import { RECOMMEND_TAB_HEADERS } from '@/constants/admin'
 import {
   RecommendTabId,
-  RecommendListItem,
   RecommendTabProps,
   RECOMMEND_TABS,
+  RecommendListItem,
+  RecommendApiResponse,
 } from '@/app/admin/recommend/_types'
 import {
   BlendMapsTab,
@@ -22,6 +23,8 @@ import {
   ProductMapsTab,
   RecommendPostModal,
 } from '@/app/admin/recommend/_page'
+
+import { updateRecommendList } from '@/app/admin/recommend/_actions/recommendActions'
 
 const TAB_COMPONENTS: Record<
   RecommendTabId,
@@ -33,12 +36,12 @@ const TAB_COMPONENTS: Record<
 }
 
 interface RecommendAdminContentProps {
-  recommendData: RecommendListItem[]
+  recommendDataPromise: Promise<RecommendApiResponse<RecommendListItem>>
   activeTab: RecommendTabId
 }
 
 export default function RecommendAdminContent({
-  recommendData,
+  recommendDataPromise,
   activeTab,
 }: RecommendAdminContentProps) {
   const router = useRouter()
@@ -55,11 +58,8 @@ export default function RecommendAdminContent({
     if (!dataId) return
 
     // TODO: 실제 상태 변경 API 호출 (Patch 등)
-    // 성공 시:
-    router.refresh()
+    await updateRecommendList({ tabId: activeTab })
   }
-
-  const ActiveTabContent = TAB_COMPONENTS[activeTab]
 
   return (
     <>
@@ -79,12 +79,20 @@ export default function RecommendAdminContent({
           onChange={handleTabChange}
         />
         <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
-          {ActiveTabContent && (
-            <ActiveTabContent
-              data={recommendData}
+          <Suspense
+            key={activeTab}
+            fallback={
+              <h1 className="py-20 text-center text-gray-400">
+                데이터 불러오는 중...
+              </h1>
+            }
+          >
+            <TableBodyWrapper
+              recommendDataPromise={recommendDataPromise}
+              activeTab={activeTab}
               onTogglePublish={handleTogglePublish}
             />
-          )}
+          </Suspense>
         </AdminTable>
       </AdminListCard>
 
@@ -94,5 +102,23 @@ export default function RecommendAdminContent({
         activeTab={activeTab}
       />
     </>
+  )
+}
+
+function TableBodyWrapper({
+  recommendDataPromise,
+  activeTab,
+  onTogglePublish,
+}: {
+  recommendDataPromise: Promise<RecommendApiResponse<RecommendListItem>>
+  activeTab: RecommendTabId
+  onTogglePublish: (id: number) => void
+}) {
+  const response = use(recommendDataPromise)
+  const recommendData = response?.success ? response.data.content : []
+  const ActiveTabContent = TAB_COMPONENTS[activeTab]
+
+  return (
+    <ActiveTabContent data={recommendData} onTogglePublish={onTogglePublish} />
   )
 }
