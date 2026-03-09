@@ -17,6 +17,7 @@ export type DropdownItemProp = {
   subtitle?: string
   icon?: 'pencil' | 'heart' | 'gear' | 'logout'
   dividerAbove?: boolean
+  onClick?: string | (() => void)
 }
 
 export type DropdownVariant = 'default' | 'withSubtitle' | 'profile'
@@ -58,10 +59,17 @@ type ItemProps = {
   item: DropdownItemProp
   index: number
   variant: DropdownVariant
+  onClick?: () => void
   onClose: () => void
 }
 
-function DropdownMenuItem({ item, index, variant, onClose }: ItemProps) {
+function DropdownMenuItem({
+  item,
+  index,
+  variant,
+  onClick,
+  onClose,
+}: ItemProps) {
   const showDivider = item.dividerAbove ?? index > 0
 
   if (
@@ -79,7 +87,6 @@ function DropdownMenuItem({ item, index, variant, onClose }: ItemProps) {
           href={item.href}
           className={styles.itemSubtitleWrap}
           role="menuitem"
-          onClick={onClose}
         >
           <span className={styles.itemTitle}>{item.title}</span>
           <p className={styles.itemSubtitle}>{item.subtitle}</p>
@@ -95,6 +102,7 @@ function DropdownMenuItem({ item, index, variant, onClose }: ItemProps) {
         key={item.href}
         role="none"
         className={cn(showDivider && styles.divider)}
+        onClick={onClick}
       >
         <Link
           href={item.href}
@@ -134,12 +142,14 @@ export function Dropdown({
   variant = 'default',
   menuMinWidth,
   'aria-label': ariaLabel,
+  onProfileAction,
 }: {
   trigger: React.ReactNode | ((isOpen: boolean) => React.ReactNode)
-  items: DropdownItemProp[]
+  items: readonly DropdownItemProp[]
   variant?: DropdownVariant
   menuMinWidth?: string
   'aria-label'?: string
+  onProfileAction?: (action: string | undefined) => void
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -155,6 +165,25 @@ export function Dropdown({
   const triggerClass =
     variant === 'profile' ? styles.triggerProfile : styles.trigger
   const menuClass = cn(styles.menu, menuMinWidth)
+
+  // 아이템 클릭 핸들러: onClick 있으면 실행, 없으면 href 이동
+  const handleItemClick = (item: DropdownItemProp) => {
+    if (
+      variant === 'profile' &&
+      typeof item.onClick === 'string' &&
+      onProfileAction
+    ) {
+      onProfileAction(item.onClick)
+      close()
+      return
+    }
+    if (item.href) {
+      window.open(item.href, '_self')
+    } else if (typeof item.onClick === 'function') {
+      item.onClick()
+    }
+    close()
+  }
 
   return (
     <div className={styles.wrap} ref={ref}>
@@ -175,11 +204,12 @@ export function Dropdown({
           <ul className={menuClass} role="menu" onKeyDown={handleKeyDown}>
             {items.map((item, index) => (
               <DropdownMenuItem
-                key={item.href}
+                key={item.href || item.label}
                 item={item}
                 index={index}
                 variant={variant}
-                onClose={close}
+                onClose={() => handleItemClick(item)}
+                onClick={() => handleItemClick(item)}
               />
             ))}
           </ul>
