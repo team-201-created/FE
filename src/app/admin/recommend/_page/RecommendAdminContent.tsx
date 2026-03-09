@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, use, Suspense } from 'react'
+import { use, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   AdminListCard,
@@ -25,6 +25,7 @@ import {
 } from '@/app/admin/recommend/_page'
 
 import { updateRecommendList } from '@/app/admin/recommend/_actions/recommendActions'
+import { useModalStore } from '@/store/useModalStore'
 
 const TAB_COMPONENTS: Record<
   RecommendTabId,
@@ -45,7 +46,6 @@ export default function RecommendAdminContent({
   activeTab,
 }: RecommendAdminContentProps) {
   const router = useRouter()
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false)
 
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
@@ -61,13 +61,18 @@ export default function RecommendAdminContent({
     await updateRecommendList({ tabId: activeTab })
   }
 
+  const { openModal, openAlert } = useModalStore()
+
+  const handleOpenPostModal = () => {
+    openModal(<RecommendPostModal activeTab={activeTab} />)
+  }
+
   return (
-    <>
-      <AdminListCard>
+    <AdminListCard>
         <AdminPageHeader
           title={`${activeTabLabel} 목록`}
           buttonText={'등록'}
-          onButtonClick={() => setIsPostModalOpen(true)}
+          onButtonClick={handleOpenPostModal}
         />
         <AdminFilterBar
           searchPlaceholder="검색"
@@ -95,13 +100,6 @@ export default function RecommendAdminContent({
           </Suspense>
         </AdminTable>
       </AdminListCard>
-
-      <RecommendPostModal
-        isOpen={isPostModalOpen}
-        onClose={() => setIsPostModalOpen(false)}
-        activeTab={activeTab}
-      />
-    </>
   )
 }
 
