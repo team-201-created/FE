@@ -49,20 +49,12 @@ export function AlertModal({
   const IconColorStyle = isDanger ? 'text-danger' : 'text-success'
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleCancel}
-      size="sm"
-      showCloseButton
-      className="overflow-hidden p-0"
-    >
-      <div
-        className={`absolute top-0 right-0 left-0 h-[6px] ${TopBorderStyle}`}
-      />
+    <Modal isOpen={isOpen} onClose={handleCancel} size="sm" showCloseButton>
+      <div className={`absolute h-[6px] w-full ${TopBorderStyle}`} />
 
       <div className="flex flex-col items-center px-6 pt-12 pb-8">
         <div
-          className={`mb-6 flex h-[72px] w-[72px] items-center justify-center rounded-full ${IconBgStyle} ${IconColorStyle}`}
+          className={`mb-6 flex h-18 w-18 items-center justify-center rounded-full ${IconBgStyle} ${IconColorStyle}`}
         >
           {isDanger ? (
             <AlertDangerIcon width={40} height={40} />
@@ -71,11 +63,11 @@ export function AlertModal({
           )}
         </div>
 
-        <h2 className="mb-2 text-center text-[18px] font-bold text-black">
+        <h2 className="mb-2 text-center text-xl font-bold text-black">
           {title}
         </h2>
         {content && (
-          <div className="mb-8 text-center text-[14px] whitespace-pre-wrap text-gray-500">
+          <div className="mb-8 text-center text-sm leading-relaxed whitespace-pre-wrap text-gray-500">
             {content}
           </div>
         )}
@@ -94,7 +86,7 @@ export function AlertModal({
           <Button
             color={isDanger ? 'danger' : 'success'}
             size="none"
-            className="flex-1 rounded-[14px] py-3 font-semibold"
+            className="flex-1 rounded-[14px] border border-transparent py-3 font-semibold"
             onClick={handleConfirm}
           >
             {confirmText}

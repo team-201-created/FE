@@ -2,27 +2,35 @@ import { create } from 'zustand'
 import React from 'react'
 import { AlertConfig } from '@/components/common/Modal/AlertModal'
 
-interface ModalState {
-  isOpen: boolean
+interface ModalData {
   content: React.ReactNode | null
   alertConfig: AlertConfig | null
+}
+
+interface ModalState {
+  modals: ModalData[]
 }
 
 interface ModalAction {
   openModal: (content: React.ReactNode) => void
   openAlert: (config: AlertConfig) => void
   closeModal: () => void
+  closeAll: () => void
 }
 
 export const useModalStore = create<ModalState & ModalAction>((set) => ({
   // state
-  isOpen: false,
-  content: null,
-  alertConfig: null,
+  modals: [],
 
   // action
-  openModal: (content) => set({ isOpen: true, content, alertConfig: null }),
+  openModal: (content) =>
+    set((state) => ({
+      modals: [...state.modals, { content, alertConfig: null }],
+    })),
   openAlert: (config) =>
-    set({ isOpen: true, alertConfig: config, content: null }),
-  closeModal: () => set({ isOpen: false, content: null, alertConfig: null }),
+    set((state) => ({
+      modals: [...state.modals, { content: null, alertConfig: config }],
+    })),
+  closeModal: () => set((state) => ({ modals: state.modals.slice(0, -1) })),
+  closeAll: () => set({ modals: [] }),
 }))
