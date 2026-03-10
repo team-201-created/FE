@@ -1,3 +1,4 @@
+/** AI 비주얼 분석 라우트 (플레이스홀더) */
 export default function AIVisualPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
