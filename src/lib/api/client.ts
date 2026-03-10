@@ -2,7 +2,15 @@ import { createFetch } from './createFetch'
 import { FetchError } from './fetchError'
 import { ApiErrorResponse } from './types'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ?? ''
+// 서버(RSC)에서는 상대 URL을 쓸 수 없어, base가 비면 절대 URL로 보정
+const getBaseUrl = () => {
+  const env = process.env.NEXT_PUBLIC_API_BASE_URL?.trim()
+  if (env) return env
+  if (typeof window === 'undefined')
+    return process.env.NEXT_PUBLIC_SITE_URL?.trim() ?? ''
+  return ''
+}
+const BASE_URL = getBaseUrl()
 
 const DEFAULT_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json',
