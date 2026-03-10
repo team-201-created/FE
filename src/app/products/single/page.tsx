@@ -1,67 +1,43 @@
 'use client'
 
-import { use, useState } from 'react'
+/** 단품 향기 목록: 검색·향조 필터, 카드 클릭 시 상세 모달 */
+import { useState } from 'react'
+import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
 import { SearchFilterBar } from '@/components/products/SearchFilterBar'
 import { ProductCard } from '@/components/products/ProductCard'
 import { ProductDetailModal } from '@/components/products/ProductDetailModal'
-import type { ProductDetailModalProduct } from '@/components/products/ProductDetailModal'
 import {
-  fetchSingles,
   fetchElementDetail,
   accordNameToScentFamilyId,
-  type SinglesResponse,
-} from '@/lib/api/productsClient'
+} from '../_api/productsClient'
+import { useSinglesList, useProductDetailModal } from '../_hooks'
 
-let singlesPromise: Promise<SinglesResponse> | null = null
-function getSinglesPromise() {
-  if (!singlesPromise) {
-    singlesPromise = fetchSingles({ page: 1, size: 100 })
-  }
-  return singlesPromise
+function fetchSingleDetail(elementId: number) {
+  return fetchElementDetail(elementId).then(({ data }) => ({
+    name: data.name,
+    imageUrl: data.image_url,
+    scentFamilyIds: [
+      accordNameToScentFamilyId[data.accord_option.name] ?? 'woody',
+    ],
+    noteLabels: [] as string[],
+    oneLineDescription: data.description,
+    productLink: data.product_link,
+  }))
 }
 
 export default function SingleContent() {
+  const items = useSinglesList()
   const [search, setSearch] = useState('')
   const [selectedScentIds, setSelectedScentIds] = useState<string[]>([])
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalProduct, setModalProduct] =
-    useState<ProductDetailModalProduct | null>(null)
-  const [modalLoading, setModalLoading] = useState(false)
-  const [modalError, setModalError] = useState<string | null>(null)
-  const res = use(getSinglesPromise())
-  const items = res.data.items
-
-  const openDetailModal = async (elementId: number) => {
-    setModalOpen(true)
-    setModalProduct(null)
-    setModalError(null)
-    setModalLoading(true)
-    try {
-      const { data } = await fetchElementDetail(elementId)
-      const scentFamilyId =
-        accordNameToScentFamilyId[data.accord_option.name] ?? 'woody'
-      setModalProduct({
-        name: data.name,
-        imageUrl: data.image_url,
-        scentFamilyIds: [scentFamilyId],
-        noteLabels: [],
-        oneLineDescription: data.description,
-        productLink: data.product_link,
-      })
-    } catch (e) {
-      setModalError(
-        e instanceof Error ? e.message : '상세 조회에 실패했습니다.'
-      )
-    } finally {
-      setModalLoading(false)
-    }
-  }
-
-  const closeDetailModal = () => {
-    setModalOpen(false)
-    setModalProduct(null)
-    setModalError(null)
-  }
+  const {
+    isOpen: modalOpen,
+    product: modalProduct,
+    isLoading: modalLoading,
+    apiError,
+    openDetail,
+    closeDetail: closeDetailModal,
+    clearApiError,
+  } = useProductDetailModal(fetchSingleDetail)
 
   const toggleScent = (id: string) => {
     setSelectedScentIds((prev) =>
@@ -101,7 +77,7 @@ export default function SingleContent() {
                 name={item.name}
                 imageUrl={item.image_url}
                 scentFamilyId={scentFamilyId}
-                onClick={() => openDetailModal(item.id)}
+                onClick={() => openDetail(item.id)}
                 priority={index === 0}
               />
             </li>
@@ -114,7 +90,13 @@ export default function SingleContent() {
         onClose={closeDetailModal}
         product={modalProduct}
         isLoading={modalLoading}
-        errorMessage={modalError}
+        errorMessage={null}
+      />
+
+      <ErrorFeedbackModal
+        message={apiError ?? ''}
+        isOpen={!!apiError}
+        onClose={clearApiError}
       />
     </>
   )

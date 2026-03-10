@@ -1,26 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { TestQuizHeader, type TestType } from './TestQuizHeader'
+import { useEffect } from 'react'
+/** 퀴즈 본문: 헤더·진행바·질문카드·이전/다음 푸터 (useQuizStep 사용) */
+import type { QuizQuestion, TestType } from '../_types'
+import { useQuizStep } from '../_hooks'
+import { AlertModal } from '@/components/common/Modal/AlertModal'
+import { ModalPortal } from '@/components/common/Modal/ModalPortal'
+import { TestQuizHeader } from './TestQuizHeader'
 import { TestProgressBar } from './TestProgressBar'
 import { TestQuestionCard } from './TestQuestionCard'
 import { TestQuizFooter } from './TestQuizFooter'
 
-/* 더미 타입 : 목데이터 연동 시 수정 예정 */
-type QuestionOption = { id: string; text: string }
-type QuestionType = 'SINGLE' | 'MULTI'
-type Question = {
-  id: string
-  text: string
-  required: boolean
-  questionType: QuestionType
-  options: QuestionOption[]
-}
-type AnswersState = Record<string, string[]>
-type QuizViewProps = {
-  testType: TestType
-  questions: Question[]
-}
+const MIN_SELECTION_WARNING_MESSAGE =
+  '다중선택 문제유형은 지문을 최소 2개이상 선택해야 합니다'
+const WARNING_AUTO_CLOSE_MS = 3000
 
 const styles = {
   wrap: 'min-h-screen bg-[var(--background-light-bg)] px-4 py-8',
@@ -29,61 +22,36 @@ const styles = {
   emptyText: 'text-neutral-500',
 } as const
 
-//
-export function QuizView({ testType, questions }: QuizViewProps) {
-  const total = questions.length
-  const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<AnswersState>({})
+// 퀴즈 본문
+export function QuizView({
+  testType,
+  questions,
+}: {
+  testType: TestType
+  questions: QuizQuestion[]
+}) {
+  const {
+    question,
+    currentNumber,
+    total,
+    selectedIds,
+    canGoNext,
+    isFirst,
+    isLast,
+    showMinSelectionWarning,
+    closeMinSelectionWarning,
+    handleToggle,
+    handlePrev,
+    handleNext,
+  } = useQuizStep(questions)
 
-  // 현재 질문
-  const question = questions[step]
-  // 현재 질문 번호
-  const currentNumber = step + 1
-  // 현재 선택된 옵션 ID 배열
-  const selectedIds = answers[question?.id] ?? []
+  // 다중선택 최소 개수 경고 모달 3초 후 자동 닫기
+  useEffect(() => {
+    if (!showMinSelectionWarning) return
+    const timer = setTimeout(closeMinSelectionWarning, WARNING_AUTO_CLOSE_MS)
+    return () => clearTimeout(timer)
+  }, [showMinSelectionWarning, closeMinSelectionWarning])
 
-  // 옵션 선택
-  const handleToggle = (optionId: string) => {
-    // 질문이 없을 때
-    if (!question) return
-    // 단일선택 질문일 때
-    if (question.questionType === 'SINGLE') {
-      setAnswers((prev) => ({ ...prev, [question.id]: [optionId] }))
-      return
-    }
-    // 다중선택 질문일 때
-    setAnswers((prev) => {
-      const current = prev[question.id] ?? []
-      const next = current.includes(optionId)
-        ? current.filter((id) => id !== optionId)
-        : [...current, optionId]
-      return { ...prev, [question.id]: next }
-    })
-  }
-
-  // 다음 질문으로 이동 가능 여부
-  const canGoNext = !question?.required || selectedIds.length > 0
-  // 첫 질문인지 여부
-  const isFirst = step === 0
-  // 마지막 질문인지 여부
-  const isLast = step === total - 1
-
-  // 이전 질문으로 이동
-  const handlePrev = () => {
-    if (step > 0) setStep((s) => s - 1)
-  }
-
-  // 다음 질문으로 이동
-  const handleNext = () => {
-    // 다음 질문으로 이동 가능하지 않을 때
-    if (!canGoNext) return
-    // 마지막 질문일 때 이동 불가( 나중에 결과 페이지로 이동 예정 )
-    if (isLast) return
-    // 다음 질문으로 이동
-    setStep((s) => s + 1)
-  }
-
-  // 질문이 없을 때
   if (!question) {
     return (
       <div className={styles.emptyWrap}>
@@ -93,23 +61,45 @@ export function QuizView({ testType, questions }: QuizViewProps) {
   }
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.inner}>
-        <TestQuizHeader testType={testType} />
-        <TestProgressBar current={currentNumber} total={total} />
-        <TestQuestionCard
-          question={question}
-          selectedIds={selectedIds}
-          onToggle={handleToggle}
-        />
-        <TestQuizFooter
-          isFirst={isFirst}
-          isLast={isLast}
-          canGoNext={canGoNext}
-          onPrev={handlePrev}
-          onNext={handleNext}
-        />
+    <>
+      <div className={styles.wrap}>
+        <div className={styles.inner}>
+          <TestQuizHeader testType={testType} />
+          <TestProgressBar current={currentNumber} total={total} />
+          <TestQuestionCard
+            question={question}
+            selectedIds={selectedIds}
+            onToggle={handleToggle}
+          />
+          <TestQuizFooter
+            isFirst={isFirst}
+            isLast={isLast}
+            canGoNext={canGoNext}
+            onPrev={handlePrev}
+            onNext={handleNext}
+          />
+        </div>
       </div>
-    </div>
+
+      {showMinSelectionWarning && (
+        <ModalPortal>
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4"
+            onClick={closeMinSelectionWarning}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <AlertModal
+                isOpen
+                onClose={closeMinSelectionWarning}
+                type="danger"
+                title="경고"
+                content={MIN_SELECTION_WARNING_MESSAGE}
+                showButtons={false}
+              />
+            </div>
+          </div>
+        </ModalPortal>
+      )}
+    </>
   )
 }

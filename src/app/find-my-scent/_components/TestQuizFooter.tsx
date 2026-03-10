@@ -1,9 +1,10 @@
+/** 퀴즈 하단: 이전 / 다음(또는 결과 보기) 버튼, canGoNext에 따라 다음 비활성화 */
 import { cn } from '@/lib/cn'
 
 type TestQuizFooterProps = {
   isFirst: boolean
   isLast: boolean
-  canGoNext: boolean
+  canGoNext: boolean // 다음 질문으로 이동 가능 여부
   onPrev: () => void
   onNext: () => void
 }
@@ -40,7 +41,7 @@ export function TestQuizFooter({
       <button
         type="button"
         onClick={onNext}
-        disabled={!canGoNext}
+        disabled={!canGoNext} //
         className={nextClassName}
       >
         {nextLabel} <span className={styles.arrow}>›</span>

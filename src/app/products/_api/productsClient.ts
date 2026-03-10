@@ -1,9 +1,9 @@
 /**
- * API 베이스 URL
- * - 목데이터(MSW) 사용 시: 빈 문자열 → 같은 origin으로 요청, MSW가 가로챔
- * - 실제 API 사용 시: .env의 NEXT_PUBLIC_API_BASE_URL
+ * 향(단품/조합) API
+ * - 목데이터(MSW): NEXT_PUBLIC_USE_MOCK_API=true 시 같은 origin 요청 → MSW가 가로챔
+ * - 실제 API: NEXT_PUBLIC_API_BASE_URL 사용
  */
-const getBaseUrl = () => process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ?? ''
+import { apiFetch } from '@/lib/api'
 
 export type SinglesResponse = {
   success: boolean
@@ -47,14 +47,16 @@ type FetchOptions = { page?: number; size?: number }
 export async function fetchSingles(
   options: FetchOptions = {}
 ): Promise<SinglesResponse> {
-  const params = new URLSearchParams()
-  if (options.page != null) params.set('page', String(options.page))
-  if (options.size != null) params.set('size', String(options.size))
-  const qs = params.toString()
-  const url = `${getBaseUrl()}/api/v1/scents/singles${qs ? `?${qs}` : ''}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Singles API error: ${res.status}`)
-  return res.json()
+  const params: Record<string, string> = {}
+  if (options.page != null) params.page = String(options.page)
+  if (options.size != null) params.size = String(options.size)
+  const hasParams = Object.keys(params).length > 0
+  return apiFetch.get<SinglesResponse>(
+    '/api/v1/scents/singles',
+    hasParams
+      ? { params: params as Record<string, string | number> }
+      : undefined
+  )
 }
 
 /** API accord_option.name(한글) → 프론트 scentFamilyId */
@@ -83,14 +85,16 @@ export const themeNameToNoteLabel: Record<string, string> = {
 export async function fetchCombinations(
   options: FetchOptions = {}
 ): Promise<CombinationsResponse> {
-  const params = new URLSearchParams()
-  if (options.page != null) params.set('page', String(options.page))
-  if (options.size != null) params.set('size', String(options.size))
-  const qs = params.toString()
-  const url = `${getBaseUrl()}/api/v1/scents/combinations${qs ? `?${qs}` : ''}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Combinations API error: ${res.status}`)
-  return res.json()
+  const params: Record<string, string> = {}
+  if (options.page != null) params.page = String(options.page)
+  if (options.size != null) params.size = String(options.size)
+  const hasParams = Object.keys(params).length > 0
+  return apiFetch.get<CombinationsResponse>(
+    '/api/v1/scents/combinations',
+    hasParams
+      ? { params: params as Record<string, string | number> }
+      : undefined
+  )
 }
 
 // ─── 상세 조회 (단품 / 조합) ─────────────────────────────────────────────
@@ -123,17 +127,13 @@ export type BlendDetailResponse = {
 export async function fetchElementDetail(
   elementId: number
 ): Promise<ElementDetailResponse> {
-  const url = `${getBaseUrl()}/api/v1/scents/elements/${elementId}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Element detail API error: ${res.status}`)
-  return res.json()
+  return apiFetch.get<ElementDetailResponse>(
+    `/api/v1/scents/elements/${elementId}`
+  )
 }
 
 export async function fetchBlendDetail(
   blendId: number
 ): Promise<BlendDetailResponse> {
-  const url = `${getBaseUrl()}/api/v1/scents/blends/${blendId}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Blend detail API error: ${res.status}`)
-  return res.json()
+  return apiFetch.get<BlendDetailResponse>(`/api/v1/scents/blends/${blendId}`)
 }

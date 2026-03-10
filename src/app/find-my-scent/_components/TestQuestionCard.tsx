@@ -1,20 +1,7 @@
+/** 한 문항 카드: 지문·단일/다중선택 옵션·선택 토글 */
 import { cn } from '@/lib/cn'
 
-/* 타입 - 목데이터 연동 시 제거 수정 예정 */
-type QuestionType = 'SINGLE' | 'MULTI'
-type QuestionOption = { id: string; text: string }
-type Question = {
-  id: string
-  text: string
-  required: boolean
-  questionType: QuestionType
-  options: QuestionOption[]
-}
-type TestQuestionCardProps = {
-  question: Question
-  selectedIds: string[]
-  onToggle: (optionId: string) => void
-}
+import type { QuizQuestion } from '../_types'
 
 // 질문 유형 라벨
 const TYPE_LABEL = { SINGLE: '단일선택', MULTI: '다중선택' } as const
@@ -56,13 +43,15 @@ function CheckIcon() {
   )
 }
 
-type OptionRowProps = {
-  option: QuestionOption
+function OptionRow({
+  option,
+  selected,
+  onToggle,
+}: {
+  option: QuizQuestion['options'][number]
   selected: boolean
   onToggle: () => void
-}
-
-function OptionRow({ option, selected, onToggle }: OptionRowProps) {
+}) {
   const optionClassName = cn(
     styles.option,
     selected ? styles.optionSelected : styles.optionDefault
@@ -83,7 +72,11 @@ export function TestQuestionCard({
   question,
   selectedIds,
   onToggle,
-}: TestQuestionCardProps) {
+}: {
+  question: QuizQuestion
+  selectedIds: string[]
+  onToggle: (optionId: string) => void
+}) {
   const typeLabel = TYPE_LABEL[question.questionType]
   const typePillClass =
     question.questionType === 'SINGLE'

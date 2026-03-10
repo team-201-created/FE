@@ -1,3 +1,4 @@
+/** 질문 진행률 바 (현재/전체, 퍼센트) */
 type TestProgressBarProps = {
   current: number
   total: number

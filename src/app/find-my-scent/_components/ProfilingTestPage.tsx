@@ -1,22 +1,22 @@
 'use client'
 
+/** 취향/건강 테스트 공통 페이지 */
 import { PageCenter } from '@/components/common/PageCenter'
+import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
 import { QuizView } from './QuizView'
 import { useProfilingForm } from '../_hooks/useProfilingForm'
-import type { TestType } from './TestQuizHeader'
+import { useErrorPopup } from '../_hooks/useErrorPopup'
+import type { TestType } from '../_types'
 
 const styles = {
   loadingText: 'text-neutral-500',
-  errorText: 'text-red-500',
   emptyText: 'text-neutral-500',
 } as const
 
-type ProfilingTestPageProps = {
-  testType: TestType
-}
-
-export function ProfilingTestPage({ testType }: ProfilingTestPageProps) {
+export function ProfilingTestPage({ testType }: { testType: TestType }) {
   const { questions, isLoading, error } = useProfilingForm(testType)
+  const { isOpen: showErrorPopup, close: closeErrorPopup } =
+    useErrorPopup(error)
 
   if (isLoading) {
     return (
@@ -28,11 +28,16 @@ export function ProfilingTestPage({ testType }: ProfilingTestPageProps) {
 
   if (error) {
     return (
-      <PageCenter>
-        <p className={styles.errorText}>
-          질문을 불러오지 못했어요. ({error.message})
-        </p>
-      </PageCenter>
+      <>
+        <PageCenter>
+          <p className="text-neutral-500">질문을 불러오지 못했어요.</p>
+        </PageCenter>
+        <ErrorFeedbackModal
+          message={error.message}
+          isOpen={showErrorPopup}
+          onClose={closeErrorPopup}
+        />
+      </>
     )
   }
 
