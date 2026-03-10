@@ -1,6 +1,6 @@
 'use client'
 
-/** 조합 향기 목록 클라이언트: 검색·필터·상세 모달 (서버에서 받은 items 사용) */
+/** 조합 향기 목록 클라이언트: 검색·필터·상세 모달 (서버에서 받은 results 사용) */
 import { useState } from 'react'
 import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
 import { SearchFilterBar } from '@/components/products/SearchFilterBar'
@@ -8,24 +8,26 @@ import { ProductCard } from '@/components/products/ProductCard'
 import { ProductDetailModal } from '@/components/products/ProductDetailModal'
 import {
   fetchBlendDetail,
-  accordNameToScentFamilyId,
-  themeNameToNoteLabel,
+  scentCategoryKrToId,
+  blendCategoryKrToNoteLabel,
 } from '../_api/productsClient'
 import { useProductDetailModal, type CombinationItem } from '../_hooks'
 
 function fetchComboDetail(blendId: number) {
   return fetchBlendDetail(blendId).then(({ data }) => {
-    const scentFamilyIds = data.accord_options.map(
-      (a) => accordNameToScentFamilyId[a.name] ?? 'woody'
+    const scentFamilyIds = data.contained_elements.map(
+      (el) => scentCategoryKrToId[el.category?.kr ?? ''] ?? 'woody'
     )
-    const themeNote = themeNameToNoteLabel[data.theme_option.name]
+    const noteLabels = data.blend_categories
+      .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
+      .filter(Boolean)
     return {
       name: data.name,
       imageUrl: data.image_url,
       scentFamilyIds,
-      noteLabels: themeNote ? [themeNote] : [],
-      oneLineDescription: data.description,
-      productLink: data.product_link,
+      noteLabels,
+      oneLineDescription: data.description ?? '',
+      productLink: data.purchase_url ?? undefined,
     }
   })
 }
@@ -61,18 +63,15 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
   }
 
   const filtered = initialItems.filter((item) => {
-    const themeNote = themeNameToNoteLabel[item.theme_option.name]
+    const noteLabels = (item.blend_categories ?? [])
+      .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
+      .filter(Boolean)
     const matchSearch =
       !search.trim() || item.name.toLowerCase().includes(search.toLowerCase())
-    const matchScent =
-      selectedScentIds.length === 0 ||
-      item.accord_options.some((a) =>
-        selectedScentIds.includes(accordNameToScentFamilyId[a.name] ?? '')
-      )
     const matchNote =
       selectedNotes.length === 0 ||
-      (themeNote && selectedNotes.includes(themeNote))
-    return matchSearch && matchScent && matchNote
+      noteLabels.some((n) => selectedNotes.includes(n))
+    return matchSearch && matchNote
   })
 
   return (
@@ -90,19 +89,17 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
       </div>
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {filtered.map((item, index) => {
-          const scentFamilyIds = item.accord_options.map(
-            (a) => accordNameToScentFamilyId[a.name] ?? 'woody'
-          )
-          const themeNote = themeNameToNoteLabel[item.theme_option.name]
-          const scentNotes = themeNote ? [themeNote] : []
+          const scentNotes = (item.blend_categories ?? [])
+            .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
+            .filter(Boolean)
           return (
             <li key={item.id}>
               <ProductCard
                 variant="combo"
                 name={item.name}
-                imageUrl={item.image_url}
-                scentFamilyId={scentFamilyIds[0] ?? 'woody'}
-                scentFamilyIds={scentFamilyIds}
+                imageUrl={item.thumbnail_image_url}
+                scentFamilyId="woody"
+                scentFamilyIds={[]}
                 scentNotes={scentNotes}
                 onClick={() => openDetail(item.id)}
                 priority={index === 0}

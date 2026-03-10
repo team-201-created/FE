@@ -1,85 +1,53 @@
 /**
- * 조합 목록 목 데이터 (API 명세: GET /api/v1/scents/combinations)
- * 테마(향기노트): 기분전환, 숙면, 집중, 휴식, 로맨틱, 운동, 포근
+ * 조합 목록 목 데이터 (API 명세: GET /api/v1/scents/blends)
+ * data.results[] — thumbnail_image_url, blend_categories[].name.kr/en
  */
-export const mockCombinationsItems = [
+const bc = (kr: string, en: string) => [{ name: { kr, en } }]
+
+export const mockBlendsResults = [
   {
     id: 11,
     name: '하트 시그널',
-    image_url: '/img/11.svg',
-    theme_option: { id: 201, name: '포근' },
-    accord_options: [
-      { id: 304, name: '우디' },
-      { id: 307, name: '머스크' },
-    ],
+    thumbnail_image_url: '/img/11.svg',
+    blend_categories: bc('포근', 'Cozy'),
   },
   {
     id: 12,
     name: '포레스트 워크',
-    image_url: '/img/12.svg',
-    theme_option: { id: 202, name: '숙면' },
-    accord_options: [
-      { id: 304, name: '우디' },
-      { id: 303, name: '아로마틱' },
-    ],
+    thumbnail_image_url: '/img/12.svg',
+    blend_categories: bc('숙면', 'Sleep'),
   },
   {
     id: 13,
     name: '모닝 에너지',
-    image_url: '/img/13.svg',
-    theme_option: { id: 203, name: '기분전환' },
-    accord_options: [
-      { id: 302, name: '시트러스' },
-      { id: 301, name: '베이스' },
-    ],
+    thumbnail_image_url: '/img/13.svg',
+    blend_categories: bc('기분전환', 'Refresh'),
   },
   {
     id: 14,
     name: '딥 릴렉스',
-    image_url: '/img/14.svg',
-    theme_option: { id: 204, name: '휴식' },
-    accord_options: [
-      { id: 303, name: '아로마틱' },
-      { id: 304, name: '우디' },
-    ],
+    thumbnail_image_url: '/img/14.svg',
+    blend_categories: bc('휴식', 'Relax'),
   },
   {
     id: 15,
     name: '로맨틱 나이트',
-    image_url: '/img/15.svg',
-    theme_option: { id: 205, name: '로맨틱' },
-    accord_options: [
-      { id: 305, name: '플로럴' },
-      { id: 306, name: '오리엔탈' },
-    ],
+    thumbnail_image_url: '/img/15.svg',
+    blend_categories: bc('로맨틱', 'Romantic'),
   },
   {
     id: 16,
     name: '액티브 플로우',
-    image_url: '/img/16.svg',
-    theme_option: { id: 206, name: '운동' },
-    accord_options: [
-      { id: 302, name: '시트러스' },
-      { id: 303, name: '아로마틱' },
-    ],
+    thumbnail_image_url: '/img/16.svg',
+    blend_categories: bc('운동', 'Active'),
   },
   {
     id: 17,
     name: '포커스 블렌드',
-    image_url: '/img/17.svg',
-    theme_option: { id: 207, name: '집중' },
-    accord_options: [
-      { id: 304, name: '우디' },
-      { id: 302, name: '시트러스' },
-    ],
+    thumbnail_image_url: '/img/17.svg',
+    blend_categories: bc('집중', 'Focus'),
   },
 ] as const
 
-export const mockCombinationsPageMeta = {
-  page: 1,
-  size: 20,
-  total_count: 7,
-  total_pages: 1,
-  has_next: false,
-  has_prev: false,
-}
+/** @deprecated 새 명세는 mockBlendsResults 사용 */
+export const mockCombinationsItems = mockBlendsResults
