@@ -1,64 +1,109 @@
-/** 테스트 제출 후 결과 페이지 UI (취향/건강 공통) — 서버 컴포넌트 */
+/** 테스트 결과 페이지 — 상단(아이콘/타이틀/부타이틀) + 컨텐츠 박스 */
+import type { ComponentProps } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import type { TestType } from '../_types'
+import type { ResultPageType } from '../_types'
+import { ResultContentBox } from './ResultContentBox'
 
-const TEST_TYPE_RESULT_CONFIG: Record<
-  TestType,
-  { icon: string; title: string; description: string }
+const RESULT_HEADER_CONFIG: Record<
+  ResultPageType,
+  { title: string; subtitle: string }
 > = {
   PREFERENCE: {
-    icon: '/taste.svg',
-    title: '취향 테스트가 완료되었어요',
-    description: '선택하신 내용을 바탕으로 향기 추천 결과를 준비하고 있습니다.',
+    title: '당신을 위한 조합 향기를 찾았습니다!',
+    subtitle: '질문을 통해 취향에 맞는 조합 향기를 추천해드립니다',
   },
   HEALTH: {
-    icon: '/wellness.svg',
-    title: '웰니스 진단이 완료되었어요',
-    description:
-      '선택하신 내용을 바탕으로 맞춤 향기 추천 결과를 준비하고 있습니다.',
+    title: '웰니스 향기 분석 완료!',
+    subtitle: '당신의 건강 상태에 맞는 아로마 테라피를 찾았습니다',
   },
+  AI: {
+    title: 'AI 조합 향기 분석 완료!',
+    subtitle: '이미지 기반으로 최적의 조합 향기를 찾았습니다',
+  },
+}
+
+/** 결과 유형별 재테스트/다른 테스트 경로 */
+const RESULT_PATHS: Record<
+  ResultPageType,
+  { retest: string; otherTest: string }
+> = {
+  PREFERENCE: {
+    retest: '/find-my-scent/taste-test',
+    otherTest: '/find-my-scent/wellness',
+  },
+  HEALTH: {
+    retest: '/find-my-scent/wellness',
+    otherTest: '/find-my-scent/taste-test',
+  },
+  AI: {
+    retest: '/find-my-scent/ai-visual',
+    otherTest: '/find-my-scent/taste-test',
+  },
+}
+
+/** 컨텐츠 박스 더미 데이터 (API 연동 전 미리보기용) */
+const DUMMY_CONTENT_BOX = {
+  productImageUrl: '/img/17.svg',
+  productName: '오리엔탈 럭셔리 조합',
+  scentTypeLabel: 'Oriental',
+  showRecommendLabel: true,
+  scentTypeTags: ['oriental'] as string[],
+  noteTags: ['#숙면', '#집중', '#기분전환', '#로맨틱'] as string[],
+  description:
+    '깊고 신비로운 오리엔탈 조합 향기가 당신만의 개성을 표현합니다. 은은한 스파이시 노트와 우디 베이스가 조화를 이루어 특별한 순간을 더해줍니다.',
 }
 
 const styles = {
-  wrap: 'min-h-screen bg-[var(--background-light-bg)] px-4 py-12',
-  inner: 'mx-auto flex max-w-lg flex-col items-center gap-8 text-center',
-  iconWrap: 'relative size-20',
+  wrap: 'min-h-screen bg-[var(--background-light-bg)] px-4 py-8 pb-50',
+  inner: 'mx-auto w-full max-w-[1200px]',
+  header: 'flex flex-col items-center gap-4 pb-8 text-center',
+  iconWrap: 'relative h-[104px] w-[104px] shrink-0',
   title: 'text-xl font-bold text-[var(--color-black-primary)]',
-  description: 'text-sm leading-relaxed text-neutral-600',
-  linkWrap: 'flex flex-col gap-3 pt-4',
-  linkPrimary:
-    'rounded-xl bg-[var(--color-black-primary)] px-6 py-3.5 text-sm font-medium text-white transition-colors hover:opacity-90',
-  linkSecondary:
-    'rounded-xl border border-neutral-200 bg-white px-6 py-3.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50',
+  subtitle: 'text-sm leading-relaxed text-neutral-600',
+  content: 'mt-0',
 } as const
 
-type TestResultPageProps = {
-  testType: TestType
+export type TestResultPageProps = {
+  resultType: ResultPageType
+  /** 컨텐츠 박스에 전달할 props (API 연동 시 사용) */
+  contentBoxProps?: Omit<
+    ComponentProps<typeof ResultContentBox>,
+    'primaryButtonHref' | 'retestButtonHref' | 'otherTestButtonHref'
+  >
 }
 
-export function TestResultPage({ testType }: TestResultPageProps) {
-  const { icon, title, description } = TEST_TYPE_RESULT_CONFIG[testType]
-  const listPath =
-    testType === 'PREFERENCE'
-      ? '/find-my-scent/taste-test'
-      : '/find-my-scent/wellness'
+export function TestResultPage({
+  resultType,
+  contentBoxProps,
+}: TestResultPageProps) {
+  const { title, subtitle } = RESULT_HEADER_CONFIG[resultType]
+  const { retest, otherTest } = RESULT_PATHS[resultType]
 
   return (
     <div className={styles.wrap}>
       <div className={styles.inner}>
-        <div className={styles.iconWrap}>
-          <Image src={icon} alt="" fill className="object-contain" />
-        </div>
-        <h1 className={styles.title}>{title}</h1>
-        <p className={styles.description}>{description}</p>
-        <div className={styles.linkWrap}>
-          <Link href="/products/single" className={styles.linkPrimary}>
-            추천 향기 보러가기
-          </Link>
-          <Link href={listPath} className={styles.linkSecondary}>
-            테스트 다시 하기
-          </Link>
+        <header className={styles.header}>
+          <div className={styles.iconWrap}>
+            <Image
+              src="/result.svg"
+              alt=""
+              fill
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+          <h1 className={styles.title}>{title}</h1>
+          <p className={styles.subtitle}>{subtitle}</p>
+        </header>
+
+        <div className={styles.content}>
+          <ResultContentBox
+            primaryButtonHref="/products/combo"
+            retestButtonHref={retest}
+            otherTestButtonHref={otherTest}
+            {...DUMMY_CONTENT_BOX}
+            {...contentBoxProps}
+          />
         </div>
       </div>
     </div>
