@@ -2,31 +2,10 @@
  * 향기 성향 테스트 항목 조회 목 데이터
  * API 명세: GET /api/v1/profilings/forms/active?profiling_type=PREFERENCE|HEALTH
  */
-
-export type ProfilingOption = {
-  id: number
-  answer_option_key: string
-  answer_option_text: string
-}
-
-export type ProfilingQuestion = {
-  id: number
-  question_key: string
-  question_text: string
-  selection_type: 'SINGLE' | 'MULTI'
-  is_required: boolean
-  options: ProfilingOption[]
-}
-
-export type ProfilingFormData = {
-  form_id: number
-  name: string
-  profiling_type: 'PREFERENCE' | 'HEALTH'
-  questions: ProfilingQuestion[]
-}
+import type { ProfilingForm } from '@/app/find-my-scent/_types'
 
 /** 취향 테스트(PREFERENCE) 활성 폼 목 데이터 */
-export const mockProfilingFormPREFERENCE: ProfilingFormData = {
+export const mockProfilingFormPREFERENCE: ProfilingForm = {
   form_id: 1,
   name: '취향 테스트 v1',
   profiling_type: 'PREFERENCE',
@@ -178,7 +157,7 @@ export const mockProfilingFormPREFERENCE: ProfilingFormData = {
 }
 
 /** 건강 테스트(HEALTH) 활성 폼 목 데이터 */
-export const mockProfilingFormHEALTH: ProfilingFormData = {
+export const mockProfilingFormHEALTH: ProfilingForm = {
   form_id: 2,
   name: '웰니스 케어 진단 v1',
   profiling_type: 'HEALTH',
