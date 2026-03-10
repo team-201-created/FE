@@ -1,7 +1,7 @@
 'use client'
 
-/** 취향/건강 테스트용 활성 폼 질문 목록 조회 (로딩·에러·questions 반환) */
-import { useEffect, useState } from 'react'
+/** 취향/건강 테스트용 활성 폼 조회 (로딩·에러·questions·refetch) */
+import { useEffect, useRef, useState } from 'react'
 import { FetchError } from '@/lib/api'
 import {
   fetchProfilingFormActive,
@@ -13,30 +13,36 @@ export function useProfilingForm(profilingType: ProfilingType) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+  const loadRef = useRef<() => void | Promise<void>>(() => {})
 
   useEffect(() => {
     let cancelled = false
-
-    const load = async () => {
+    loadRef.current = async () => {
+      setError(null)
+      setQuestions([])
+      setIsLoading(true)
       try {
         const res = await fetchProfilingFormActive(profilingType)
         if (cancelled) return
         setQuestions(toQuizQuestions(res.data))
-        setError(null)
       } catch (err) {
-        if (cancelled) return
-        setError(err instanceof FetchError ? err : new Error(String(err)))
-        setQuestions([])
+        if (!cancelled)
+          setError(err instanceof FetchError ? err : new Error(String(err)))
+        if (!cancelled) setQuestions([])
       } finally {
         if (!cancelled) setIsLoading(false)
       }
     }
-
-    load()
+    loadRef.current()
     return () => {
       cancelled = true
     }
   }, [profilingType])
 
-  return { questions, isLoading, error }
+  return {
+    questions,
+    isLoading,
+    error,
+    refetch: () => loadRef.current?.(),
+  }
 }
