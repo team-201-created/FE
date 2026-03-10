@@ -10,6 +10,8 @@ export interface AlertConfig {
   type: 'success' | 'danger'
   title: string
   content?: React.ReactNode
+  /** false면 확인/취소 버튼 영역 미표시 (예: 자동 닫힘 경고) */
+  showButtons?: boolean
   confirmText?: string
   cancelText?: string
   onConfirm?: () => void
@@ -27,6 +29,7 @@ export function AlertModal({
   type,
   title,
   content,
+  showButtons = true,
   confirmText = '확인',
   cancelText,
   onConfirm,
@@ -67,31 +70,35 @@ export function AlertModal({
           {title}
         </h2>
         {content && (
-          <div className="mb-8 text-center text-sm leading-relaxed whitespace-pre-wrap text-gray-500">
+          <div
+            className={`text-center text-sm leading-relaxed whitespace-pre-wrap text-gray-500 ${showButtons ? 'mb-8' : ''}`}
+          >
             {content}
           </div>
         )}
 
-        <div className="flex w-full gap-3">
-          {cancelText && (
+        {showButtons && (
+          <div className="flex w-full gap-3">
+            {cancelText && (
+              <Button
+                color="none"
+                size="none"
+                className="flex-1 rounded-[14px] border border-gray-200 bg-gray-50 py-3 font-semibold text-gray-600 hover:bg-gray-100"
+                onClick={handleCancel}
+              >
+                {cancelText}
+              </Button>
+            )}
             <Button
-              color="none"
+              color={isDanger ? 'danger' : 'success'}
               size="none"
-              className="flex-1 rounded-[14px] border border-gray-200 bg-gray-50 py-3 font-semibold text-gray-600 hover:bg-gray-100"
-              onClick={handleCancel}
+              className="flex-1 rounded-[14px] border border-transparent py-3 font-semibold"
+              onClick={handleConfirm}
             >
-              {cancelText}
+              {confirmText}
             </Button>
-          )}
-          <Button
-            color={isDanger ? 'danger' : 'success'}
-            size="none"
-            className="flex-1 rounded-[14px] border border-transparent py-3 font-semibold"
-            onClick={handleConfirm}
-          >
-            {confirmText}
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
     </Modal>
   )
