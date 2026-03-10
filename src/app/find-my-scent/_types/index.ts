@@ -49,5 +49,8 @@ export type QuizQuestion = {
 /** ProfilingType과 동일 (UI용 alias) */
 export type TestType = ProfilingType
 
+/** 결과 페이지 구분 (취향 / 건강 / AI) */
+export type ResultPageType = 'PREFERENCE' | 'HEALTH' | 'AI'
+
 /** 질문 유형 - 고정 */
 export type QuestionType = 'SINGLE' | 'MULTI'
