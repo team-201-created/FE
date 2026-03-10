@@ -1,12 +1,13 @@
 'use client'
 
+/** 취향/건강 테스트용 활성 폼 질문 목록 조회 (로딩·에러·questions 반환) */
 import { useEffect, useState } from 'react'
+import { FetchError } from '@/lib/api'
 import {
   fetchProfilingFormActive,
   toQuizQuestions,
-  type QuizQuestion,
-  type ProfilingType,
-} from '@/lib/api/profilingClient'
+} from '../_api/profilingClient'
+import type { ProfilingType, QuizQuestion } from '../_types'
 
 export function useProfilingForm(profilingType: ProfilingType) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
@@ -24,7 +25,7 @@ export function useProfilingForm(profilingType: ProfilingType) {
         setError(null)
       } catch (err) {
         if (cancelled) return
-        setError(err instanceof Error ? err : new Error(String(err)))
+        setError(err instanceof FetchError ? err : new Error(String(err)))
         setQuestions([])
       } finally {
         if (!cancelled) setIsLoading(false)
