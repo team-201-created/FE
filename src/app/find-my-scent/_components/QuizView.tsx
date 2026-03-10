@@ -1,9 +1,15 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 /** 퀴즈 본문: 헤더·진행바·질문카드·이전/다음 푸터 (useQuizStep 사용) */
 import type { QuizQuestion, TestType } from '../_types'
 import { useQuizStep } from '../_hooks'
+
+const RESULT_PATH: Record<TestType, string> = {
+  PREFERENCE: '/find-my-scent/taste-test/result',
+  HEALTH: '/find-my-scent/wellness/result',
+}
 import { AlertModal } from '@/components/common/Modal/AlertModal'
 import { ModalPortal } from '@/components/common/Modal/ModalPortal'
 import { TestQuizHeader } from './TestQuizHeader'
@@ -44,6 +50,15 @@ export function QuizView({
     handlePrev,
     handleNext,
   } = useQuizStep(questions)
+  const router = useRouter()
+
+  const handleNextOrSubmit = () => {
+    if (isLast) {
+      router.push(RESULT_PATH[testType])
+      return
+    }
+    handleNext()
+  }
 
   // 다중선택 최소 개수 경고 모달 3초 후 자동 닫기
   useEffect(() => {
@@ -76,7 +91,7 @@ export function QuizView({
             isLast={isLast}
             canGoNext={canGoNext}
             onPrev={handlePrev}
-            onNext={handleNext}
+            onNext={handleNextOrSubmit}
           />
         </div>
       </div>
