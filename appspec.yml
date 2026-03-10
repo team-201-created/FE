@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/FE
+
+permissions:
+  - object: /home/ubuntu/FE
+    owner: ubuntu
+    group: ubuntu
+    type:
+      - file
+      - directory
+hooks:
+  AfterInstall:
+    - location: scripts/deploy.sh
+      timeout: 600
+      runas: ubuntu

@@ -1,0 +1,52 @@
+name: Deploy to EC2 with CodeDeploy
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Create deployment zip
+        run: |
+          zip -r deploy.zip . \
+            -x "*.git*" \
+            -x "node_modules/*" \
+            -x ".next/cache/*"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload zip file to S3
+        run: |
+          aws s3 cp deploy.zip s3://${{ secrets.S3_BUCKET }}/deploy.zip
+
+      - name: Create CodeDeploy deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name "${{ secrets.CODEDEPLOY_APP_NAME }}" \
+            --deployment-group-name "${{ secrets.CODEDEPLOY_DEPLOYMENT_GROUP }}" \
+            --revision "revisionType=S3,s3Location={bucket=${{ secrets.S3_BUCKET }},key=deploy.zip,bundleType=zip}" \
+            --description "GitHub Actions deployment"
