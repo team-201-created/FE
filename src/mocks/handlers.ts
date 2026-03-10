@@ -130,6 +130,7 @@ export const handlers = [
   combinationsHandler,
   elementDetailHandler,
   blendDetailHandler,
+  profilingFormActiveHandler,
   adminTestsHandler,
   adminBlendMapsHandlers,
   adminProductPoolsHandlers,
