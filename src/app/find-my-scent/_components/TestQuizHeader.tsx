@@ -1,7 +1,9 @@
+/** 테스트 상단: 아이콘·제목·부제 (취향/건강 타입별 설정) */
 import Image from 'next/image'
 
-/* TODO: 목데이터 연동 시 제거 - 더미 설정 */
-export type TestType = 'PREFERENCE' | 'HEALTH'
+import type { TestType } from '../_types'
+
+// 취향/건강 타입별 설정
 const TEST_TYPE_CONFIG: Record<
   TestType,
   { icon: string; title: string; subtitle: string }
@@ -18,10 +20,6 @@ const TEST_TYPE_CONFIG: Record<
   },
 }
 
-type TestQuizHeaderProps = {
-  testType: TestType
-}
-
 const styles = {
   wrap: 'flex flex-col items-center text-center',
   iconWrap: 'relative mb-3 size-14',
@@ -29,9 +27,8 @@ const styles = {
   subtitle: 'mt-1 text-sm text-neutral-500',
 } as const
 
-export function TestQuizHeader({ testType }: TestQuizHeaderProps) {
+export function TestQuizHeader({ testType }: { testType: TestType }) {
   const { icon, title, subtitle } = TEST_TYPE_CONFIG[testType]
-
   return (
     <header className={styles.wrap}>
       <div className={styles.iconWrap}>
