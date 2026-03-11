@@ -37,13 +37,60 @@ export type ProfilingFormResponse = {
   data: ProfilingForm
 }
 
-/** QuizView에서 쓰는 질문 형태 */
+/** QuizView에서 쓰는 질문 형태 (제출 시 question_key, answer_option_keys 매핑용) */
 export type QuizQuestion = {
   id: string
+  /** API 제출용 (POST submit) */
+  questionKey?: string
   text: string
   required: boolean
   questionType: 'SINGLE' | 'MULTI'
-  options: { id: string; text: string }[]
+  options: {
+    id: string
+    text: string
+    /** API 제출용 */ answerOptionKey?: string
+  }[]
+}
+
+/** POST /api/v1/profilings/submit 요청 */
+export type ProfilingSubmitRequest = {
+  profiling_type: ProfilingType
+  product_type: 'DIFFUSER' | 'PERFUME'
+  responses: { question_key: string; answer_option_keys: string[] }[]
+}
+
+/** POST /api/v1/profilings/submit 응답 */
+export type ProfilingSubmitResponse = {
+  success: boolean
+  data?: { result_id: number; message: string }
+  error?: { code: string; message: string; details?: Record<string, unknown> }
+}
+
+/** GET /api/v1/profilings/results/{result_id} 응답 - recommended_blend 등 */
+export type ProfilingResultBlend = {
+  name: string
+  image_url: string
+  description: string
+  contained_elements: {
+    name: string
+    category: { kr: string; en: string }
+  }[]
+}
+
+export type ProfilingResultDetail = {
+  id: number
+  input_data_type: string
+  product_type: string
+  input_data_summary: string
+  recommended_blend: ProfilingResultBlend
+  recommended_products: { purchase_url: string }[]
+  created_at: string
+}
+
+export type ProfilingResultDetailResponse = {
+  success: boolean
+  data?: ProfilingResultDetail
+  error?: { code: string; message: string; details?: Record<string, unknown> }
 }
 
 /** ProfilingType과 동일 (UI용 alias) */
@@ -54,3 +101,6 @@ export type ResultPageType = 'PREFERENCE' | 'HEALTH' | 'AI'
 
 /** 질문 유형 - 고정 */
 export type QuestionType = 'SINGLE' | 'MULTI'
+
+/** 퀴즈 답변 상태 (question id → 선택된 option id[]) */
+export type AnswersState = Record<string, string[]>

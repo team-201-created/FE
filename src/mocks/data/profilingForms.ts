@@ -191,5 +191,88 @@ export const mockProfilingFormHEALTH: ProfilingForm = {
         },
       ],
     },
+    {
+      id: 103,
+      question_key: 'stress_level',
+      question_text: '요즘 스트레스 수준은 어느 정도인가요?',
+      selection_type: 'SINGLE',
+      is_required: true,
+      options: [
+        { id: 208, answer_option_key: 'low', answer_option_text: '낮음' },
+        { id: 209, answer_option_key: 'medium', answer_option_text: '보통' },
+        { id: 210, answer_option_key: 'high', answer_option_text: '높음' },
+      ],
+    },
+    {
+      id: 104,
+      question_key: 'usage_place',
+      question_text: '아로마를 주로 사용할 공간은?',
+      selection_type: 'MULTI',
+      is_required: false,
+      options: [
+        { id: 211, answer_option_key: 'bedroom', answer_option_text: '침실' },
+        { id: 212, answer_option_key: 'living', answer_option_text: '거실' },
+        {
+          id: 213,
+          answer_option_key: 'office',
+          answer_option_text: '업무 공간',
+        },
+        { id: 214, answer_option_key: 'bathroom', answer_option_text: '욕실' },
+      ],
+    },
+    {
+      id: 105,
+      question_key: 'scent_preference',
+      question_text: '선호하는 웰니스 향 계열이 있나요?',
+      selection_type: 'SINGLE',
+      is_required: true,
+      options: [
+        {
+          id: 215,
+          answer_option_key: 'lavender',
+          answer_option_text: '라벤더 (진정)',
+        },
+        {
+          id: 216,
+          answer_option_key: 'citrus',
+          answer_option_text: '시트러스 (상쾌)',
+        },
+        {
+          id: 217,
+          answer_option_key: 'woody',
+          answer_option_text: '우디 (안정)',
+        },
+        {
+          id: 218,
+          answer_option_key: 'unknown',
+          answer_option_text: '잘 모르겠음',
+        },
+      ],
+    },
+    {
+      id: 106,
+      question_key: 'goal',
+      question_text: '아로마 테라피로 가장 얻고 싶은 효과는?',
+      selection_type: 'MULTI',
+      is_required: false,
+      options: [
+        {
+          id: 219,
+          answer_option_key: 'better_sleep',
+          answer_option_text: '수면 질 개선',
+        },
+        {
+          id: 220,
+          answer_option_key: 'energy',
+          answer_option_text: '에너지 보충',
+        },
+        { id: 221, answer_option_key: 'calm', answer_option_text: '마음 안정' },
+        {
+          id: 222,
+          answer_option_key: 'concentration',
+          answer_option_text: '집중력 향상',
+        },
+      ],
+    },
   ],
 }

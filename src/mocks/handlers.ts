@@ -13,6 +13,7 @@ import {
   mockProfilingFormPREFERENCE,
   mockProfilingFormHEALTH,
 } from './data/profilingForms'
+import { mockProfilingResultDetail } from './data/profilingResults'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/elements
@@ -121,17 +122,114 @@ export const blendDetailHandler = http.get(
 /**
  * 향기 성향 테스트 항목 조회 GET /api/v1/profilings/forms/active
  * Query: profiling_type (required) PREFERENCE | HEALTH
+ * - 200: success, 400: 잘못된 파라미터, 404: 활성화된 테스트 없음(목에서는 미사용)
  */
 export const profilingFormActiveHandler = http.get(
   '/api/v1/profilings/forms/active',
   ({ request }) => {
     const url = new URL(request.url)
     const profilingType = url.searchParams.get('profiling_type')
+
+    if (!profilingType) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMETER',
+            message: 'profiling_type은 필수입니다.',
+            details: { field: 'profiling_type', reason: 'required' },
+          },
+        },
+        { status: 400 }
+      )
+    }
+
+    if (profilingType !== 'PREFERENCE' && profilingType !== 'HEALTH') {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMETER',
+            message: 'profiling_type은 PREFERENCE 또는 HEALTH여야 합니다.',
+            details: { field: 'profiling_type', reason: 'invalid_value' },
+          },
+        },
+        { status: 400 }
+      )
+    }
+
     const form =
       profilingType === 'HEALTH'
         ? mockProfilingFormHEALTH
         : mockProfilingFormPREFERENCE
     return HttpResponse.json({ success: true, data: form })
+  }
+)
+
+/**
+ * 테스트 제출 POST /api/v1/profilings/submit
+ */
+export const profilingSubmitHandler = http.post(
+  '/api/v1/profilings/submit',
+  async ({ request }) => {
+    const body = (await request.json()) as {
+      profiling_type?: string
+      product_type?: string
+      responses?: unknown[]
+    }
+    if (!body?.profiling_type || !body?.responses) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'BAD_REQUEST',
+            message: '필수 항목이 누락되었습니다.',
+            details: null,
+          },
+        },
+        { status: 400 }
+      )
+    }
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          result_id: mockProfilingResultDetail.id,
+          message: '테스트가 제출되었습니다.',
+        },
+      },
+      { status: 201 }
+    )
+  }
+)
+
+/**
+ * 결과 상세 조회 GET /api/v1/profilings/results/:resultId
+ */
+export const profilingResultDetailHandler = http.get(
+  '/api/v1/profilings/results/:resultId',
+  ({ params }) => {
+    const resultId = params.resultId
+    if (!resultId) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: '리소스를 찾을 수 없습니다.',
+            details: null,
+          },
+        },
+        { status: 404 }
+      )
+    }
+    return HttpResponse.json({
+      success: true,
+      data: {
+        ...mockProfilingResultDetail,
+        id: Number(resultId) || mockProfilingResultDetail.id,
+      },
+    })
   }
 )
 
@@ -141,6 +239,8 @@ export const handlers = [
   elementDetailHandler,
   blendDetailHandler,
   profilingFormActiveHandler,
+  profilingSubmitHandler,
+  profilingResultDetailHandler,
   adminTestsHandler,
   adminBlendMapsHandlers,
   adminProductPoolsHandlers,

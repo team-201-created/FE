@@ -1,21 +1,22 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-/** 퀴즈 본문: 헤더·진행바·질문카드·이전/다음 푸터 (useQuizStep 사용) */
 import type { QuizQuestion, TestType } from '../_types'
 import { useQuizStep } from '../_hooks'
-
-const RESULT_PATH: Record<TestType, string> = {
-  PREFERENCE: '/find-my-scent/taste-test/result',
-  HEALTH: '/find-my-scent/wellness/result',
-}
+import { buildSubmitPayload, submitProfiling } from '../_api/profilingClient'
+import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
 import { AlertModal } from '@/components/common/Modal/AlertModal'
 import { ModalPortal } from '@/components/common/Modal/ModalPortal'
 import { TestQuizHeader } from './TestQuizHeader'
 import { TestProgressBar } from './TestProgressBar'
 import { TestQuestionCard } from './TestQuestionCard'
 import { TestQuizFooter } from './TestQuizFooter'
+
+const RESULT_PATH: Record<TestType, string> = {
+  PREFERENCE: '/find-my-scent/taste-test/result',
+  HEALTH: '/find-my-scent/wellness/result',
+}
 
 const MIN_SELECTION_WARNING_MESSAGE =
   '다중선택 문제유형은 지문을 최소 2개이상 선택해야 합니다'
@@ -41,6 +42,7 @@ export function QuizView({
     currentNumber,
     total,
     selectedIds,
+    answers,
     canGoNext,
     isFirst,
     isLast,
@@ -51,10 +53,36 @@ export function QuizView({
     handleNext,
   } = useQuizStep(questions)
   const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<Error | null>(null)
 
-  const handleNextOrSubmit = () => {
+  const handleNextOrSubmit = async () => {
     if (isLast) {
-      router.push(RESULT_PATH[testType])
+      setIsSubmitting(true)
+      setSubmitError(null)
+      try {
+        const payload = buildSubmitPayload(
+          questions,
+          answers,
+          testType,
+          'DIFFUSER'
+        )
+        const res = await submitProfiling(payload)
+        if (!res.success || !res.data?.result_id) {
+          setSubmitError(
+            new Error(
+              (res as { error?: { message?: string } }).error?.message ??
+                '제출에 실패했습니다.'
+            )
+          )
+          return
+        }
+        router.push(`${RESULT_PATH[testType]}?result_id=${res.data.result_id}`)
+      } catch (err) {
+        setSubmitError(err instanceof Error ? err : new Error(String(err)))
+      } finally {
+        setIsSubmitting(false)
+      }
       return
     }
     handleNext()
@@ -90,11 +118,20 @@ export function QuizView({
             isFirst={isFirst}
             isLast={isLast}
             canGoNext={canGoNext}
+            isSubmitting={isSubmitting}
             onPrev={handlePrev}
             onNext={handleNextOrSubmit}
           />
         </div>
       </div>
+
+      {submitError && (
+        <ErrorFeedbackModal
+          message={submitError.message}
+          isOpen
+          onClose={() => setSubmitError(null)}
+        />
+      )}
 
       {showMinSelectionWarning && (
         <ModalPortal>

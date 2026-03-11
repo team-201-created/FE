@@ -1,10 +1,10 @@
 import { PageCenter } from '@/components/common/PageCenter'
 
-/** 취향 테스트 질문 로딩 중 (Suspense fallback) */
+/** 취향 테스트 로딩 (Suspense fallback) */
 export default function TasteTestLoading() {
   return (
     <PageCenter>
-      <p className="text-neutral-500">질문을 불러오는 중...</p>
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-300 border-t-[var(--color-black-primary)]" />
     </PageCenter>
   )
 }
