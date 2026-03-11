@@ -29,19 +29,6 @@ const RESULT_PATHS: Record<ResultPageType, { retest: string }> = {
   AI: { retest: '/find-my-scent/ai-visual' },
 }
 
-/** 컨텐츠 박스 더미 데이터 (API 연동 전 미리보기용) */
-const DUMMY_CONTENT_BOX = {
-  productImageUrl: '/img/17.svg',
-  productName: '오리엔탈 럭셔리 조합',
-  scentTypeLabel: 'Oriental',
-  showRecommendLabel: true,
-  scentTypeTags: ['oriental'] as string[],
-  noteTags: ['#숙면', '#집중', '#기분전환', '#로맨틱'] as string[],
-  description:
-    '깊고 신비로운 오리엔탈 조합 향기가 당신만의 개성을 표현합니다. 은은한 스파이시 노트와 우디 베이스가 조화를 이루어 특별한 순간을 더해줍니다.',
-  primaryButtonHref: 'https://www.coupang.com/',
-}
-
 const styles = {
   wrap: 'min-h-screen bg-[var(--background-light-bg)] px-4 py-8 pb-50',
   inner: 'mx-auto w-full max-w-[1200px]',
@@ -54,8 +41,8 @@ const styles = {
 
 export type TestResultPageProps = {
   resultType: ResultPageType
-  /** 컨텐츠 박스에 전달할 props (API 연동 시 primaryButtonHref = recommended_products[0].purchase_url) */
-  contentBoxProps?: Omit<
+  /** 컨텐츠 박스 props (API 결과 또는 목데이터) */
+  contentBoxProps: Omit<
     ComponentProps<typeof ResultContentBox>,
     'retestButtonHref' | 'resultType'
   >
@@ -89,7 +76,6 @@ export function TestResultPage({
           <ResultContentBox
             retestButtonHref={retest}
             resultType={resultType}
-            {...DUMMY_CONTENT_BOX}
             {...contentBoxProps}
           />
         </div>

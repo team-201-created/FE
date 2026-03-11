@@ -11,8 +11,8 @@ const DEFAULT_ANALYZING_MS = 3000
 
 type ResultPageWithAnalyzingProps = {
   resultType: ResultPageType
-  /** API 결과로 채운 컨텐츠 박스 props (없으면 더미 표시) */
-  contentBoxProps?: Omit<
+  /** 컨텐츠 박스 props (API 결과 또는 목데이터) */
+  contentBoxProps: Omit<
     ComponentProps<typeof TestResultPage>,
     'resultType'
   >['contentBoxProps']
