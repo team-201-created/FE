@@ -9,7 +9,6 @@ import { useErrorPopup } from '../_hooks/useErrorPopup'
 import type { TestType } from '../_types'
 
 const styles = {
-  loadingText: 'text-neutral-500',
   emptyText: 'text-neutral-500',
   retryBtn:
     'mt-4 rounded-xl bg-[var(--color-black-primary)] px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90',
@@ -19,14 +18,6 @@ export function ProfilingTestPage({ testType }: { testType: TestType }) {
   const { questions, isLoading, error, refetch } = useProfilingForm(testType)
   const { isOpen: showErrorPopup, close: closeErrorPopup } =
     useErrorPopup(error)
-
-  if (isLoading) {
-    return (
-      <PageCenter>
-        <p className={styles.loadingText}>질문을 불러오는 중...</p>
-      </PageCenter>
-    )
-  }
 
   if (error) {
     return (

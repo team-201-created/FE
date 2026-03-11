@@ -4,7 +4,8 @@ import { cn } from '@/lib/cn'
 type TestQuizFooterProps = {
   isFirst: boolean
   isLast: boolean
-  canGoNext: boolean // 다음 질문으로 이동 가능 여부
+  canGoNext: boolean
+  isSubmitting?: boolean
   onPrev: () => void
   onNext: () => void
 }
@@ -23,15 +24,17 @@ export function TestQuizFooter({
   isFirst,
   isLast,
   canGoNext,
+  isSubmitting = false,
   onPrev,
   onNext,
 }: TestQuizFooterProps) {
   const prevClassName = cn(styles.prev, isFirst && styles.prevHidden)
+  const nextDisabled = !canGoNext || isSubmitting
   const nextClassName = cn(
     styles.next,
-    canGoNext ? styles.nextActive : styles.nextInactive
+    nextDisabled ? styles.nextInactive : styles.nextActive
   )
-  const nextLabel = isLast ? '결과 보기' : '다음'
+  const nextLabel = isSubmitting ? '제출 중...' : isLast ? '결과 보기' : '다음'
 
   return (
     <footer className={styles.wrap}>
@@ -41,7 +44,7 @@ export function TestQuizFooter({
       <button
         type="button"
         onClick={onNext}
-        disabled={!canGoNext} //
+        disabled={nextDisabled}
         className={nextClassName}
       >
         {nextLabel} <span className={styles.arrow}>›</span>

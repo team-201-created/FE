@@ -22,23 +22,11 @@ const RESULT_HEADER_CONFIG: Record<
   },
 }
 
-/** 결과 유형별 재테스트/다른 테스트 경로 */
-const RESULT_PATHS: Record<
-  ResultPageType,
-  { retest: string; otherTest: string }
-> = {
-  PREFERENCE: {
-    retest: '/find-my-scent/taste-test',
-    otherTest: '/find-my-scent/wellness',
-  },
-  HEALTH: {
-    retest: '/find-my-scent/wellness',
-    otherTest: '/find-my-scent/taste-test',
-  },
-  AI: {
-    retest: '/find-my-scent/ai-visual',
-    otherTest: '/find-my-scent/taste-test',
-  },
+/** 결과 유형별 재테스트 경로 (다른 테스트는 모달에서 선택) */
+const RESULT_PATHS: Record<ResultPageType, { retest: string }> = {
+  PREFERENCE: { retest: '/find-my-scent/taste-test' },
+  HEALTH: { retest: '/find-my-scent/wellness' },
+  AI: { retest: '/find-my-scent/ai-visual' },
 }
 
 /** 컨텐츠 박스 더미 데이터 (API 연동 전 미리보기용) */
@@ -51,6 +39,7 @@ const DUMMY_CONTENT_BOX = {
   noteTags: ['#숙면', '#집중', '#기분전환', '#로맨틱'] as string[],
   description:
     '깊고 신비로운 오리엔탈 조합 향기가 당신만의 개성을 표현합니다. 은은한 스파이시 노트와 우디 베이스가 조화를 이루어 특별한 순간을 더해줍니다.',
+  primaryButtonHref: 'https://www.coupang.com/',
 }
 
 const styles = {
@@ -65,10 +54,10 @@ const styles = {
 
 export type TestResultPageProps = {
   resultType: ResultPageType
-  /** 컨텐츠 박스에 전달할 props (API 연동 시 사용) */
+  /** 컨텐츠 박스에 전달할 props (API 연동 시 primaryButtonHref = recommended_products[0].purchase_url) */
   contentBoxProps?: Omit<
     ComponentProps<typeof ResultContentBox>,
-    'primaryButtonHref' | 'retestButtonHref' | 'otherTestButtonHref'
+    'retestButtonHref' | 'resultType'
   >
 }
 
@@ -77,7 +66,7 @@ export function TestResultPage({
   contentBoxProps,
 }: TestResultPageProps) {
   const { title, subtitle } = RESULT_HEADER_CONFIG[resultType]
-  const { retest, otherTest } = RESULT_PATHS[resultType]
+  const { retest } = RESULT_PATHS[resultType]
 
   return (
     <div className={styles.wrap}>
@@ -98,9 +87,8 @@ export function TestResultPage({
 
         <div className={styles.content}>
           <ResultContentBox
-            primaryButtonHref="/products/combo"
             retestButtonHref={retest}
-            otherTestButtonHref={otherTest}
+            resultType={resultType}
             {...DUMMY_CONTENT_BOX}
             {...contentBoxProps}
           />
