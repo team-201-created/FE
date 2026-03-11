@@ -5,10 +5,8 @@ import {
   mockAdminProductMaps,
 } from '@/mocks/data/adminRecommend'
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-
 export const adminBlendMapsHandlers = http.get(
-  `${BASE_URL}/api/v1/admin/matches/blend-maps`,
+  '/api/v1/admin/matches/blend-maps',
   ({ request }) => {
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1)
@@ -33,7 +31,7 @@ export const adminBlendMapsHandlers = http.get(
 )
 
 export const adminProductPoolsHandlers = http.get(
-  `${BASE_URL}/api/v1/admin/matches/product-pools`,
+  '/api/v1/admin/matches/product-pools',
   ({ request }) => {
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1)
@@ -67,7 +65,7 @@ export const adminProductPoolsHandlers = http.get(
 )
 
 export const adminProductMapsHandlers = http.get(
-  `${BASE_URL}/api/v1/admin/matches/product-maps`,
+  '/api/v1/admin/matches/product-maps',
   ({ request }) => {
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1)

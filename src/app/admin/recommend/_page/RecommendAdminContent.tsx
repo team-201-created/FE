@@ -8,6 +8,9 @@ import {
   AdminTable,
   AdminFilterBar,
   AdminTabGroup,
+  AdminTableError,
+  AdminTableLoading,
+  AdminTableEmpty,
 } from '@/app/admin/_components'
 import { RECOMMEND_TAB_HEADERS } from '@/constants/admin'
 import {
@@ -26,6 +29,7 @@ import {
 
 import { updateRecommendList } from '@/app/admin/recommend/_actions/recommendActions'
 import { useModalStore } from '@/store/useModalStore'
+import { ErrorBoundary } from 'react-error-boundary'
 
 const TAB_COMPONENTS: Record<
   RecommendTabId,
@@ -69,37 +73,32 @@ export default function RecommendAdminContent({
 
   return (
     <AdminListCard>
-        <AdminPageHeader
-          title={`${activeTabLabel} 목록`}
-          buttonText={'등록'}
-          onButtonClick={handleOpenPostModal}
-        />
-        <AdminFilterBar
-          searchPlaceholder="검색"
-          filterOptions={[{ label: '전체', value: 'all' }]}
-        />
-        <AdminTabGroup
-          tabs={RECOMMEND_TABS}
-          activeTab={activeTab}
-          onChange={handleTabChange}
-        />
-        <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
-          <Suspense
-            key={activeTab}
-            fallback={
-              <h1 className="py-20 text-center text-gray-400">
-                데이터 불러오는 중...
-              </h1>
-            }
-          >
+      <AdminPageHeader
+        title={`${activeTabLabel} 목록`}
+        buttonText={'등록'}
+        onButtonClick={handleOpenPostModal}
+      />
+      <AdminFilterBar
+        searchPlaceholder="검색"
+        filterOptions={[{ label: '전체', value: 'all' }]}
+      />
+      <AdminTabGroup
+        tabs={RECOMMEND_TABS}
+        activeTab={activeTab}
+        onChange={handleTabChange}
+      />
+      <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
+        <ErrorBoundary fallback={<AdminTableError />}>
+          <Suspense key={activeTab} fallback={<AdminTableLoading />}>
             <TableBodyWrapper
               recommendDataPromise={recommendDataPromise}
               activeTab={activeTab}
               onTogglePublish={handleTogglePublish}
             />
           </Suspense>
-        </AdminTable>
-      </AdminListCard>
+        </ErrorBoundary>
+      </AdminTable>
+    </AdminListCard>
   )
 }
 
@@ -115,6 +114,10 @@ function TableBodyWrapper({
   const response = use(recommendDataPromise)
   const recommendData = response?.success ? response.data.content : []
   const ActiveTabContent = TAB_COMPONENTS[activeTab]
+
+  if (!recommendData.length) {
+    return <AdminTableEmpty />
+  }
 
   return (
     <ActiveTabContent data={recommendData} onTogglePublish={onTogglePublish} />

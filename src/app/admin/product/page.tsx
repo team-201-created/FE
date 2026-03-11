@@ -1,84 +1,27 @@
-'use client'
+import type { Metadata } from 'next'
+import { fetchAdminProductList } from './_api/adminFetchProductList'
+import ProductAdminContent from './_page/ProductAdminContent'
+import type { ProductTabId } from './_types/AdminProductType'
 
-import { useState } from 'react'
-import {
-  AdminFilterBar,
-  AdminListCard,
-  AdminPageHeader,
-  AdminTable,
-  AdminTableRow,
-  AdminTableCell,
-  AdminTabGroup,
-  AdminFirstCell,
-} from '@/app/admin/_components'
-import {
-  PRODUCT_MOCK_DATA,
-  PRODUCT_TABLE_HEADERS,
-  ProductData,
-} from '@/constants/admin'
-import Button from '@/components/common/Button'
-import PenIcon from '@/assets/icons/pen.svg'
+export const metadata: Metadata = {
+  title: '어드민 상품 관리',
+}
 
-const PRODUCT_TABS = [
-  { id: 'SINGLE', label: '단품' },
-  { id: 'COMBO', label: '조합' },
-]
+interface ProductAdminPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
-export default function ProductAdminPage() {
-  const [activeTab, setActiveTab] = useState('SINGLE')
+export default async function ProductAdminPage({
+  searchParams,
+}: ProductAdminPageProps) {
+  const params = await searchParams
 
-  const activeTabLabel =
-    PRODUCT_TABS.find((t) => t.id === activeTab)?.label || ''
+  const typeParam = params?.type || 'ELEMENT'
+  const activeTab: ProductTabId =
+    typeof typeParam === 'string' && typeParam === 'BLEND' ? 'BLEND' : 'ELEMENT'
 
-  const filteredData = PRODUCT_MOCK_DATA.filter((row) =>
-    activeTab === 'SINGLE' ? row.type === '단품' : row.type === '조합'
-  )
+  // 페치 함수 호출 Promise 자체를 Client 컴포넌트로 전달
+  const dataPromise = fetchAdminProductList(activeTab)
 
-  return (
-    <AdminListCard>
-      <AdminPageHeader
-        title={`${activeTabLabel} 목록`}
-        buttonText="상품 등록"
-      />
-
-      <AdminFilterBar
-        searchPlaceholder="상품명 검색"
-        filterOptions={[{ label: '전체', value: 'all' }]}
-      />
-
-      <AdminTabGroup
-        tabs={PRODUCT_TABS}
-        activeTab={activeTab}
-        onChange={setActiveTab}
-      />
-
-      <AdminTable headers={PRODUCT_TABLE_HEADERS}>
-        {filteredData.map((row: ProductData) => (
-          <AdminTableRow key={row.id}>
-            <AdminFirstCell>{row.name}</AdminFirstCell>
-
-            <AdminTableCell
-              slot={2}
-              className="text-black-secondary font-medium"
-            >
-              {row.category}
-            </AdminTableCell>
-
-            <AdminTableCell
-              slot={4}
-              className="text-black-secondary font-medium"
-            >
-              {row.type}
-            </AdminTableCell>
-
-            <AdminTableCell slot={7} className="flex justify-center">
-              <Button color="none" size="w32h32" rounded="sm">
-                <PenIcon width={16} height={16} />
-              </Button>
-            </AdminTableCell>
-          </AdminTableRow>
-        ))}
-      </AdminTable>
-    </AdminListCard>
-  )
+  return <ProductAdminContent dataPromise={dataPromise} activeTab={activeTab} />
 }
