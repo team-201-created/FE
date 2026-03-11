@@ -173,3 +173,34 @@ export const AdminTable = ({ headers, children }: AdminTableProps) => (
     <div className="flex flex-col">{children}</div>
   </div>
 )
+
+// 테이블 예외상황 처리 - 에러
+export const AdminTableError = ({
+  message = '데이터를 불러오는 중 문제가 발생했습니다.',
+}: {
+  message?: string
+}) => (
+  <div className="text-danger flex w-full justify-center py-20 text-center font-medium">
+    {message}
+  </div>
+)
+
+// 테이블 예외상황 처리 - 로딩
+export const AdminTableLoading = ({
+  message = '데이터를 불러오는 중입니다...',
+}: {
+  message?: string
+}) => (
+  <div className="flex w-full justify-center py-20 text-center">{message}</div>
+)
+
+// 테이블 예외상황 처리 - 빈 데이터
+export const AdminTableEmpty = ({
+  message = '등록된 데이터가 없습니다.',
+}: {
+  message?: string
+}) => (
+  <div className="flex w-full justify-center py-20 text-center font-medium">
+    {message}
+  </div>
+)
