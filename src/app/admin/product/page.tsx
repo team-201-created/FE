@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { fetchAdminProductList } from './_api/adminFetchProducts'
+import { fetchAdminProductList } from './_api/adminFetchProductList'
 import ProductAdminContent from './_page/ProductAdminContent'
 import type { ProductTabId } from './_types/AdminProductType'
 

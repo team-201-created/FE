@@ -157,7 +157,7 @@ function TableBodyWrapper({
                         const krName = c.name.kr
                         return (
                           <span
-                            key={blendItem.id}
+                            key={`${blendItem.id}-${krName}`}
                             className={ACCORD_LABEL_PILL_SM_CLASS}
                           >
                             # {krName}
