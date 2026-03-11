@@ -1,7 +1,5 @@
 'use client'
-import Modal from '@/components/common/Modal'
 import ExitIcon from '@/assets/icons/exit.svg'
-
 import Input from '@/components/common/Input'
 import Button from '@/components/common/Button'
 
@@ -12,7 +10,7 @@ export type WithdrawModalProps = {
 
 export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
   return (
-    <Modal rounded="sm" size="md" isOpen={isOpen} onClose={onClose}>
+    <>
       <div className="flex items-center border-b border-[#f3f4f6] p-4">
         <ExitIcon className="bg-black-primary h-11 w-11 rounded-[14px] p-2.5 text-white" />
         <div className="ml-4">
@@ -22,7 +20,7 @@ export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-6 p-4">
+      <div className="flex flex-col gap-6 p-6">
         <Input
           className="w-99.5"
           placeholder="원하는 상품이 없습니다."
@@ -39,6 +37,6 @@ export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
           탈퇴 하기
         </Button>
       </div>
-    </Modal>
+    </>
   )
 }

@@ -1,5 +1,4 @@
 'use client'
-import Modal from '@/components/common/Modal'
 import ManageProfileIcon from '@/assets/icons/manageProfile.svg'
 import Input from '@/components/common/Input'
 import Button from '@/components/common/Button'
@@ -11,7 +10,7 @@ export type NicknameModalProps = {
 
 export default function NicknameModal({ isOpen, onClose }: NicknameModalProps) {
   return (
-    <Modal rounded="sm" size="md" isOpen={isOpen} onClose={onClose}>
+    <>
       <div className="flex items-center border-b border-[#f3f4f6] p-4">
         <ManageProfileIcon className="bg-black-primary h-11 w-11 rounded-[14px] p-2.5 text-white" />
         <div className="ml-4">
@@ -21,7 +20,7 @@ export default function NicknameModal({ isOpen, onClose }: NicknameModalProps) {
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-6 p-4">
+      <div className="flex flex-col gap-6 p-6">
         <Input
           className="w-99.5"
           placeholder="DeepScent 사용자"
@@ -38,6 +37,6 @@ export default function NicknameModal({ isOpen, onClose }: NicknameModalProps) {
           변경하기
         </Button>
       </div>
-    </Modal>
+    </>
   )
 }

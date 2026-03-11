@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Dropdown } from '@/components/common/Dropdown'
 import { headerNavLinks } from '@/constants/headerNavLinks'
@@ -11,6 +10,8 @@ import NicknameModal from '@/app/profile/profileModal/NicknameModal'
 import WithdrawModal from '@/app/profile/profileModal/WithdrawModal'
 import CloseIcon from '@/assets/icons/close.svg'
 import OpenIcon from '@/assets/icons/open.svg'
+import { useModalStore } from '@/store/useModalStore'
+import Modal from './Modal'
 
 const styles = {
   header:
@@ -27,15 +28,37 @@ const styles = {
   chevronWrap: 'ml-0.5 shrink-0',
 } as const
 export function Header() {
-  const [activeModal, setActiveModal] = useState<
-    null | 'profile' | 'nickname' | 'withdraw'
-  >(null)
+  // useModalStore만 사용하도록 변경
   const router = useRouter()
 
-  const openProfileModal = () => setActiveModal('profile')
-  const openNicknameModal = () => setActiveModal('nickname')
-  const openWithdrawModal = () => setActiveModal('withdraw')
-  const closeModal = () => setActiveModal(null)
+  const { openModal, closeModal, closeAll } = useModalStore()
+  const openProfileModal = () => {
+    closeAll()
+    openModal(
+      <Modal rounded="sm" size="md" isOpen onClose={closeModal}>
+        <ProfileModal
+          isOpen
+          onClose={closeModal}
+          onNicknameClick={() => {
+            closeAll()
+            openModal(
+              <Modal rounded="sm" size="md" isOpen onClose={closeModal}>
+                <NicknameModal isOpen onClose={closeModal} />
+              </Modal>
+            )
+          }}
+          onWithdrawClick={() => {
+            closeAll()
+            openModal(
+              <Modal rounded="sm" size="md" isOpen onClose={closeModal}>
+                <WithdrawModal isOpen onClose={closeModal} />
+              </Modal>
+            )
+          }}
+        />
+      </Modal>
+    )
+  }
   const logout = () => {
     // TODO: 실제 로그아웃 로직 구현
     router.push('/login')
@@ -138,27 +161,7 @@ export function Header() {
           </div>
         </div>
       </header>
-      {/* activeModal 상태에 따라 모달 렌더링 */}
-      {activeModal === 'profile' && (
-        <ProfileModal
-          isOpen
-          onClose={closeModal}
-          onNicknameClick={() => {
-            closeModal()
-            openNicknameModal()
-          }}
-          onWithdrawClick={() => {
-            closeModal()
-            openWithdrawModal()
-          }}
-        />
-      )}
-      {activeModal === 'nickname' && (
-        <NicknameModal isOpen onClose={closeModal} />
-      )}
-      {activeModal === 'withdraw' && (
-        <WithdrawModal isOpen onClose={closeModal} />
-      )}
+      {/* useModalStore에서 모달 렌더링, Header에서는 직접 렌더링하지 않음 */}
     </>
   )
 }
