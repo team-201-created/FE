@@ -54,4 +54,5 @@ jobs:
             --application-name "${{ secrets.CODEDEPLOY_APP_NAME }}" \
             --deployment-group-name "${{ secrets.CODEDEPLOY_DEPLOYMENT_GROUP }}" \
             --revision "revisionType=S3,s3Location={bucket=${{ secrets.S3_BUCKET }},key=deploy.zip,bundleType=zip}" \
+            --file-exists-behavior OVERWRITE \
             --description "GitHub Actions deployment"
