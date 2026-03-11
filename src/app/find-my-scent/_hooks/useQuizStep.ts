@@ -1,11 +1,10 @@
 'use client'
 import { useState } from 'react'
-import type { QuizQuestion } from '../_types'
+import type { AnswersState, QuizQuestion } from '../_types'
 
 /** 퀴즈 단계·답변 상태 + 이전/다음/선택 토글 (단일·다중선택 규칙 적용) */
 
-// 답변 상태
-export type AnswersState = Record<string, string[]>
+export type { AnswersState }
 
 // 퀴즈 단계·답변 상태 + 이전/다음/선택 토글 (단일·다중선택 규칙 적용)
 export function useQuizStep(questions: QuizQuestion[]) {
@@ -65,6 +64,7 @@ export function useQuizStep(questions: QuizQuestion[]) {
     currentNumber: step + 1,
     total,
     selectedIds,
+    answers,
     canGoNext,
     isFirst,
     isLast,
