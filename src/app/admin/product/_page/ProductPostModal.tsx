@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, use, Suspense } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
 import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
 import { useModalStore } from '@/store/useModalStore'
@@ -179,21 +180,29 @@ export const ProductPostModal = ({
             <div className={LABEL_CLASS}>
               구성 단품 선택 (현재 {blendData.element_ids.length} / 4개)
               <div className="border-gray-light grid h-40 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2 font-normal">
-                <Suspense
+                <ErrorBoundary
                   fallback={
-                    <span className="col-span-2 my-auto text-center text-xs">
-                      단품 목록을 불러오는 중...
+                    <span className="text-danger col-span-2 my-auto text-center text-xs">
+                      단품 목록을 불러오는 데 실패했습니다.
                     </span>
                   }
                 >
-                  {elementPromise && (
-                    <ElementCheckboxList
-                      elementPromise={elementPromise}
-                      selectedIds={blendData.element_ids}
-                      onToggle={toggleElementId}
-                    />
-                  )}
-                </Suspense>
+                  <Suspense
+                    fallback={
+                      <span className="text-black-tertiary col-span-2 my-auto text-center text-xs">
+                        단품 목록을 불러오는 중...
+                      </span>
+                    }
+                  >
+                    {elementPromise && (
+                      <ElementCheckboxList
+                        elementPromise={elementPromise}
+                        selectedIds={blendData.element_ids}
+                        onToggle={toggleElementId}
+                      />
+                    )}
+                  </Suspense>
+                </ErrorBoundary>
               </div>
             </div>
 
