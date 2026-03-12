@@ -4,8 +4,6 @@ import {
   AdminTableCell,
   AdminTableEmpty,
 } from '@/app/admin/_components'
-import Button from '@/components/common/Button'
-import PenIcon from '@/assets/icons/pen.svg'
 import { fetchAdminProductList } from '../_api/adminFetchProductList'
 import type {
   ProductTabId,
@@ -17,15 +15,27 @@ import {
   ACCORD_LABEL_PILL_SM_CLASS,
 } from '@/constants/accordLabelStyles'
 
+import { ProductDeleteButton } from './ProductDeleteButton'
+
 interface ProductTableServerProps {
   activeTab: ProductTabId
+  searchParams: { q?: string; scent_category_id?: string; [key: string]: any }
 }
 
 export async function ProductTableServer({
   activeTab,
+  searchParams,
 }: ProductTableServerProps) {
+  // Option 없이 전체 데이터를 가져옵니다 (Next.js 캐싱 활용)
   const response = await fetchAdminProductList(activeTab)
-  const items = response?.data?.results || []
+
+  const allItems = response?.data?.results || []
+
+  // 받아온 데이터를 기반으로 직접 필터링
+  const items = allItems.filter((item) => {
+    if (!searchParams.q) return true
+    return item.name.toLowerCase().includes(searchParams.q.toLowerCase())
+  })
 
   if (!items.length) {
     return <AdminTableEmpty />
@@ -97,9 +107,7 @@ export async function ProductTableServer({
             </AdminTableCell>
 
             <AdminTableCell slot={7}>
-              <Button color="none" size="w32h32" rounded="sm">
-                <PenIcon width={16} height={16} />
-              </Button>
+              <ProductDeleteButton type={activeTab} id={item.id} />
             </AdminTableCell>
           </AdminTableRow>
         )

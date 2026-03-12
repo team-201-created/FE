@@ -7,22 +7,36 @@ import {
   AdminDateCell,
   AdminTableEmpty,
 } from '@/app/admin/_components'
-import Button from '@/components/common/Button'
-import TrashIcon from '@/assets/icons/trash.svg'
 import AdminCategoryIcon from '@/assets/icons/adminCategory.svg'
+
+import { CategoryDeleteButton } from './CategoryDeleteButton'
 
 interface CategoryTableServerProps {
   activeTab: CategoryTabId
+  searchParams: {
+    q?: string
+  }
 }
 
 export async function CategoryTableServer({
   activeTab,
+  searchParams,
 }: CategoryTableServerProps) {
   const response = await fetchAdminCategories({ root_category: activeTab })
 
   // response.data.categories[0] 계층 구조
   const rootCategory = response?.data?.categories?.[0]
-  const items = rootCategory?.children || []
+  const allItems = rootCategory?.children || []
+
+  // 로컬 필터링 (명칭 검색)
+  const items = allItems.filter((item) => {
+    if (!searchParams.q) return true
+    const q = searchParams.q.toLowerCase()
+    return (
+      item.name.kr.toLowerCase().includes(q) ||
+      item.name.en.toLowerCase().includes(q)
+    )
+  })
 
   if (!items.length) {
     return <AdminTableEmpty />
@@ -52,13 +66,7 @@ export async function CategoryTableServer({
 
           <AdminTableCell slot={7}>
             <div className="flex justify-center">
-              <Button color="none" size="w32h32" rounded="sm">
-                <TrashIcon
-                  width={16}
-                  height={16}
-                  className="hover:text-black-primary text-gray-400 transition-colors"
-                />
-              </Button>
+              <CategoryDeleteButton categoryId={item.category_id} />
             </div>
           </AdminTableCell>
         </AdminTableRow>

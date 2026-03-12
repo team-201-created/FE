@@ -84,32 +84,44 @@ export const AdminStatusCell = ({
   onClick,
 }: {
   slot: number
-  status: 'PUBLISHED' | 'UNPUBLISHED'
+  status: 'PUBLISHED' | 'UNPUBLISHED' | 'ADOPTED' | 'UNADOPTED'
   trueLabel?: string
   falseLabel?: string
-  onClick: () => void
+  onClick?: () => void
 }) => {
-  const isPublished = status === 'PUBLISHED'
+  const isPublished = status === 'PUBLISHED' || status === 'ADOPTED'
+  const content = (
+    <>
+      <div
+        className={cn(
+          'h-1.5 w-1.5 rounded-full',
+          isPublished ? 'bg-status-success-text' : 'bg-status-neutral-text'
+        )}
+      />
+      {isPublished ? trueLabel : falseLabel}
+    </>
+  )
+
+  const statusClass = cn(
+    'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-colors',
+    isPublished
+      ? 'bg-status-success-bg text-status-success-text'
+      : 'bg-status-neutral-bg text-status-neutral-text'
+  )
+
   return (
     <AdminTableCell slot={slot}>
-      <button
-        type="button"
-        onClick={onClick}
-        className={cn(
-          'inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold',
-          isPublished
-            ? 'bg-status-success-bg text-status-success-text'
-            : 'bg-status-neutral-bg text-status-neutral-text'
-        )}
-      >
-        <div
-          className={cn(
-            'h-1.5 w-1.5 rounded-full',
-            isPublished ? 'bg-status-success-text' : 'bg-status-neutral-text'
-          )}
-        />
-        {isPublished ? trueLabel : falseLabel}
-      </button>
+      {onClick ? (
+        <button
+          type="button"
+          onClick={onClick}
+          className={cn(statusClass, 'cursor-pointer')}
+        >
+          {content}
+        </button>
+      ) : (
+        <div className={statusClass}>{content}</div>
+      )}
     </AdminTableCell>
   )
 }

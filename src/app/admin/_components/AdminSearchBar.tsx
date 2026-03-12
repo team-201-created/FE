@@ -6,25 +6,31 @@ import AdminSearchIcon from '@/assets/icons/adminSearch.svg'
 import { AdminSelect } from './AdminSelect'
 
 interface AdminFilterBarProps {
+  searchValue?: string
+  filterValue?: string
   searchPlaceholder?: string
   filterOptions?: { label: string; value: string }[]
   onSearchChange?: (val: string) => void
   onFilterChange?: (val: string) => void
 }
 
-export const AdminFilterBar = ({
+export const AdminSearchBar = ({
+  searchValue,
+  filterValue,
   searchPlaceholder = '검색',
   filterOptions,
   onSearchChange,
   onFilterChange,
 }: AdminFilterBarProps) => {
-  // 현재 선택된 필터 값 관리 (기본값: 첫 번째 옵션이 있다면 그 값)
-  const [currentFilter, setCurrentFilter] = useState(
-    filterOptions && filterOptions.length > 0 ? filterOptions[0].value : ''
-  )
+  // 내부 필터 값
+  const [internalFilter, setInternalFilter] = useState('')
+
+  // 외부 필터 값이 있으면 그것을 우선 사용
+  const activeFilterValue =
+    filterValue !== undefined ? filterValue : internalFilter
 
   const handleFilterChange = (val: string) => {
-    setCurrentFilter(val)
+    setInternalFilter(val)
     onFilterChange?.(val)
   }
 
@@ -32,6 +38,7 @@ export const AdminFilterBar = ({
     <div className="mb-6 flex gap-3">
       <div className="relative flex-1">
         <Input
+          value={searchValue}
           placeholder={searchPlaceholder}
           className="h-12 w-full rounded-xl border-neutral-200 bg-white pl-11 text-sm transition-all outline-none focus:border-violet-300"
           onChange={(e) => onSearchChange?.(e.target.value)}
@@ -43,7 +50,7 @@ export const AdminFilterBar = ({
       {filterOptions && (
         <AdminSelect
           options={filterOptions}
-          value={currentFilter}
+          value={activeFilterValue}
           onChange={handleFilterChange}
           width="w-32"
         />
