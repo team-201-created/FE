@@ -8,29 +8,10 @@ import { ProductCard } from '@/components/products/ProductCard'
 import { ProductDetailModal } from '@/components/products/ProductDetailModal'
 import {
   fetchBlendDetail,
-  scentCategoryKrToId,
   blendCategoryKrToNoteLabel,
 } from '../_api/productsClient'
+import { mapBlendDetailToModalProduct } from '../_api/productDetailMappers'
 import { useProductDetailModal, type CombinationItem } from '../_hooks'
-
-function fetchComboDetail(blendId: number) {
-  return fetchBlendDetail(blendId).then(({ data }) => {
-    const scentFamilyIds = data.contained_elements.map(
-      (el) => scentCategoryKrToId[el.category?.kr ?? ''] ?? 'woody'
-    )
-    const noteLabels = data.blend_categories
-      .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
-      .filter(Boolean)
-    return {
-      name: data.name,
-      imageUrl: data.image_url,
-      scentFamilyIds,
-      noteLabels,
-      oneLineDescription: data.description ?? '',
-      productLink: data.purchase_url ?? undefined,
-    }
-  })
-}
 
 type ComboPageClientProps = {
   initialItems: CombinationItem[]
@@ -48,7 +29,7 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
     openDetail,
     closeDetail: closeDetailModal,
     clearApiError,
-  } = useProductDetailModal(fetchComboDetail)
+  } = useProductDetailModal(fetchBlendDetail, mapBlendDetailToModalProduct)
 
   const toggleScent = (id: string) => {
     setSelectedScentIds((prev) =>
