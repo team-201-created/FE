@@ -39,8 +39,7 @@ export default function CategoryAdminContent({
   }
 
   const handleCreateSuccess = () => {
-    // 성공 시 데이터 리프레시
-    router.refresh()
+    // TODO: 모달 띄우기
   }
 
   return (

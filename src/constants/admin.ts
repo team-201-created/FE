@@ -61,7 +61,7 @@ export const CATEGORY_TABLE_HEADERS: AdminTableHeader[] = [
   { label: '' },
   { label: '' },
   { label: '' },
-  { label: '' },
+  { label: '생성 일시' },
   { label: '작업' },
 ]
 
