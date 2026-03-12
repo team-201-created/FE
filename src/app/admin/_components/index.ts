@@ -1,5 +1,5 @@
 export * from './AdminPageHeader'
-export * from './AdminFilterBar'
+export * from './AdminSearchBar'
 export * from './AdminTable'
 export * from './AdminListCard'
 export * from './AdminSidebar'

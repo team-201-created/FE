@@ -1,19 +1,24 @@
 import { useEffect, useState } from 'react'
 import { TestListItem } from '@/app/admin/test/_types'
-import { fetchAdminTests } from '@/app/admin/test/_api'
+import { fetchAdminTests, FormsFetchOptions } from '@/app/admin/test/_api'
 
-export const useTestList = () => {
+export const useTestList = (options: FormsFetchOptions = {}) => {
   const [tests, setTests] = useState<TestListItem[]>([])
 
   useEffect(() => {
     const loadTests = async () => {
-      const response = await fetchAdminTests()
+      const response = await fetchAdminTests(options)
       if (response.success) {
         setTests(response.data.content)
       }
     }
     loadTests()
-  }, [])
+  }, [
+    options.publish_status,
+    options.profiling_type,
+    options.page,
+    options.size,
+  ])
 
   const handleTogglePublish = (id: number) => {
     setTests((prev) => {
@@ -26,7 +31,7 @@ export const useTestList = () => {
             ...test,
             publish_status:
               test.publish_status === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED',
-            updated_at: new Date().toISOString(), // 임시
+            updated_at: new Date().toISOString(),
           }
         }
         return test

@@ -1,36 +1,17 @@
+import { authFetch } from '@/lib/api'
 import { TestListResponse } from '@/app/admin/test/_types'
 
-export type FetchOptions = {
+export type FormsFetchOptions = {
   page?: number
   size?: number
-}
-
-const DEFAULT_EMPTY_TESTS: TestListResponse = {
-  success: true,
-  data: {
-    content: [],
-    page: 1,
-    size: 20,
-    total_elements: 0,
-    total_pages: 0,
-  },
+  publish_status?: string
+  profiling_type?: string
 }
 
 export async function fetchAdminTests(
-  options: FetchOptions = {}
+  options: FormsFetchOptions = {}
 ): Promise<TestListResponse> {
-  try {
-    const params = new URLSearchParams()
-    if (options.page != null) params.set('page', String(options.page))
-    if (options.size != null) params.set('size', String(options.size))
-    const qs = params.toString()
-    const url = `/api/v1/admin/tests${qs ? `?${qs}` : ''}`
-
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`API 호출 실패 ${res.status}`)
-    return res.json()
-  } catch (err) {
-    console.error('API 호출 실패', err)
-    return DEFAULT_EMPTY_TESTS
-  }
+  return authFetch.get<TestListResponse>('/api/v1/admin/profilings/forms', {
+    params: options,
+  })
 }
