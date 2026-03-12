@@ -14,6 +14,7 @@ import {
   mockProfilingFormHEALTH,
 } from './data/profilingForms'
 import { mockProfilingResultDetail } from './data/profilingResults'
+import { adminCategoryHandlers } from './handlers/adminCategoryHandlers'
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/elements
@@ -245,4 +246,5 @@ export const handlers = [
   adminBlendMapsHandlers,
   adminProductPoolsHandlers,
   adminProductMapsHandlers,
+  ...adminCategoryHandlers,
 ]
