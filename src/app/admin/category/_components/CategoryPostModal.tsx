@@ -6,7 +6,7 @@ import Input from '@/components/common/Input'
 import Button from '@/components/common/Button'
 import { useModalStore } from '@/store/useModalStore'
 import type { CategoryTabId } from '../_types/AdminCategoryType'
-import { postCategoryAction } from '../_lib/postCategoryAction'
+import { postCategoryAction } from '../_lib/categoryAction'
 
 const LABEL_CLASS = 'flex flex-col gap-2 font-semibold'
 
