@@ -59,21 +59,21 @@ export type ElementsListParams = {
   size?: number
 }
 
+/** 단품 목록 아이템 (클라이언트 props 등에서 사용) */
+export type SingleItem = ElementsListResponse['data']['results'][number]
+
 export async function fetchElements(
   params: ElementsListParams = {}
 ): Promise<ElementsListResponse> {
-  const query: Record<string, string> = {}
-  if (params.q != null) query.q = params.q
-  if (params.scent_category_id != null)
-    query.scent_category_id = String(params.scent_category_id)
-  if (params.sort != null) query.sort = params.sort
-  if (params.page != null) query.page = String(params.page)
-  if (params.size != null) query.size = String(params.size)
-  const hasParams = Object.keys(query).length > 0
-  return apiFetch.get<ElementsListResponse>(
-    '/api/v1/scents/elements',
-    hasParams ? { params: query as Record<string, string | number> } : undefined
-  )
+  return apiFetch.get<ElementsListResponse>('/api/v1/scents/elements', {
+    params: {
+      q: params.q,
+      scent_category_id: params.scent_category_id,
+      sort: params.sort,
+      page: params.page,
+      size: params.size,
+    },
+  })
 }
 
 // ─── 단품 상세 GET /api/v1/scents/elements/{element_id} ────────────────────
@@ -127,23 +127,22 @@ export type BlendsListParams = {
   size?: number
 }
 
+/** 조합 목록 아이템 (클라이언트 props 등에서 사용) */
+export type CombinationItem = BlendsListResponse['data']['results'][number]
+
 export async function fetchBlends(
   params: BlendsListParams = {}
 ): Promise<BlendsListResponse> {
-  const query: Record<string, string> = {}
-  if (params.q != null) query.q = params.q
-  if (params.blend_category_id != null)
-    query.blend_category_id = String(params.blend_category_id)
-  if (params.scent_category_id != null)
-    query.scent_category_id = String(params.scent_category_id)
-  if (params.sort != null) query.sort = params.sort
-  if (params.page != null) query.page = String(params.page)
-  if (params.size != null) query.size = String(params.size)
-  const hasParams = Object.keys(query).length > 0
-  return apiFetch.get<BlendsListResponse>(
-    '/api/v1/scents/blends',
-    hasParams ? { params: query as Record<string, string | number> } : undefined
-  )
+  return apiFetch.get<BlendsListResponse>('/api/v1/scents/blends', {
+    params: {
+      q: params.q,
+      blend_category_id: params.blend_category_id,
+      scent_category_id: params.scent_category_id,
+      sort: params.sort,
+      page: params.page,
+      size: params.size,
+    },
+  })
 }
 
 // ─── 조합 상세 GET /api/v1/scents/blends/{blend_id} ────────────────────────
