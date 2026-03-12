@@ -15,6 +15,23 @@ import {
 } from './data/profilingForms'
 import { mockProfilingResultDetail } from './data/profilingResults'
 import { adminCategoryHandlers } from './handlers/adminCategoryHandlers'
+import {
+  IMAGE_FORMATS,
+  IMAGE_TYPES,
+  PRODUCT_TYPES,
+  PROFILING_TYPES,
+  type ImageFormat,
+  type ImageType,
+  type ProductType,
+  type ProfilingType,
+} from './constants'
+import type { ProfilingForm } from '@/app/find-my-scent/_types'
+
+/** profiling_type → 목데이터 폼 매핑 (PROFILING_TYPES 추가 시 맵에도 필수 추가) */
+const PROFILING_FORM_MAP: Record<ProfilingType, ProfilingForm> = {
+  PREFERENCE: mockProfilingFormPREFERENCE,
+  HEALTH: mockProfilingFormHEALTH,
+}
 
 /**
  * 단품 목록 조회 GET /api/v1/scents/elements
@@ -145,13 +162,13 @@ export const profilingFormActiveHandler = http.get(
       )
     }
 
-    if (profilingType !== 'PREFERENCE' && profilingType !== 'HEALTH') {
+    if (!PROFILING_TYPES.includes(profilingType as ProfilingType)) {
       return HttpResponse.json(
         {
           success: false,
           error: {
             code: 'INVALID_PARAMETER',
-            message: 'profiling_type은 PREFERENCE 또는 HEALTH여야 합니다.',
+            message: `profiling_type은 ${PROFILING_TYPES.join(' 또는 ')}여야 합니다.`,
             details: { field: 'profiling_type', reason: 'invalid_value' },
           },
         },
@@ -159,10 +176,7 @@ export const profilingFormActiveHandler = http.get(
       )
     }
 
-    const form =
-      profilingType === 'HEALTH'
-        ? mockProfilingFormHEALTH
-        : mockProfilingFormPREFERENCE
+    const form = PROFILING_FORM_MAP[profilingType as ProfilingType]
     return HttpResponse.json({ success: true, data: form })
   }
 )
@@ -280,7 +294,6 @@ export const presignedUrlHandler = http.put(
     }
 
     const { file_name, image_format, file_size } = body ?? {}
-    const allowedFormats = ['jpeg', 'jpg', 'png', 'webp']
     if (!file_name || !image_format || file_size == null) {
       return HttpResponse.json(
         {
@@ -294,7 +307,8 @@ export const presignedUrlHandler = http.put(
         { status: 400 }
       )
     }
-    if (!allowedFormats.includes(image_format.toLowerCase())) {
+    const formatLower = image_format.toLowerCase()
+    if (!IMAGE_FORMATS.includes(formatLower as ImageFormat)) {
       return HttpResponse.json(
         {
           success: false,
@@ -395,26 +409,26 @@ export const imagesAnalyzeHandler = http.post(
         { status: 400 }
       )
     }
-    if (!['OOTD', 'INTERIOR'].includes(image_type)) {
+    if (!IMAGE_TYPES.includes(image_type as ImageType)) {
       return HttpResponse.json(
         {
           success: false,
           error: {
             code: 'BAD_REQUEST',
-            message: 'image_type은 OOTD 또는 INTERIOR여야 합니다.',
+            message: `image_type은 ${IMAGE_TYPES.join(' 또는 ')}여야 합니다.`,
             details: { field: 'image_type', reason: 'invalid' },
           },
         },
         { status: 400 }
       )
     }
-    if (!['DIFFUSER', 'PERFUME'].includes(product_type)) {
+    if (!PRODUCT_TYPES.includes(product_type as ProductType)) {
       return HttpResponse.json(
         {
           success: false,
           error: {
             code: 'BAD_REQUEST',
-            message: 'product_type은 DIFFUSER 또는 PERFUME이어야 합니다.',
+            message: `product_type은 ${PRODUCT_TYPES.join(' 또는 ')}이어야 합니다.`,
             details: { field: 'product_type', reason: 'invalid' },
           },
         },

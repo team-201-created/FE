@@ -1,6 +1,7 @@
 // 표준 fetch옵션 상속 + 추가 옵션
+/** params: null/undefined 값은 쿼리에서 제외되며, 숫자는 문자열로 변환됨 (createFetch 내부 처리) */
 export type FetchOptions = RequestInit & {
-  params?: Record<string, string | number>
+  params?: Record<string, string | number | undefined | null>
   cache?: 'no-store' | 'force-cache'
   next?: {
     revalidate?: number | false // 재검증 주기 (초)

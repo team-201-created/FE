@@ -1,13 +1,16 @@
 'use client'
 
-/** 상품 상세 모달: openDetail(id) 시 fetchDetail 호출 → 로딩/에러/product 관리 */
+/** 상품 상세 모달: openDetail(id) 시 fetch 호출 → mapper 적용 → 로딩/에러/product 관리 */
 import { useState } from 'react'
 import { FetchError } from '@/lib/api'
 import type { ProductDetailModalProduct } from '@/components/products/ProductDetailModal'
 
-type FetchDetailFn = (id: number) => Promise<ProductDetailModalProduct>
+type FetchDetailFn<T> = (id: number) => Promise<T>
 
-export function useProductDetailModal(fetchDetail: FetchDetailFn) {
+export function useProductDetailModal<T>(
+  fetchDetail: FetchDetailFn<T>,
+  mapToModalProduct: (response: T) => ProductDetailModalProduct
+) {
   const [isOpen, setIsOpen] = useState(false)
   const [product, setProduct] = useState<ProductDetailModalProduct | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -19,8 +22,8 @@ export function useProductDetailModal(fetchDetail: FetchDetailFn) {
     setApiError(null)
     setIsLoading(true)
     try {
-      const data = await fetchDetail(id)
-      setProduct(data)
+      const response = await fetchDetail(id)
+      setProduct(mapToModalProduct(response))
     } catch (e) {
       setApiError(
         e instanceof FetchError ? e.message : '상세 조회에 실패했습니다.'

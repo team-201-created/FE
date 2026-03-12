@@ -116,7 +116,7 @@ export function resultDetailToContentBoxProps(detail: ProfilingResultDetail): {
   const scentTypeLabel =
     recommended_blend.contained_elements?.[0]?.category?.en ??
     recommended_blend.contained_elements?.[0]?.category?.kr
-  const primaryButtonHref = recommended_products[0].purchase_url
+  const primaryButtonHref = recommended_products[0]?.purchase_url ?? ''
   const noteTags =
     recommended_blend.contained_elements?.map(
       (e) => `#${e.category?.en ?? e.name}`

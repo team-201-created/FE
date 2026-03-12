@@ -7,26 +7,8 @@ import { SearchFilterBar } from '@/components/products/SearchFilterBar'
 import { ProductCard } from '@/components/products/ProductCard'
 import { ProductDetailModal } from '@/components/products/ProductDetailModal'
 import { fetchElementDetail, scentCategoryKrToId } from '../_api/productsClient'
+import { mapElementDetailToModalProduct } from '../_api/productDetailMappers'
 import { useProductDetailModal, type SingleItem } from '../_hooks'
-
-function fetchSingleDetail(elementId: number) {
-  return fetchElementDetail(elementId).then(({ data }) => {
-    const imageUrl =
-      typeof data.image_url === 'string'
-        ? data.image_url
-        : (data.image_url?.[0] ?? '')
-    const kr = data.element_category?.name?.kr ?? ''
-    const scentFamilyId = scentCategoryKrToId[kr] ?? 'woody'
-    return {
-      name: data.name,
-      imageUrl,
-      scentFamilyIds: [scentFamilyId],
-      noteLabels: [] as string[],
-      oneLineDescription: data.description ?? '',
-      productLink: undefined,
-    }
-  })
-}
 
 type SinglePageClientProps = {
   initialItems: SingleItem[]
@@ -43,7 +25,7 @@ export function SinglePageClient({ initialItems }: SinglePageClientProps) {
     openDetail,
     closeDetail: closeDetailModal,
     clearApiError,
-  } = useProductDetailModal(fetchSingleDetail)
+  } = useProductDetailModal(fetchElementDetail, mapElementDetailToModalProduct)
 
   const toggleScent = (id: string) => {
     setSelectedScentIds((prev) =>

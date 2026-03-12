@@ -3,6 +3,7 @@
 /** 다른 테스트 하러가기 모달 — 현재 결과 유형 제외 2가지 테스트 선택 */
 import Image from 'next/image'
 import type { ResultPageType } from '../_types'
+import { ModalOverlay, ModalPortal } from '@/components/common/Modal'
 import { OtherTestCard } from './OtherTestCard'
 
 const OTHER_TEST_CONFIG: Record<
@@ -39,8 +40,6 @@ export type OtherTestModalProps = {
 }
 
 const styles = {
-  overlay:
-    'fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4',
   modal: 'w-full max-w-md rounded-2xl bg-white p-6 shadow-lg',
   header: 'relative mb-5',
   closeBtn:
@@ -62,46 +61,46 @@ export function OtherTestModal({
   )
 
   return (
-    <div
-      className={styles.overlay}
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="other-test-modal-title"
-    >
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <header className={styles.header}>
-          <button
-            type="button"
-            onClick={onClose}
-            className={styles.closeBtn}
-            aria-label="닫기"
-          >
-            <Image
-              src="/modalClose.svg"
-              alt=""
-              width={20}
-              height={20}
-              unoptimized
-            />
-          </button>
-          <h2 id="other-test-modal-title" className={styles.title}>
-            다른 테스트 하러가기
-          </h2>
-          <p className={styles.subtitle}>관심 있는 테스트를 선택해주세요</p>
-        </header>
-        <div className={styles.list}>
-          {options.map((opt) => (
-            <OtherTestCard
-              key={opt.href}
-              iconSrc={opt.icon}
-              title={opt.title}
-              subtitle={opt.subtitle}
-              href={opt.href}
-            />
-          ))}
+    <ModalPortal>
+      <ModalOverlay onClose={onClose}>
+        <div
+          className={styles.modal}
+          onClick={(e) => e.stopPropagation()}
+          aria-labelledby="other-test-modal-title"
+        >
+          <header className={styles.header}>
+            <button
+              type="button"
+              onClick={onClose}
+              className={styles.closeBtn}
+              aria-label="닫기"
+            >
+              <Image
+                src="/modalClose.svg"
+                alt=""
+                width={20}
+                height={20}
+                unoptimized
+              />
+            </button>
+            <h2 id="other-test-modal-title" className={styles.title}>
+              다른 테스트 하러가기
+            </h2>
+            <p className={styles.subtitle}>관심 있는 테스트를 선택해주세요</p>
+          </header>
+          <div className={styles.list}>
+            {options.map((opt) => (
+              <OtherTestCard
+                key={opt.href}
+                iconSrc={opt.icon}
+                title={opt.title}
+                subtitle={opt.subtitle}
+                href={opt.href}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
+      </ModalOverlay>
+    </ModalPortal>
   )
 }

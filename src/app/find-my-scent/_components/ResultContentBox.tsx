@@ -172,7 +172,7 @@ export function ResultContentBox({
               <div className={styles.descriptionBox}>
                 <Image
                   src="/details.svg"
-                  alt=""
+                  alt="추천 조합 설명"
                   width={120}
                   height={50}
                   className="shrink-0"
