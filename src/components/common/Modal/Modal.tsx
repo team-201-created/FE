@@ -11,6 +11,7 @@ export interface ModalProps extends VariantProps<typeof modalVariants> {
   isOpen: boolean
   onClose: () => void
   showCloseButton?: boolean
+  overflowVisible?: boolean
   children: React.ReactNode
 }
 
@@ -18,6 +19,7 @@ export function Modal({
   isOpen,
   onClose,
   showCloseButton = true,
+  overflowVisible = false,
   children,
   size,
   rounded,
@@ -32,7 +34,10 @@ export function Modal({
   return (
     <div
       ref={modalRef}
-      className={cn(modalVariants({ size, rounded }), 'overflow-hidden')}
+      className={cn(
+        modalVariants({ size, rounded }),
+        overflowVisible ? 'overflow-visible' : 'overflow-hidden'
+      )}
     >
       {showCloseButton && (
         <button

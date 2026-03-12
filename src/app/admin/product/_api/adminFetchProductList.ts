@@ -36,5 +36,6 @@ export const fetchAdminProductList = <T extends ProductTabId>(
 ): Promise<ProductResponseMap[T]> => {
   return apiFetch.get<ProductResponseMap[T]>(PRODUCT_ENDPOINTS[tabId], {
     params: options,
+    cache: 'force-cache',
   })
 }

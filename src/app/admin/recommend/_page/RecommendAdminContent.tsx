@@ -65,7 +65,7 @@ export default function RecommendAdminContent({
     await updateRecommendList({ tabId: activeTab })
   }
 
-  const { openModal, openAlert } = useModalStore()
+  const { openModal } = useModalStore()
 
   const handleOpenPostModal = () => {
     openModal(<RecommendPostModal activeTab={activeTab} />)

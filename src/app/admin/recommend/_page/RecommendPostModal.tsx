@@ -123,7 +123,7 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
   }
 
   return (
-    <Modal isOpen onClose={closeModal} size="md">
+    <Modal isOpen onClose={closeModal} size="md" overflowVisible>
       <Modal.Header>{activeTabLabel} 등록</Modal.Header>
       <Modal.Content>{renderContent()}</Modal.Content>
       <Modal.Footer className="flex justify-end gap-2 text-[16px]">

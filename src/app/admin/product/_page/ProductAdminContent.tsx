@@ -11,10 +11,7 @@ import {
   AdminTableError,
   AdminTableLoading,
 } from '@/app/admin/_components'
-import type {
-  AdminElementListResponse,
-  ProductTabId,
-} from '../_types/AdminProductType'
+import type { ProductTabId } from '../_types/AdminProductType'
 import { PRODUCT_TABLE_HEADERS } from '@/constants/admin'
 import { ProductPostModal } from './ProductPostModal'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -42,15 +39,13 @@ export default function ProductAdminContent({
     PRODUCT_TABS.find((t) => t.id === activeTab)?.label || '단품'
 
   const handleTabChange = (tabId: string) => {
-    router.replace(`/admin/product?type=${tabId}`, { scroll: false })
+    router.replace(`/admin/product?tab=${tabId}`, { scroll: false })
   }
 
   const handleOpenRegisterModal = () => {
-    // 🔥 무한 루프 방지 핵심: 렌더링 함수 내부가 아닌 "이벤트 핸들러"에서 호출!!
-    // 또한 page.tsx 의 오버페칭(초기 로딩 낭비) 문제도 완벽하게 해결!
     const elementPromise =
       activeTab === 'BLEND'
-        ? fetchAdminProductList('ELEMENT', { size: 100 })
+        ? fetchAdminProductList('ELEMENT')
         : Promise.resolve(null)
 
     openModal(
