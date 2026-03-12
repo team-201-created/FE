@@ -1,4 +1,5 @@
 /** 단품 향기 목록: 서버에서 목록 조회 후 클라이언트에 전달 */
+import { SkeletonDelay } from '@/components/products/ScentListSkeleton'
 import { fetchElements } from '../_api/productsClient'
 import { SinglePageClient } from './SinglePageClient'
 
@@ -7,5 +8,9 @@ export const dynamic = 'force-dynamic'
 
 export default async function ProductsSinglePage() {
   const { data } = await fetchElements({ page: 1, size: 100 })
-  return <SinglePageClient initialItems={data.results} />
+  return (
+    <SkeletonDelay>
+      <SinglePageClient initialItems={data.results} />
+    </SkeletonDelay>
+  )
 }
