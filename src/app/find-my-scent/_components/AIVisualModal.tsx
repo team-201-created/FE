@@ -38,7 +38,8 @@ const PHOTO_TYPE_CONFIG: Record<
 export type AIVisualModalProps = {
   isOpen: boolean
   onClose: () => void
-  onAnalyze?: (photoType: PhotoType, file: File) => void
+  /** 제출 후 결과 페이지로 이동 등; Promise 반환 시 제출 중 버튼 비활성화 */
+  onAnalyze?: (photoType: PhotoType, file: File) => void | Promise<void>
 }
 
 const styles = {
@@ -78,9 +79,9 @@ const styles = {
   step2Title: 'text-lg font-semibold text-[var(--color-black-primary)]',
   step2Desc: 'mt-1.5 text-sm leading-relaxed text-neutral-600',
   uploadZone:
-    'mt-6 flex min-h-[240px] flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50/80 p-8 transition-colors hover:border-neutral-400 hover:bg-neutral-100/80 -mx-10 w-[calc(100%+5rem)]',
+    'mt-6 flex min-h-[240px] flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50/80 transition-colors hover:border-neutral-400 hover:bg-neutral-100/80 -mx-10 w-[calc(100%+5rem)]',
   uploadZoneFilled:
-    'flex min-h-[240px] flex-1 flex-col border-solid border-neutral-200 p-2 -mx-10 w-[calc(100%+5rem)]',
+    'flex min-h-[240px] flex-1 flex-col border-solid border-neutral-200 p-2 -mx-5 w-[calc(100%+3rem)]',
   uploadIcon: 'relative h-20 w-20 shrink-0',
   uploadText: 'mt-4 text-sm font-medium text-neutral-700',
   uploadHint: 'mt-2 text-xs text-neutral-500',
@@ -110,6 +111,8 @@ export function AIVisualModal({
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -128,6 +131,7 @@ export function AIVisualModal({
     }
     setPreviewUrl(null)
     setUploadError(null)
+    setSubmitError(null)
   }
 
   const handleClose = () => {
@@ -185,11 +189,21 @@ export function AIVisualModal({
     }
   }
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (step !== 2 || !photoType || !file) return
     if (onAnalyze) {
-      onAnalyze(photoType, file)
-      handleClose()
+      setSubmitError(null)
+      setIsSubmitting(true)
+      try {
+        await onAnalyze(photoType, file)
+        // onAnalyze에서 결과 페이지로 이동하므로 handleClose() 호출하지 않음 (history.back() 방지)
+      } catch (err) {
+        setSubmitError(
+          err instanceof Error ? err.message : '제출에 실패했습니다.'
+        )
+      } finally {
+        setIsSubmitting(false)
+      }
     } else {
       router.push('/find-my-scent/ai-visual/result')
       handleClose()
@@ -361,6 +375,9 @@ export function AIVisualModal({
                 {uploadError && (
                   <p className="mt-3 text-sm text-red-600">{uploadError}</p>
                 )}
+                {submitError && (
+                  <p className="mt-3 text-sm text-red-600">{submitError}</p>
+                )}
               </div>
             )}
           </div>
@@ -387,10 +404,10 @@ export function AIVisualModal({
                 <button
                   type="button"
                   onClick={handleAnalyze}
-                  disabled={!file}
-                  className={`${styles.btnNext} ${file ? styles.btnNextActive : styles.btnNextInactive}`}
+                  disabled={!file || isSubmitting}
+                  className={`${styles.btnNext} ${file && !isSubmitting ? styles.btnNextActive : styles.btnNextInactive}`}
                 >
-                  분석 시작
+                  {isSubmitting ? '제출 중...' : '분석 시작'}
                 </button>
               </>
             )}
