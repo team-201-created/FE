@@ -1,10 +1,9 @@
 'use client'
 
 import StorageCard from '@/components/storage/StorageCard'
-import data from '@/mocks/data/storage'
-import { useState } from 'react'
-
-// 아이콘 SVG import
+import type { StorageApiResponse } from './_types'
+import { useEffect, useState } from 'react'
+import { apiFetch } from '@/lib/api'
 import HeartIcon from '@/assets/icons/heart.svg'
 import AdminTestIcon from '@/assets/icons/adminTest.svg'
 import AdminRecommendationIcon from '@/assets/icons/adminRecommendation.svg'
@@ -19,13 +18,64 @@ type TabKey = (typeof TAB_LIST)[number]['key']
 
 export default function ProfileStoragePage() {
   const [activeTab, setActiveTab] = useState<TabKey>('preference')
+  const [storageData, setStorageData] = useState<any[]>([])
+  const [tabCounts, setTabCounts] = useState<Record<TabKey, number> | null>(
+    null
+  )
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // 각 탭별 개수 계산
-  const tabCounts: Record<TabKey, number> = {
-    preference: data.filter((item) => item.input_data_type === 'PREFERENCE')
-      .length,
-    wellness: data.filter((item) => item.input_data_type === 'WELLNESS').length,
-    ai: data.filter((item) => item.input_data_type === 'AI_VISUAL').length,
+  useEffect(() => {
+    async function fetchStorage() {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await apiFetch<StorageApiResponse>('/api/v1/storage')
+        if (!res.success || !res.data) {
+          setError('데이터를 불러오지 못했습니다')
+          setStorageData([])
+          setTabCounts({ preference: 0, wellness: 0, ai: 0 })
+          return
+        }
+        setStorageData(res.data)
+        setTabCounts({
+          preference: res.data.filter(
+            (item) => item.input_data_type === 'PREFERENCE'
+          ).length,
+          wellness: res.data.filter(
+            (item) => item.input_data_type === 'WELLNESS'
+          ).length,
+          ai: res.data.filter((item) => item.input_data_type === 'AI_VISUAL')
+            .length,
+        })
+      } catch (e: any) {
+        setError(e?.message || '데이터를 불러오지 못했습니다')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStorage()
+  }, [])
+  const handleDelete = async (id: number) => {
+    try {
+      await apiFetch.delete(`/api/v1/storage/${id}`)
+      setStorageData((prev) => {
+        const newData = prev.filter((item) => item.id !== id)
+        setTabCounts({
+          preference: newData.filter(
+            (item) => item.input_data_type === 'PREFERENCE'
+          ).length,
+          wellness: newData.filter(
+            (item) => item.input_data_type === 'WELLNESS'
+          ).length,
+          ai: newData.filter((item) => item.input_data_type === 'AI_VISUAL')
+            .length,
+        })
+        return newData
+      })
+    } catch (e) {
+      alert('삭제에 실패했습니다.')
+    }
   }
 
   return (
@@ -52,7 +102,7 @@ export default function ProfileStoragePage() {
               <tab.icon width={20} height={20} />
               <span className="text-[14px] font-semibold">{tab.label}</span>
               <span className="text-black-primary ml-2 rounded-full bg-neutral-100 px-2 py-0.5 text-[13px] font-bold">
-                {tabCounts[tab.key]}
+                {tabCounts ? tabCounts[tab.key] : 0}
               </span>
             </span>
           </button>
@@ -61,28 +111,33 @@ export default function ProfileStoragePage() {
 
       {/* 카드 영역 */}
       <div className="flex flex-wrap justify-center">
-        {data
-          .filter((item) => {
-            if (activeTab === 'preference')
-              return item.input_data_type === 'PREFERENCE'
-            if (activeTab === 'wellness')
-              return item.input_data_type === 'WELLNESS'
-            if (activeTab === 'ai') return item.input_data_type === 'AI_VISUAL'
-            return true
-          })
-          .map((item) => (
-            <StorageCard
-              key={item.id}
-              blendName={item.recommended_blend.name}
-              blendImageUrl={item.recommended_blend.image_url}
-              productType={item.product_type}
-              elementCategory={item.recommended_blend.element_category}
-              blendCategory={item.recommended_blend.blend_category}
-              createdAt={item.created_at}
-              onDelete={() => console.log('삭제api 연동 예정')}
-              onDetail={() => console.log('자세히 보기 클릭')}
-            />
-          ))}
+        {loading && <div>로딩 중...</div>}
+        {error && <div className="text-red-500">{error}</div>}
+        {!loading &&
+          !error &&
+          storageData
+            .filter((item) => {
+              if (activeTab === 'preference')
+                return item.input_data_type === 'PREFERENCE'
+              if (activeTab === 'wellness')
+                return item.input_data_type === 'WELLNESS'
+              if (activeTab === 'ai')
+                return item.input_data_type === 'AI_VISUAL'
+              return true
+            })
+            .map((item) => (
+              <StorageCard
+                key={item.id}
+                blendName={item.recommended_blend.name}
+                blendImageUrl={item.recommended_blend.image_url}
+                productType={item.product_type}
+                elementCategory={item.recommended_blend.element_category}
+                blendCategory={item.recommended_blend.blend_category}
+                createdAt={item.created_at}
+                onDelete={() => handleDelete(item.id)}
+                onDetail={() => console.log('자세히 보기 클릭')}
+              />
+            ))}
       </div>
     </div>
   )
