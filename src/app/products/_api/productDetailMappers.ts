@@ -1,0 +1,53 @@
+/**
+ * API 상세 응답 → ProductDetailModal용 데이터로 변환
+ * (fetch는 훅/호출부, 변환 로직만 여기서 관리)
+ */
+import type { ProductDetailModalProduct } from '@/components/products/ProductDetailModal'
+import {
+  blendCategoryKrToNoteLabel,
+  scentCategoryKrToId,
+} from './productsClient'
+import type {
+  BlendDetailResponse,
+  ElementDetailResponse,
+} from './productsClient'
+
+export function mapElementDetailToModalProduct(
+  res: ElementDetailResponse
+): ProductDetailModalProduct {
+  const data = res.data
+  const imageUrl =
+    typeof data.image_url === 'string'
+      ? data.image_url
+      : (data.image_url?.[0] ?? '')
+  const kr = data.element_category?.name?.kr ?? ''
+  const scentFamilyId = scentCategoryKrToId[kr] ?? 'woody'
+  return {
+    name: data.name,
+    imageUrl,
+    scentFamilyIds: [scentFamilyId],
+    noteLabels: [],
+    oneLineDescription: data.description ?? '',
+    productLink: undefined,
+  }
+}
+
+export function mapBlendDetailToModalProduct(
+  res: BlendDetailResponse
+): ProductDetailModalProduct {
+  const data = res.data
+  const scentFamilyIds = data.contained_elements.map(
+    (el) => scentCategoryKrToId[el.category?.kr ?? ''] ?? 'woody'
+  )
+  const noteLabels = data.blend_categories
+    .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
+    .filter(Boolean)
+  return {
+    name: data.name,
+    imageUrl: data.image_url,
+    scentFamilyIds,
+    noteLabels,
+    oneLineDescription: data.description ?? '',
+    productLink: data.purchase_url ?? undefined,
+  }
+}
