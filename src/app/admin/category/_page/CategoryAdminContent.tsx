@@ -1,12 +1,12 @@
 'use client'
 
 import React, { ReactNode, Suspense } from 'react'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { AdminPageHeader } from '@/app/admin/_components/AdminPageHeader'
 import { AdminTabGroup } from '@/app/admin/_components/AdminTabGroup'
 import type { CategoryTabId } from '../_types/AdminCategoryType'
 import {
-  AdminFilterBar,
+  AdminSearchBar,
   AdminListCard,
   AdminTable,
   AdminTableError,
@@ -16,6 +16,7 @@ import { CATEGORY_TABLE_HEADERS } from '@/constants/admin'
 import { ErrorBoundary } from 'react-error-boundary'
 import { CategoryPostModal } from '../_components/CategoryPostModal'
 import { useModalStore } from '@/store/useModalStore'
+import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 
 export const CATEGORY_TABS: { id: CategoryTabId; label: string }[] = [
   { id: 'Element', label: '단품 관리' },
@@ -31,12 +32,14 @@ export default function CategoryAdminContent({
   activeTab,
   children,
 }: CategoryAdminContentProps) {
-  const router = useRouter()
   const { openModal } = useModalStore()
+  const searchParams = useSearchParams()
 
-  const handleTabChange = (tabId: string) => {
-    router.push(`/admin/category?tab=${tabId}`)
-  }
+  const { searchTerm, setSearchTerm, onFilterChange, onTabChange } =
+    useAdminTable({
+      searchDelay: 500,
+      resetParamsOnTabChange: ['category_id'],
+    })
 
   const handleCreateSuccess = () => {
     // TODO: 모달 띄우기
@@ -57,20 +60,24 @@ export default function CategoryAdminContent({
         }
       />
 
-      <AdminFilterBar
+      <AdminSearchBar
+        searchValue={searchTerm}
         searchPlaceholder="카테고리명 검색"
-        filterOptions={[{ label: '전체', value: 'all' }]}
+        onSearchChange={setSearchTerm}
       />
 
       <AdminTabGroup
         tabs={CATEGORY_TABS}
         activeTab={activeTab}
-        onChange={handleTabChange}
+        onChange={onTabChange}
       />
 
       <AdminTable headers={CATEGORY_TABLE_HEADERS}>
         <ErrorBoundary fallback={<AdminTableError />}>
-          <Suspense key={activeTab} fallback={<AdminTableLoading />}>
+          <Suspense
+            key={`${activeTab}-${searchParams.toString()}`}
+            fallback={<AdminTableLoading />}
+          >
             {children}
           </Suspense>
         </ErrorBoundary>

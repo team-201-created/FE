@@ -1,11 +1,11 @@
 'use client'
 
 import { Suspense } from 'react'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import {
   AdminListCard,
   AdminPageHeader,
-  AdminFilterBar,
+  AdminSearchBar,
   AdminTable,
   AdminTabGroup,
   AdminTableError,
@@ -17,6 +17,7 @@ import { ProductPostModal } from './ProductPostModal'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useModalStore } from '@/store/useModalStore'
 import { fetchAdminProductList } from '../_api/adminFetchProductList'
+import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 
 const PRODUCT_TABS: { id: ProductTabId; label: string }[] = [
   { id: 'ELEMENT', label: '단품' },
@@ -32,15 +33,17 @@ export default function ProductAdminContent({
   activeTab,
   children,
 }: ProductAdminContentProps) {
-  const router = useRouter()
   const { openModal } = useModalStore()
+  const searchParams = useSearchParams()
+
+  const { searchTerm, setSearchTerm, onFilterChange, onTabChange } =
+    useAdminTable({
+      searchDelay: 300,
+      resetParamsOnTabChange: ['scent_category_id'],
+    })
 
   const activeTabLabel =
     PRODUCT_TABS.find((t) => t.id === activeTab)?.label || '단품'
-
-  const handleTabChange = (tabId: string) => {
-    router.replace(`/admin/product?tab=${tabId}`, { scroll: false })
-  }
 
   const handleOpenRegisterModal = () => {
     const elementPromise =
@@ -66,20 +69,26 @@ export default function ProductAdminContent({
         onButtonClick={handleOpenRegisterModal}
       />
 
-      <AdminFilterBar
+      <AdminSearchBar
+        searchValue={searchTerm}
         searchPlaceholder="상품명 검색"
         filterOptions={[{ label: '전체', value: 'all' }]}
+        onSearchChange={setSearchTerm}
+        onFilterChange={(val) => onFilterChange('scent_category_id', val)}
       />
 
       <AdminTabGroup
         tabs={PRODUCT_TABS}
         activeTab={activeTab}
-        onChange={handleTabChange}
+        onChange={onTabChange}
       />
 
       <AdminTable headers={PRODUCT_TABLE_HEADERS}>
         <ErrorBoundary fallback={<AdminTableError />}>
-          <Suspense key={activeTab} fallback={<AdminTableLoading />}>
+          <Suspense
+            key={`${activeTab}-${searchParams.toString()}`}
+            fallback={<AdminTableLoading />}
+          >
             {children}
           </Suspense>
         </ErrorBoundary>
