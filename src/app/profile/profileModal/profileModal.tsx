@@ -1,5 +1,4 @@
 'use client'
-import Modal from '@/components/common/Modal'
 import ManageProfileIcon from '@/assets/icons/manageProfile.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 
@@ -17,7 +16,7 @@ export default function ProfileModal({
   onWithdrawClick,
 }: ProfileModalProps) {
   return (
-    <Modal rounded="sm" size="md" isOpen={isOpen} onClose={onClose}>
+    <>
       <div className="flex items-center border-b border-[#f3f4f6] p-4">
         <ManageProfileIcon className="bg-black-primary h-11 w-11 rounded-[14px] p-2.5 text-white" />
         <div className="ml-4">
@@ -55,6 +54,6 @@ export default function ProfileModal({
           </div>
         </button>
       </div>
-    </Modal>
+    </>
   )
 }
