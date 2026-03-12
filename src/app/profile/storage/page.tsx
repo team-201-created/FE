@@ -1,6 +1,7 @@
 'use client'
 
 import StorageCard from '@/components/storage/StorageCard'
+import type { StorageApiResponse } from './_types'
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/lib/api'
 import HeartIcon from '@/assets/icons/heart.svg'
@@ -29,18 +30,23 @@ export default function ProfileStoragePage() {
       setLoading(true)
       setError(null)
       try {
-        const res = await apiFetch<{ data: any[] }>('/api/v1/storage')
+        const res = await apiFetch<StorageApiResponse>('/api/v1/storage')
+        if (!res.success || !res.data) {
+          setError('데이터를 불러오지 못했습니다')
+          setStorageData([])
+          setTabCounts({ preference: 0, wellness: 0, ai: 0 })
+          return
+        }
         setStorageData(res.data)
         setTabCounts({
           preference: res.data.filter(
-            (item: any) => item.input_data_type === 'PREFERENCE'
+            (item) => item.input_data_type === 'PREFERENCE'
           ).length,
           wellness: res.data.filter(
-            (item: any) => item.input_data_type === 'WELLNESS'
+            (item) => item.input_data_type === 'WELLNESS'
           ).length,
-          ai: res.data.filter(
-            (item: any) => item.input_data_type === 'AI_VISUAL'
-          ).length,
+          ai: res.data.filter((item) => item.input_data_type === 'AI_VISUAL')
+            .length,
         })
       } catch (e: any) {
         setError(e?.message || '데이터를 불러오지 못했습니다')
