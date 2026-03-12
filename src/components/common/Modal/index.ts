@@ -1,4 +1,5 @@
 export * from './AlertModal'
+export * from './ModalOverlay'
 export * from './ModalPortal'
 export * from './useModal'
 export * from './GlobalModal'

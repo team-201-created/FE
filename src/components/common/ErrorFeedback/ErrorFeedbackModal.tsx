@@ -1,6 +1,6 @@
 'use client'
 
-import { ModalPortal } from '../Modal/ModalPortal'
+import { ModalOverlay, ModalPortal } from '../Modal'
 import { AlertModal } from '../Modal/AlertModal'
 
 type ErrorFeedbackModalProps = {
@@ -22,20 +22,19 @@ export function ErrorFeedbackModal({
 
   return (
     <ModalPortal>
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4"
-        onClick={(e) => e.target === e.currentTarget && onClose()}
-      >
-        <AlertModal
-          isOpen
-          onClose={onClose}
-          type="danger"
-          title="오류 발생"
-          content={message}
-          confirmText="확인"
-          onConfirm={onClose}
-        />
-      </div>
+      <ModalOverlay onClose={onClose}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <AlertModal
+            isOpen
+            onClose={onClose}
+            type="danger"
+            title="오류 발생"
+            content={message}
+            confirmText="확인"
+            onConfirm={onClose}
+          />
+        </div>
+      </ModalOverlay>
     </ModalPortal>
   )
 }
