@@ -16,7 +16,7 @@ export default async function ProductAdminPage({
 }: ProductAdminPageProps) {
   const params = await searchParams
 
-  const typeParam = params?.type || 'ELEMENT'
+  const typeParam = params?.tab || 'ELEMENT'
   const activeTab: ProductTabId =
     typeof typeParam === 'string' && typeParam === 'BLEND' ? 'BLEND' : 'ELEMENT'
 
