@@ -40,7 +40,7 @@ export const GlobalModal = () => {
                     {...modal.alertConfig}
                   />
                 ) : modal.content ? (
-                  <>{modal.content}</>
+                  modal.content
                 ) : null}
               </div>
             )

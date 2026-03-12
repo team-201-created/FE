@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, Suspense, useMemo } from 'react'
 import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
@@ -12,7 +14,7 @@ interface RecommendPostModalProps {
   activeTab: RecommendTabId
 }
 
-// 제품 추천맵 폼 로딩 폴백 임시
+// 제품 추천맵 폼 로딩
 const ProductMapsFormFallback = () => (
   <div className="flex w-full items-center justify-center py-20 font-bold text-gray-400">
     후보군 불러오는 중...
@@ -50,7 +52,7 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     if (activeTab !== 'product-maps') return null
     return RECOMMEND_API.productPools({
       size: 20,
-      adoption_status: 'ADOPTED',
+      publish_status: 'ADOPTED',
     })
   }, [activeTab])
 
