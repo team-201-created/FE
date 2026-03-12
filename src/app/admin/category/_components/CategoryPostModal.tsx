@@ -57,55 +57,52 @@ export function CategoryPostModal({
   return (
     <Modal isOpen onClose={closeModal} size="md">
       <Modal.Header>{isElement ? '단품' : '조합'} 카테고리 등록</Modal.Header>
-      <Modal.Content className="flex flex-col gap-3 text-sm">
-        <label className={LABEL_CLASS}>
-          {isElement ? '향조' : '테마'} 명 (kr)
-          <Input
-            value={nameKr}
-            placeholder="한글로 입력하세요"
-            onChange={(e) => {
-              const value = e.target.value.replace(
-                /[^ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]/g,
-                ''
-              )
-              setNameKr(value)
-            }}
-            required
-          />
-        </label>
+      <form onSubmit={handleSubmit}>
+        <Modal.Content className="flex flex-col gap-3 text-sm">
+          <label className={LABEL_CLASS}>
+            {isElement ? '향조' : '테마'} 명 (kr)
+            <Input
+              value={nameKr}
+              placeholder="한글로 입력하세요"
+              onChange={(e) => {
+                const value = e.target.value.replace(
+                  /[^ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]/g,
+                  ''
+                )
+                setNameKr(value)
+              }}
+              required
+            />
+          </label>
 
-        <label className={LABEL_CLASS}>
-          {isElement ? '향조' : '테마'} 명 (en)
-          <Input
-            value={nameEn}
-            placeholder="영문으로 입력하세요"
-            onChange={(e) => {
-              const value = e.target.value.replace(/[^a-zA-Z\s]/g, '')
-              setNameEn(value)
-            }}
-            required
-          />
-        </label>
-      </Modal.Content>
-      <Modal.Footer className="flex justify-end gap-2">
-        <Button
-          type="button"
-          color="none"
-          onClick={closeModal}
-          disabled={isLoading}
-          className="border-gray-light border"
-        >
-          취소
-        </Button>
-        <Button
-          type="submit"
-          color="primary"
-          disabled={isLoading}
-          onClick={handleSubmit}
-        >
-          {isLoading ? '등록 중...' : '등록'}
-        </Button>
-      </Modal.Footer>
+          <label className={LABEL_CLASS}>
+            {isElement ? '향조' : '테마'} 명 (en)
+            <Input
+              value={nameEn}
+              placeholder="영문으로 입력하세요"
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^a-zA-Z\s]/g, '')
+                setNameEn(value)
+              }}
+              required
+            />
+          </label>
+        </Modal.Content>
+        <Modal.Footer className="flex justify-end gap-2">
+          <Button
+            type="button"
+            color="none"
+            onClick={closeModal}
+            disabled={isLoading}
+            className="border-gray-light border"
+          >
+            취소
+          </Button>
+          <Button type="submit" color="primary" disabled={isLoading}>
+            {isLoading ? '등록 중...' : '등록'}
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   )
 }
