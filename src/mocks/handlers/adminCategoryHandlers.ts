@@ -25,7 +25,7 @@ export const adminCategoryHandlers = [
   }),
 
   // 카테고리 등록
-  http.post('*/api/v1/scents/categories', async ({ request }) => {
+  http.post('*/api/v1/admin/scents/categories', async ({ request }) => {
     const payload = (await request.json()) as any
     return HttpResponse.json({
       success: true,

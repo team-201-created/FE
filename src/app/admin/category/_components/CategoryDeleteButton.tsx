@@ -3,7 +3,7 @@
 import React from 'react'
 import Button from '@/components/common/Button'
 import TrashIcon from '@/assets/icons/trash.svg'
-import { deleteCategoryAction } from '../_lib/postCategoryAction'
+import { deleteCategoryAction } from '../_lib/categoryAction'
 import { useModalStore } from '@/store/useModalStore'
 
 interface CategoryDeleteButtonProps {

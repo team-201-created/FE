@@ -11,5 +11,5 @@ export type RecommendListItem =
 
 export interface RecommendTabProps<T extends RecommendListItem> {
   data: T[]
-  onTogglePublish: (id: number) => void
+  onTogglePublish?: (id: number) => void
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminCategory } from '../_api/adminCreateCategory'
+import { deleteAdminCategory } from '../_api/adminDeleteCategory'
 import { CreateCategoryRequest } from '../_types/AdminCategoryType'
 
 /**
@@ -10,10 +11,20 @@ import { CreateCategoryRequest } from '../_types/AdminCategoryType'
 export async function postCategoryAction(payload: CreateCategoryRequest) {
   try {
     await createAdminCategory(payload)
-
-    // 카테고리 관리 페이지의 서버 데이터를 최신화
     revalidatePath('/admin/category')
+    return { success: true }
+  } catch (error) {
+    return { success: false, error }
+  }
+}
 
+/**
+ * 카테고리 삭제 Server Action
+ */
+export async function deleteCategoryAction(categoryId: number) {
+  try {
+    await deleteAdminCategory(categoryId)
+    revalidatePath('/admin/category')
     return { success: true }
   } catch (error) {
     return { success: false, error }

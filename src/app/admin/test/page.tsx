@@ -1,75 +1,29 @@
-'use client'
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
+import TestAdminContent from './_page/TestAdminContent'
+import { TestTableServer } from './_components/TestTableServer'
+import { AdminTableLoading } from '../_components'
 
-import {
-  AdminFilterBar,
-  AdminListCard,
-  AdminPageHeader,
-  AdminTable,
-  AdminTableRow,
-  AdminTableCell,
-  AdminFirstCell,
-  AdminDateCell,
-  AdminStatusCell,
-  AdminTypeCell,
-} from '@/app/admin/_components'
-import { TEST_TABLE_HEADERS } from '@/constants/admin'
-import { useRouter } from 'next/navigation'
-import { useTestList } from '@/app/admin/test/_hooks'
+export const dynamic = 'force-dynamic'
 
-import TrashIcon from '@/assets/icons/trash.svg'
-import Button from '@/components/common/Button'
-import { FILTER_OPTIONS } from '@/app/admin/test/_constants'
+export const metadata: Metadata = {
+  title: '어드민 테스트 관리',
+}
 
-export default function TestAdminPage() {
-  const router = useRouter()
-  const { tests, handleTogglePublish } = useTestList()
+interface TestAdminPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
-  const handleCreateTest = () => {
-    router.push('/admin/test/create')
-  }
+export default async function TestAdminPage({
+  searchParams,
+}: TestAdminPageProps) {
+  const params = await searchParams
 
   return (
-    <AdminListCard>
-      <AdminPageHeader
-        title="테스트 목록"
-        buttonText="테스트 등록"
-        onButtonClick={handleCreateTest}
-      />
-
-      <AdminFilterBar
-        searchPlaceholder="테스트명 검색"
-        filterOptions={FILTER_OPTIONS}
-      />
-
-      <AdminTable headers={TEST_TABLE_HEADERS}>
-        {tests.map((row) => (
-          <AdminTableRow key={row.id}>
-            <AdminFirstCell>{row.name}</AdminFirstCell>
-
-            <AdminTypeCell slot={2} type={row.profiling_type} />
-
-            <AdminStatusCell
-              slot={3}
-              status={row.publish_status}
-              onClick={() => handleTogglePublish(row.id)}
-            />
-
-            <AdminTableCell slot={4} className="text-black-secondary">
-              -
-            </AdminTableCell>
-
-            <AdminDateCell slot={5} date={row.created_at} />
-
-            <AdminDateCell slot={6} date={row.updated_at} />
-
-            <AdminTableCell slot={7}>
-              <Button color="none" size="w32h32" rounded="sm">
-                <TrashIcon width={16} height={16} />
-              </Button>
-            </AdminTableCell>
-          </AdminTableRow>
-        ))}
-      </AdminTable>
-    </AdminListCard>
+    <Suspense fallback={<AdminTableLoading />}>
+      <TestAdminContent>
+        <TestTableServer searchParams={params} />
+      </TestAdminContent>
+    </Suspense>
   )
 }

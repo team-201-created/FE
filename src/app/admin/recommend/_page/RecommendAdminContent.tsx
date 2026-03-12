@@ -1,72 +1,59 @@
 'use client'
 
-import { use, Suspense } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
   AdminListCard,
   AdminPageHeader,
   AdminTable,
-  AdminFilterBar,
+  AdminSearchBar,
   AdminTabGroup,
   AdminTableError,
   AdminTableLoading,
-  AdminTableEmpty,
 } from '@/app/admin/_components'
 import { RECOMMEND_TAB_HEADERS } from '@/constants/admin'
-import {
-  RecommendTabId,
-  RecommendTabProps,
-  RECOMMEND_TABS,
-  RecommendListItem,
-  RecommendApiResponse,
-} from '@/app/admin/recommend/_types'
-import {
-  BlendMapsTab,
-  ProductPoolsTab,
-  ProductMapsTab,
-  RecommendPostModal,
-} from '@/app/admin/recommend/_page'
+import { RecommendTabId, RECOMMEND_TABS } from '@/app/admin/recommend/_types'
+import { RecommendPostModal } from '@/app/admin/recommend/_page'
 
-import { updateRecommendList } from '@/app/admin/recommend/_actions/recommendActions'
 import { useModalStore } from '@/store/useModalStore'
 import { ErrorBoundary } from 'react-error-boundary'
-
-const TAB_COMPONENTS: Record<
-  RecommendTabId,
-  React.ComponentType<RecommendTabProps<any>>
-> = {
-  'blend-maps': BlendMapsTab,
-  'product-pools': ProductPoolsTab,
-  'product-maps': ProductMapsTab,
-}
+import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 
 interface RecommendAdminContentProps {
-  recommendDataPromise: Promise<RecommendApiResponse<RecommendListItem>>
   activeTab: RecommendTabId
+  children: React.ReactNode
 }
 
 export default function RecommendAdminContent({
-  recommendDataPromise,
   activeTab,
+  children,
 }: RecommendAdminContentProps) {
-  const router = useRouter()
+  const { openModal } = useModalStore()
+  const searchParams = useSearchParams()
+
+  const { searchTerm, setSearchTerm, onFilterChange, onTabChange } =
+    useAdminTable({
+      searchDelay: 500,
+      resetParamsOnTabChange: ['status', 'input_type'],
+    })
 
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
 
-  const handleTabChange = (tabId: string) => {
-    router.push(`/admin/recommend?tab=${tabId}`, { scroll: false })
+  const getFilterOptions = () => {
+    if (activeTab === 'product-pools') {
+      return [
+        { label: '전체', value: 'all' },
+        { label: '채택', value: 'ADOPTED' },
+        { label: '미채택', value: 'UNADOPTED' },
+      ]
+    }
+    return [
+      { label: '전체', value: 'all' },
+      { label: '발행', value: 'PUBLISHED' },
+      { label: '미발행', value: 'UNPUBLISHED' },
+    ]
   }
-
-  const handleTogglePublish = async (dataId: number) => {
-    if (!dataId) return
-
-    // TODO: 실제 상태 변경 API 호출 (Patch 등)
-    await updateRecommendList({ tabId: activeTab })
-  }
-
-  const { openModal } = useModalStore()
-
   const handleOpenPostModal = () => {
     openModal(<RecommendPostModal activeTab={activeTab} />)
   }
@@ -78,48 +65,28 @@ export default function RecommendAdminContent({
         buttonText={'등록'}
         onButtonClick={handleOpenPostModal}
       />
-      <AdminFilterBar
-        searchPlaceholder="검색"
-        filterOptions={[{ label: '전체', value: 'all' }]}
+      <AdminSearchBar
+        searchValue={searchTerm}
+        searchPlaceholder={`${activeTabLabel} 검색`}
+        filterOptions={getFilterOptions()}
+        onSearchChange={setSearchTerm}
+        onFilterChange={(val) => onFilterChange('status', val)}
       />
       <AdminTabGroup
         tabs={RECOMMEND_TABS}
         activeTab={activeTab}
-        onChange={handleTabChange}
+        onChange={onTabChange}
       />
       <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
         <ErrorBoundary fallback={<AdminTableError />}>
-          <Suspense key={activeTab} fallback={<AdminTableLoading />}>
-            <TableBodyWrapper
-              recommendDataPromise={recommendDataPromise}
-              activeTab={activeTab}
-              onTogglePublish={handleTogglePublish}
-            />
+          <Suspense
+            key={`${activeTab}-${searchParams.toString()}`}
+            fallback={<AdminTableLoading />}
+          >
+            {children}
           </Suspense>
         </ErrorBoundary>
       </AdminTable>
     </AdminListCard>
-  )
-}
-
-function TableBodyWrapper({
-  recommendDataPromise,
-  activeTab,
-  onTogglePublish,
-}: {
-  recommendDataPromise: Promise<RecommendApiResponse<RecommendListItem>>
-  activeTab: RecommendTabId
-  onTogglePublish: (id: number) => void
-}) {
-  const response = use(recommendDataPromise)
-  const recommendData = response?.success ? response.data.content : []
-  const ActiveTabContent = TAB_COMPONENTS[activeTab]
-
-  if (!recommendData.length) {
-    return <AdminTableEmpty />
-  }
-
-  return (
-    <ActiveTabContent data={recommendData} onTogglePublish={onTogglePublish} />
   )
 }

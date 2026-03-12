@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw'
 import { mockAdminTests } from '@/mocks/data/adminTests'
 
 export const adminTestsHandler = http.get(
-  '/api/v1/admin/tests',
+  '*/api/v1/admin/profilings/forms',
   ({ request }) => {
     const url = new URL(request.url)
     const page = Number(url.searchParams.get('page') ?? 1)

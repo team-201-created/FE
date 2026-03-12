@@ -1,9 +1,24 @@
-import { RECOMMEND_API } from './_api'
-import { RecommendTabId } from './_types'
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import RecommendAdminContent from './_page/RecommendAdminContent'
+import { RecommendTableServer } from './_components/RecommendTableServer'
+import { RecommendTabId } from './_types'
+import { AdminTableLoading } from '../_components'
+
+export const metadata: Metadata = {
+  title: '어드민 추천 관리',
+}
 
 interface PageProps {
-  searchParams: Promise<{ tab?: string }>
+  searchParams: Promise<{
+    tab?: string
+    page?: string
+    size?: string
+    q?: string
+    publish_status?: string
+    input_type?: string
+    sort?: string
+  }>
 }
 
 const VALID_TABS: RecommendTabId[] = [
@@ -21,12 +36,11 @@ export default async function RecommendAdminPage({ searchParams }: PageProps) {
     ? (rawTab as RecommendTabId)
     : 'blend-maps'
 
-  const recommendDataPromise = RECOMMEND_API.get(activeTab)
-
   return (
-    <RecommendAdminContent
-      recommendDataPromise={recommendDataPromise}
-      activeTab={activeTab}
-    />
+    <Suspense fallback={<AdminTableLoading />}>
+      <RecommendAdminContent activeTab={activeTab}>
+        <RecommendTableServer activeTab={activeTab} searchParams={params} />
+      </RecommendAdminContent>
+    </Suspense>
   )
 }

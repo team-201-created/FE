@@ -1,8 +1,21 @@
 'use server'
 
-import { updateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
+import { deleteAdminRecommend } from '../_api/adminDeleteRecommend'
+import { RecommendTabId } from '../_types'
 
-// 추천 시스템 관리자 페이지의 캐시를 강제로 무효화하는 액션
-export async function updateRecommendList({ tabId }: { tabId: string }) {
-  updateTag(tabId)
+/**
+ * 추천 관련 데이터 삭제 Server Action
+ */
+export async function deleteRecommendAction(tabId: RecommendTabId, id: number) {
+  try {
+    await deleteAdminRecommend(tabId, id)
+
+    // 추천 관리 페이지 데이터 갱신
+    revalidatePath('/admin/recommend')
+
+    return { success: true }
+  } catch (error) {
+    return { success: false, error }
+  }
 }
