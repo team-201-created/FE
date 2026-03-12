@@ -26,6 +26,7 @@ import {
   type ProfilingType,
 } from './constants'
 import type { ProfilingForm } from '@/app/find-my-scent/_types'
+import { storageHandlers } from './handlers/storageHandlers'
 
 /** profiling_type → 목데이터 폼 매핑 (PROFILING_TYPES 추가 시 맵에도 필수 추가) */
 const PROFILING_FORM_MAP: Record<ProfilingType, ProfilingForm> = {
@@ -465,4 +466,5 @@ export const handlers = [
   adminProductPoolsHandlers,
   adminProductMapsHandlers,
   ...adminCategoryHandlers,
+  ...storageHandlers,
 ]
