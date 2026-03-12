@@ -6,8 +6,11 @@ import type { QuizQuestion, TestType } from '../_types'
 import { useQuizStep } from '../_hooks'
 import { buildSubmitPayload, submitProfiling } from '../_api/profilingClient'
 import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
-import { AlertModal } from '@/components/common/Modal/AlertModal'
-import { ModalPortal } from '@/components/common/Modal/ModalPortal'
+import {
+  AlertModal,
+  ModalOverlay,
+  ModalPortal,
+} from '@/components/common/Modal'
 import { TestQuizHeader } from './TestQuizHeader'
 import { TestProgressBar } from './TestProgressBar'
 import { TestQuestionCard } from './TestQuestionCard'
@@ -135,10 +138,7 @@ export function QuizView({
 
       {showMinSelectionWarning && (
         <ModalPortal>
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4"
-            onClick={closeMinSelectionWarning}
-          >
+          <ModalOverlay onClose={closeMinSelectionWarning}>
             <div onClick={(e) => e.stopPropagation()}>
               <AlertModal
                 isOpen
@@ -149,7 +149,7 @@ export function QuizView({
                 showButtons={false}
               />
             </div>
-          </div>
+          </ModalOverlay>
         </ModalPortal>
       )}
     </>

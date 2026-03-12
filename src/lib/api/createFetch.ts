@@ -1,5 +1,17 @@
 import { FetchArgs, FetchConfig, FetchInstance, FetchOptions } from './types'
 
+/** null/undefined 제외, 나머지는 문자열로 변환해 쿼리 파라미터로 사용 */
+function toQueryString(
+  params: Record<string, string | number | undefined | null>
+): string {
+  const record: Record<string, string> = {}
+  for (const [k, v] of Object.entries(params)) {
+    if (v != null) record[k] = String(v)
+  }
+  if (Object.keys(record).length === 0) return ''
+  return `?${new URLSearchParams(record)}`
+}
+
 export const createFetch = ({
   baseUrl,
   headers: defaultHeaders,
@@ -11,9 +23,7 @@ export const createFetch = ({
   ): Promise<T> => {
     const { params, ...restOptions } = options
 
-    const query = params
-      ? `?${new URLSearchParams(params as Record<string, string>)}`
-      : ''
+    const query = params ? toQueryString(params) : ''
     let args: FetchArgs = {
       url: `${baseUrl}${url}${query}`,
       options: {

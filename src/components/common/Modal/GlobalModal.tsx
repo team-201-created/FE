@@ -3,8 +3,10 @@
 import React from 'react'
 import { useModalStore } from '@/store/useModalStore'
 import { AlertModal } from './AlertModal'
+import { ModalOverlay } from './ModalOverlay'
 import { ModalPortal } from './ModalPortal'
 
+/** openModal로 전달한 콘텐츠는 ModalPortal + ModalOverlay로 자동 감싸져 렌더됨 */
 export const GlobalModal = () => {
   const { modals, closeModal } = useModalStore()
 
@@ -12,41 +14,34 @@ export const GlobalModal = () => {
 
   return (
     <ModalPortal>
-      <div className="fixed inset-0 z-50">
-        {' '}
-        {/* 헤더가 z-50이라 default 50으로 설정 */}
-        <div className="relative flex h-full items-center justify-center">
-          {modals.map((modal, index) => {
-            const baseZIndex = 51 + index
-            return (
-              <div
-                key={index}
-                className={`absolute inset-0 flex items-center justify-center px-4 ${
-                  index === 0
-                    ? 'bg-black/40 backdrop-blur-[1px]'
-                    : 'bg-black/20'
-                }`}
-                style={{ zIndex: baseZIndex }}
-                onMouseDown={(e) => {
-                  if (e.target === e.currentTarget) {
-                    closeModal()
-                  }
-                }}
-              >
-                {modal.alertConfig ? (
+      {modals.map((modal, index) => {
+        const zIndex = 100 + index
+        const handleOverlayClose = () => {
+          modal.onClose?.()
+          closeModal()
+        }
+        return (
+          <div
+            key={index}
+            className="fixed inset-0 flex items-center justify-center"
+            style={{ zIndex }}
+          >
+            <ModalOverlay onClose={handleOverlayClose}>
+              {modal.alertConfig ? (
+                <div onClick={(e) => e.stopPropagation()}>
                   <AlertModal
                     isOpen
                     onClose={closeModal}
                     {...modal.alertConfig}
                   />
-                ) : modal.content ? (
-                  modal.content
-                ) : null}
-              </div>
-            )
-          })}
-        </div>
-      </div>
+                </div>
+              ) : modal.content ? (
+                <div onClick={(e) => e.stopPropagation()}>{modal.content}</div>
+              ) : null}
+            </ModalOverlay>
+          </div>
+        )
+      })}
     </ModalPortal>
   )
 }

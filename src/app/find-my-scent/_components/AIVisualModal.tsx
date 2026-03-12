@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { ModalPortal } from '@/components/common/Modal/ModalPortal'
+import { ModalOverlay, ModalPortal } from '@/components/common/Modal'
 import { StepIndicator } from './StepIndicator'
 
 const ACCEPT_TYPES = 'image/jpeg,image/jpg,image/png,image/webp'
@@ -43,8 +43,6 @@ export type AIVisualModalProps = {
 }
 
 const styles = {
-  overlay:
-    'fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm',
   modal:
     'flex min-h-[550px] w-full max-w-[1000px] flex-col rounded-2xl bg-white shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] ring-1 ring-black/5',
   header:
@@ -214,14 +212,12 @@ export function AIVisualModal({
 
   return (
     <ModalPortal>
-      <div
-        className={styles.overlay}
-        onClick={handleClose}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="ai-visual-modal-title"
-      >
-        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <ModalOverlay onClose={handleClose} className="p-4 backdrop-blur-sm">
+        <div
+          className={styles.modal}
+          onClick={(e) => e.stopPropagation()}
+          aria-labelledby="ai-visual-modal-title"
+        >
           <header className={styles.header}>
             <button
               type="button"
@@ -413,7 +409,7 @@ export function AIVisualModal({
             )}
           </footer>
         </div>
-      </div>
+      </ModalOverlay>
     </ModalPortal>
   )
 }
