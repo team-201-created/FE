@@ -1,1 +1,42 @@
-export {}
+export interface AccordLabelStyle {
+  label: string
+  style: string
+}
+
+/**
+ * API 응답의 공통적인 구조를 정의합니다.
+ */
+export interface ApiResponse<T> {
+  success: boolean
+  data: T
+  error?: {
+    code: string
+    message: string
+  }
+}
+
+/**
+ * 사용자 정보 타입을 정의합니다.
+ */
+export interface User {
+  id: number // 또는 string, 백엔드 데이터 타입에 따라 조절
+  nickname: string
+  email?: string
+  profileImageUrl?: string
+}
+
+/**
+ * 소셜 로그인 콜백 API 응답의 data 타입을 정의합니다.
+ */
+export interface AuthTokens {
+  access_token: string
+  refresh_token: string
+  user: User
+}
+
+/**
+ * 소셜 로그인 URL 요청 API 응답의 data 타입을 정의합니다.
+ */
+export interface AuthorizeUrl {
+  authorize_url: string
+}

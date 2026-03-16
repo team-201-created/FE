@@ -1,10 +1,29 @@
+'use client'
+
 import Button from '@/components/common/Button'
 import KakaoIcon from '@/assets/icons/kakao.svg'
 import IdIcon from '@/assets/icons/loginId.svg'
 import PwIcon from '@/assets/icons/loginPassword.svg'
 import Input from '@/components/common/Input'
+import { getSocialAuthorizeUrl } from '@/lib/api/auth'
 
 export default function LoginPage() {
+  const handleKakaoLogin = async () => {
+    try {
+      const state = Math.random().toString(36).substring(2)
+
+      const data = await getSocialAuthorizeUrl('kakao', state)
+
+      if (data.success && data.data.authorize_url) {
+        window.location.href = data.data.authorize_url
+      } else {
+        throw new Error(data.error?.message || '카카오 로그인에 실패했습니다.')
+      }
+    } catch (error) {
+      alert('로그인 처리 중 오류가 발생했습니다.')
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-around">
       <div className="flex flex-col items-center">
@@ -48,7 +67,12 @@ export default function LoginPage() {
           </span>
           <div className="h-px flex-1 bg-gray-200" />
         </div>
-        <Button color="kakao" size="w382h48" className="font-medium">
+        <Button
+          color="kakao"
+          size="w382h48"
+          className="font-medium"
+          onClick={handleKakaoLogin}
+        >
           <KakaoIcon className="mr-2" />
           카카오로 시작하기
         </Button>

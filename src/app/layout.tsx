@@ -4,6 +4,7 @@ import { Header } from '@/components/common/Header'
 import { Footer } from '@/components/common/Footer'
 import { MockProvider } from '@/mocks/MockProvider'
 import { GlobalModal } from '@/components/common/Modal/GlobalModal'
+import ClientLayoutInitializer from '@/components/common/ClientLayoutInitializer'
 import './globals.css'
 
 const pretendard = localFont({
@@ -29,11 +30,13 @@ export default function RootLayout({
         className={`${pretendard.variable} flex min-h-screen flex-col antialiased`}
       >
         <MockProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <div id="modal-root" />
-          <GlobalModal />
+          <ClientLayoutInitializer>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <div id="modal-root" />
+            <GlobalModal />
+          </ClientLayoutInitializer>
         </MockProvider>
       </body>
     </html>

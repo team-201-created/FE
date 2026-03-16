@@ -209,7 +209,6 @@ export function Dropdown({
                 index={index}
                 variant={variant}
                 onClose={() => handleItemClick(item)}
-                onClick={() => handleItemClick(item)}
               />
             ))}
           </ul>
