@@ -1,8 +1,8 @@
 import React, { use } from 'react'
 import { AdminSelect } from '@/app/admin/_components'
 import { ProductMapsFormProps } from '@/app/admin/recommend/_types'
-import { PRODUCT_TYPE_LABELS } from '@/app/admin/test/_constants/testListLabels'
-import { formatDate } from '@/app/admin/test/_utils'
+import { PRODUCT_TYPE_LABELS } from '@/app/admin/_constants/labels'
+import { formatDate } from '@/app/admin/_utils'
 
 export const ProductMapsForm = ({
   value,

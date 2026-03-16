@@ -35,7 +35,7 @@ export function AdminPagination({
 }: AdminPaginationProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const [isPending, startTransition] = useTransition()
+  const [_isPending, startTransition] = useTransition()
   const searchParams = useSearchParams()
 
   const goTo = useCallback(
