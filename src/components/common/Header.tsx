@@ -12,6 +12,9 @@ import CloseIcon from '@/assets/icons/close.svg'
 import OpenIcon from '@/assets/icons/open.svg'
 import { useModalStore } from '@/store/useModalStore'
 import Modal from './Modal'
+import { postLogout } from '@/lib/api/auth'
+import { useAuthStore } from '@/store/useAuthStore'
+import { useState, useEffect } from 'react'
 
 const styles = {
   header:
@@ -28,7 +31,7 @@ const styles = {
   chevronWrap: 'ml-0.5 shrink-0',
 } as const
 export function Header() {
-  // useModalStore만 사용하도록 변경
+  const { isLoggedIn, user, logout: logoutFromStore } = useAuthStore()
   const router = useRouter()
 
   const { openModal, closeModal, closeAll } = useModalStore()
@@ -59,14 +62,92 @@ export function Header() {
       </Modal>
     )
   }
-  const logout = () => {
-    // TODO: 실제 로그아웃 로직 구현
-    router.push('/login')
+  const logout = async () => {
+    const accessToken = localStorage.getItem('accessToken')
+    const refreshToken = localStorage.getItem('refreshToken')
+
+    if (!accessToken || !refreshToken) {
+      alert('로그인 정보가 없습니다.')
+      logoutFromStore()
+      router.push('/login')
+      return
+    }
+
+    try {
+      await postLogout(accessToken, refreshToken)
+      alert('로그아웃되었습니다.')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('user')
+      logoutFromStore()
+      router.push('/login')
+    } catch (error: any) {
+      console.error('Logout Error:', error)
+      alert(error.message || '로그아웃 처리 중 오류가 발생했습니다.')
+    }
   }
 
   const handleProfileMenu = (action: string | undefined) => {
     if (action === 'openProfileModal') openProfileModal()
     if (action === 'logout') logout()
+  }
+
+  const renderRightMenu = () => {
+    // 개발 환경에서는 로그인 상태와 관계없이 로그인 링크와 프로필 메뉴를 모두 보여줌
+    if (process.env.NODE_ENV === 'development') {
+      return (
+        <>
+          <Link href="/login" className={styles.rightLink}>
+            로그인
+          </Link>
+          <Dropdown
+            trigger={
+              <Image
+                src="/profile.svg"
+                alt="프로필 메뉴"
+                width={36}
+                height={36}
+                className="size-9"
+                aria-hidden
+              />
+            }
+            items={headerNavLinks.profile}
+            variant="profile"
+            menuMinWidth="min-w-[200px]"
+            aria-label="프로필 메뉴"
+            onProfileAction={handleProfileMenu}
+          />
+        </>
+      )
+    }
+
+    if (isLoggedIn) {
+      return (
+        <Dropdown
+          trigger={
+            <Image
+              src="/profile.svg"
+              alt="프로필 메뉴"
+              width={36}
+              height={36}
+              className="size-9"
+              aria-hidden
+            />
+          }
+          items={headerNavLinks.profile}
+          variant="profile"
+          menuMinWidth="min-w-[200px]"
+          aria-label="프로필 메뉴"
+          onProfileAction={handleProfileMenu}
+        />
+      )
+    }
+
+    return (
+      <Link href="/login" className={styles.rightLink}>
+        로그인
+      </Link>
+    )
   }
 
   return (
@@ -137,28 +218,7 @@ export function Header() {
             </nav>
           </div>
 
-          <div className={styles.rightMenu}>
-            <Link href="/login" className={styles.rightLink}>
-              로그인
-            </Link>
-            <Dropdown
-              trigger={
-                <Image
-                  src="/profile.svg"
-                  alt=""
-                  width={36}
-                  height={36}
-                  className="size-9"
-                  aria-hidden
-                />
-              }
-              items={headerNavLinks.profile}
-              variant="profile"
-              menuMinWidth="min-w-[200px]"
-              aria-label="프로필 메뉴"
-              onProfileAction={handleProfileMenu}
-            />
-          </div>
+          <div className={styles.rightMenu}>{renderRightMenu()}</div>
         </div>
       </header>
       {/* useModalStore에서 모달 렌더링, Header에서는 직접 렌더링하지 않음 */}
