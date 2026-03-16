@@ -3,14 +3,14 @@ import type { Metadata } from 'next'
 import CategoryAdminContent from './_page/CategoryAdminContent'
 import type { CategoryTabId } from './_types/AdminCategoryType'
 import { CategoryTableServer } from './_components/CategoryTableServer'
-import { AdminTableLoading } from '../_components'
+import { notFound } from 'next/navigation'
 
 export const metadata: Metadata = {
-  title: '카테고리 관리',
+  title: '어드민 카테고리 관리',
 }
 
 interface CategoryAdminPageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
 export default async function CategoryAdminPage({
@@ -18,17 +18,19 @@ export default async function CategoryAdminPage({
 }: CategoryAdminPageProps) {
   const params = await searchParams
 
-  const tabParam = params?.tab || 'Element'
-  const activeTab: CategoryTabId =
-    typeof tabParam === 'string' && tabParam === 'Blend' ? 'Blend' : 'Element'
+  const tabParam = params?.tab
+  const isValidTab = !tabParam || tabParam === 'Element' || tabParam === 'Blend'
+
+  if (!isValidTab) {
+    notFound()
+  }
+
+  const activeTab: CategoryTabId = (tabParam as CategoryTabId) || 'Element'
 
   return (
-    <Suspense fallback={<AdminTableLoading />}>
-      <CategoryAdminContent activeTab={activeTab}>
-        <CategoryTableServer
-          activeTab={activeTab}
-          searchParams={params as any}
-        />
+    <Suspense fallback={null}>
+      <CategoryAdminContent activeTab={activeTab} searchParams={params}>
+        <CategoryTableServer activeTab={activeTab} searchParams={params} />
       </CategoryAdminContent>
     </Suspense>
   )

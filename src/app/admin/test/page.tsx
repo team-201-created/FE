@@ -2,7 +2,6 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import TestAdminContent from './_page/TestAdminContent'
 import { TestTableServer } from './_components/TestTableServer'
-import { AdminTableLoading } from '../_components'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 interface TestAdminPageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
 export default async function TestAdminPage({
@@ -20,8 +19,8 @@ export default async function TestAdminPage({
   const params = await searchParams
 
   return (
-    <Suspense fallback={<AdminTableLoading />}>
-      <TestAdminContent>
+    <Suspense fallback={null}>
+      <TestAdminContent searchParams={params}>
         <TestTableServer searchParams={params} />
       </TestAdminContent>
     </Suspense>

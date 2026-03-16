@@ -1,16 +1,16 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import ProductAdminContent from './_page/ProductAdminContent'
 import type { ProductTabId } from './_types/AdminProductType'
 import { ProductTableServer } from './_components/ProductTableServer'
-import { AdminTableLoading } from '../_components'
 
 export const metadata: Metadata = {
   title: '어드민 상품 관리',
 }
 
 interface ProductAdminPageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
 export default async function ProductAdminPage({
@@ -18,13 +18,18 @@ export default async function ProductAdminPage({
 }: ProductAdminPageProps) {
   const params = await searchParams
 
-  const typeParam = params?.tab || 'ELEMENT'
-  const activeTab: ProductTabId =
-    typeof typeParam === 'string' && typeParam === 'BLEND' ? 'BLEND' : 'ELEMENT'
+  const tabParam = params?.tab
+  const isValidTab = !tabParam || tabParam === 'ELEMENT' || tabParam === 'BLEND'
+
+  if (!isValidTab) {
+    notFound()
+  }
+
+  const activeTab: ProductTabId = (tabParam as ProductTabId) || 'ELEMENT'
 
   return (
-    <Suspense fallback={<AdminTableLoading />}>
-      <ProductAdminContent activeTab={activeTab}>
+    <Suspense fallback={null}>
+      <ProductAdminContent activeTab={activeTab} searchParams={params}>
         <ProductTableServer activeTab={activeTab} searchParams={params} />
       </ProductAdminContent>
     </Suspense>
