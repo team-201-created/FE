@@ -32,15 +32,32 @@ export async function ProductTableServer({
   searchParams,
 }: ProductTableServerProps) {
   const currentPage = Math.max(1, Number(searchParams.page) || 1)
+  const pageSize = 10
 
+  // 모든 데이터를 가져옴 (핸들러를 건드리지 않기 위해 임의로 크게 100 요청)
   const response = await fetchAdminProductList(activeTab, {
-    q: searchParams.q,
-    page: currentPage,
-    size: 10,
+    size: 100,
   })
 
-  const items = response?.data?.results || []
-  const totalPages = response?.data?.total_pages ?? 1
+  const productItems = (response?.data?.results || []) as (
+    | AdminElementProduct
+    | AdminBlendProduct
+  )[]
+
+  // 검색어 필터링 (q)
+  let filtered = productItems.filter((item) => {
+    if (!searchParams.q) return true
+    const q = searchParams.q.toLowerCase()
+    return item.name.toLowerCase().includes(q)
+  })
+
+  filtered = [...filtered].sort((a, b) => a.id - b.id)
+
+  // 페이지네이션 계산
+  const totalElements = filtered.length
+  const totalPages = Math.ceil(totalElements / pageSize) || 1
+  const startIndex = (currentPage - 1) * pageSize
+  const items = filtered.slice(startIndex, startIndex + pageSize)
 
   if (!items.length) {
     return <AdminTableEmpty />

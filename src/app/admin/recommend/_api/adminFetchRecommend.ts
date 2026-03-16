@@ -9,13 +9,15 @@ import { authFetch } from '@/lib/api'
 export type BlendMapsFetchOptions = {
   input_type?: string
   publish_status?: string
+  q?: string
   sort?: string
   page?: number
   size?: number
 }
 
 export type ProductPoolsFetchOptions = {
-  publish_status?: string
+  adoption_status?: string
+  q?: string
   sort?: string
   page?: number
   size?: number
@@ -23,6 +25,7 @@ export type ProductPoolsFetchOptions = {
 
 export type ProductMapsFetchOptions = {
   publish_status?: string
+  q?: string
   sort?: string
   page?: number
   size?: number

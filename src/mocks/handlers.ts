@@ -3,7 +3,7 @@ import { mockElementsResults } from './data/singles'
 import { mockBlendsResults } from './data/combo'
 import { mockElementDetails } from './data/singlesDetails'
 import { mockBlendDetails } from './data/comboDetails'
-import { adminTestsHandler } from './handlers/adminTestHandlers'
+import { adminTestHandlers } from './handlers/adminTestHandlers'
 import {
   adminBlendMapsHandlers,
   adminProductPoolsHandlers,
@@ -461,10 +461,10 @@ export const handlers = [
   presignedUrlHandler,
   mockUploadHandler,
   imagesAnalyzeHandler,
-  adminTestsHandler,
-  adminBlendMapsHandlers,
-  adminProductPoolsHandlers,
-  adminProductMapsHandlers,
+  ...adminTestHandlers,
+  ...adminBlendMapsHandlers,
+  ...adminProductPoolsHandlers,
+  ...adminProductMapsHandlers,
   ...adminCategoryHandlers,
   ...storageHandlers,
 ]

@@ -26,10 +26,10 @@ export async function CategoryTableServer({
 
   // response.data.categories[0] 계층 구조
   const rootCategory = response?.data?.categories?.[0]
-  const allItems = rootCategory?.children || []
+  const rootCategoryItems = rootCategory?.children || []
 
-  // 로컬 필터링 (명칭 검색)
-  const items = allItems.filter((item) => {
+  // 클라이언트에서 필터링 만
+  const items = rootCategoryItems.filter((item) => {
     if (!searchParams.q) return true
     const q = searchParams.q.toLowerCase()
     return (
@@ -48,14 +48,12 @@ export async function CategoryTableServer({
         <AdminTableRow key={item.category_id}>
           <AdminFirstCell>
             <div className="flex items-center gap-2">
-              <div className="bg-black-primary rounded-[10px] p-2 text-white">
+              <div className="bg-black-primary rounded-lg p-2 text-white">
                 <AdminCategoryIcon width={20} height={20} />
               </div>
               <div className="flex flex-col">
-                <span className="text-black-primary text-[16px] font-bold">
-                  {item.name.kr}
-                </span>
-                <span className="text-[12px] font-normal text-gray-400">
+                <span className="text-md font-bold">{item.name.kr}</span>
+                <span className="text-xs font-normal text-gray-500">
                   {item.name.en}
                 </span>
               </div>
