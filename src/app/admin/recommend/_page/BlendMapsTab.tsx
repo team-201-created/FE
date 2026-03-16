@@ -5,10 +5,10 @@ import {
   AdminTableCell,
   AdminDateCell,
   AdminFirstCell,
-  AdminStatusCell,
   AdminTypeCell,
 } from '@/app/admin/_components'
 import { RecommendDeleteButton } from '../_components/RecommendDeleteButton'
+import { RecommendStatusCell } from '../_components/RecommendStatusCell'
 import {
   BlendMapsItemResponse,
   RecommendTabProps,
@@ -16,7 +16,6 @@ import {
 
 export const BlendMapsTab = ({
   data,
-  onTogglePublish,
 }: RecommendTabProps<BlendMapsItemResponse>) => {
   return (
     <>
@@ -26,12 +25,10 @@ export const BlendMapsTab = ({
 
           <AdminTypeCell slot={2} type={row.input_type} />
 
-          <AdminStatusCell
-            slot={3}
+          <RecommendStatusCell
+            id={row.id}
+            tabId="blend-maps"
             status={row.publish_status}
-            onClick={
-              onTogglePublish ? () => onTogglePublish(row.id) : undefined
-            }
           />
 
           <AdminTableCell slot={4} />

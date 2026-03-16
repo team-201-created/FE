@@ -10,30 +10,34 @@ import {
   AdminTableLoading,
 } from '@/app/admin/_components'
 import { TEST_TABLE_HEADERS } from '@/constants/admin'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { FILTER_OPTIONS } from '@/app/admin/test/_constants'
+import { cn } from '@/lib/cn'
+import { useRouter } from 'next/navigation'
+import { FILTER_OPTIONS } from '@/app/admin/_constants/labels'
 import { ErrorBoundary } from 'react-error-boundary'
-
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 
 interface TestAdminContentProps {
   children: React.ReactNode
+  searchParams: { [key: string]: string | undefined }
 }
 
-export default function TestAdminContent({ children }: TestAdminContentProps) {
+export default function TestAdminContent({
+  children,
+  searchParams,
+}: TestAdminContentProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
 
-  const { searchTerm, setSearchTerm, onFilterChange } = useAdminTable({
-    searchDelay: 300,
-  })
+  const { searchTerm, setSearchTerm, onFilterChange, isPending } =
+    useAdminTable({
+      searchDelay: 300,
+    })
 
   const handleCreateTest = () => {
     router.push('/admin/test/create')
   }
 
   return (
-    <AdminListCard>
+    <AdminListCard className={cn(isPending && 'pointer-events-none')}>
       <AdminPageHeader
         title="테스트 목록"
         buttonText="테스트 등록"
@@ -51,7 +55,7 @@ export default function TestAdminContent({ children }: TestAdminContentProps) {
       <AdminTable headers={TEST_TABLE_HEADERS}>
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense
-            key={`${searchParams.toString()}`}
+            key={JSON.stringify(searchParams)}
             fallback={<AdminTableLoading />}
           >
             {children}

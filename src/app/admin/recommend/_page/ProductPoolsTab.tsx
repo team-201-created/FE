@@ -5,10 +5,10 @@ import {
   AdminTableCell,
   AdminDateCell,
   AdminFirstCell,
-  AdminStatusCell,
   AdminTypeCell,
 } from '@/app/admin/_components'
 import { RecommendDeleteButton } from '../_components/RecommendDeleteButton'
+import { RecommendStatusCell } from '../_components/RecommendStatusCell'
 import {
   ProductPoolsItemResponse,
   RecommendTabProps,
@@ -16,7 +16,6 @@ import {
 
 export const ProductPoolsTab = ({
   data,
-  onTogglePublish,
 }: RecommendTabProps<ProductPoolsItemResponse>) => {
   return (
     <>
@@ -26,14 +25,12 @@ export const ProductPoolsTab = ({
 
           <AdminTypeCell slot={2} type={row.product_type} />
 
-          <AdminStatusCell
-            slot={3}
-            status={row.adoption_status === 'ADOPTED' ? 'ADOPTED' : 'UNADOPTED'}
+          <RecommendStatusCell
+            id={row.id}
+            tabId="product-pools"
+            status={row.adoption_status}
             trueLabel="채택"
             falseLabel="미채택"
-            onClick={
-              onTogglePublish ? () => onTogglePublish(row.id) : undefined
-            }
           />
 
           <AdminTableCell slot={4} />

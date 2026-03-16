@@ -5,7 +5,8 @@ import {
   useEffect,
   useRef,
   useCallback,
-  startTransition,
+  startTransition as reactStartTransition,
+  useTransition,
 } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useDebounce } from '@/hooks'
@@ -22,11 +23,6 @@ interface UpdateUrlOptions {
 
 /**
  * 어드민 테이블의 검색, 필터, 탭 전환 로직을 통합 관리하는 훅
- *
- * - searchTerm: 검색어 상태 (디바운스 후 URL의 `q` 파라미터와 동기화)
- * - setSearchTerm: 검색어를 직접 변경할 때 사용
- * - onFilterChange(key, value): 필터 파라미터를 URL에 반영
- * - onTabChange(tabId): 탭 전환 시 검색어/필터를 초기화하고 URL 업데이트
  */
 export function useAdminTable({
   searchDelay = 300,
@@ -35,6 +31,7 @@ export function useAdminTable({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
   // 최신 searchParams를 참조하도록 ref로 유지
   const paramsRef = useRef(searchParams)
@@ -49,12 +46,10 @@ export function useAdminTable({
   const currentUrlQ = searchParams.get('q') ?? ''
   useEffect(() => {
     if (currentUrlQ !== searchTerm) {
-      startTransition(() => {
+      reactStartTransition(() => {
         setSearchTerm(currentUrlQ)
       })
     }
-    // searchTerm을 의존성에서 제외: URL이 바뀔 때만 동기화, 입력 중엔 무시
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUrlQ])
 
   const updateUrl = useCallback(
@@ -75,11 +70,13 @@ export function useAdminTable({
       const qs = params.toString()
       const url = `${pathname}${qs ? `?${qs}` : ''}`
 
-      if (replace) {
-        router.replace(url, { scroll })
-      } else {
-        router.push(url, { scroll })
-      }
+      startTransition(() => {
+        if (replace) {
+          router.replace(url, { scroll })
+        } else {
+          router.push(url, { scroll })
+        }
+      })
     },
     [pathname, router]
   )
@@ -107,7 +104,7 @@ export function useAdminTable({
         resetParamsOnTabChange.map((key) => [key, null])
       )
       // 검색 input을 즉시 빈 문자열로 리셋
-      startTransition(() => {
+      reactStartTransition(() => {
         setSearchTerm('')
       })
       updateUrl(
@@ -124,5 +121,6 @@ export function useAdminTable({
     onFilterChange,
     onTabChange,
     searchParams,
+    isPending,
   }
 }

@@ -5,9 +5,9 @@ import {
   AdminTableCell,
   AdminDateCell,
   AdminFirstCell,
-  AdminStatusCell,
 } from '@/app/admin/_components'
 import { RecommendDeleteButton } from '../_components/RecommendDeleteButton'
+import { RecommendStatusCell } from '../_components/RecommendStatusCell'
 import {
   ProductMapsItemResponse,
   RecommendTabProps,
@@ -15,7 +15,6 @@ import {
 
 export const ProductMapsTab = ({
   data,
-  onTogglePublish,
 }: RecommendTabProps<ProductMapsItemResponse>) => {
   return (
     <>
@@ -23,12 +22,10 @@ export const ProductMapsTab = ({
         <AdminTableRow key={row.id}>
           <AdminFirstCell>{row.id}</AdminFirstCell>
 
-          <AdminStatusCell
-            slot={3}
+          <RecommendStatusCell
+            id={row.id}
+            tabId="product-maps"
             status={row.publish_status}
-            onClick={
-              onTogglePublish ? () => onTogglePublish(row.id) : undefined
-            }
           />
 
           <AdminTableCell slot={4} />

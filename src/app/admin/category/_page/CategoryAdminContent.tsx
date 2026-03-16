@@ -1,7 +1,6 @@
 'use client'
 
 import React, { ReactNode, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { AdminPageHeader } from '@/app/admin/_components/AdminPageHeader'
 import { AdminTabGroup } from '@/app/admin/_components/AdminTabGroup'
 import type { CategoryTabId } from '../_types/AdminCategoryType'
@@ -17,6 +16,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { CategoryPostModal } from '../_components/CategoryPostModal'
 import { useModalStore } from '@/store/useModalStore'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
+import { cn } from '@/lib/cn'
 
 export const CATEGORY_TABS: { id: CategoryTabId; label: string }[] = [
   { id: 'Element', label: '단품 관리' },
@@ -26,27 +26,27 @@ export const CATEGORY_TABS: { id: CategoryTabId; label: string }[] = [
 interface CategoryAdminContentProps {
   activeTab: CategoryTabId
   children: ReactNode
+  searchParams: { [key: string]: string | undefined }
 }
 
 export default function CategoryAdminContent({
   activeTab,
   children,
+  searchParams,
 }: CategoryAdminContentProps) {
   const { openModal } = useModalStore()
-  const searchParams = useSearchParams()
 
-  const { searchTerm, setSearchTerm, onFilterChange, onTabChange } =
-    useAdminTable({
-      searchDelay: 500,
-      resetParamsOnTabChange: ['category_id'],
-    })
+  const { searchTerm, setSearchTerm, onTabChange, isPending } = useAdminTable({
+    searchDelay: 500,
+    resetParamsOnTabChange: ['category_id'],
+  })
 
   const handleCreateSuccess = () => {
     // TODO: 모달 띄우기
   }
 
   return (
-    <AdminListCard>
+    <AdminListCard className={cn(isPending && 'pointer-events-none')}>
       <AdminPageHeader
         title="카테고리 관리"
         buttonText="카테고리 등록"
@@ -75,7 +75,7 @@ export default function CategoryAdminContent({
       <AdminTable headers={CATEGORY_TABLE_HEADERS}>
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense
-            key={`${activeTab}-${searchParams.toString()}`}
+            key={`${activeTab}-${JSON.stringify(searchParams)}`}
             fallback={<AdminTableLoading />}
           >
             {children}
