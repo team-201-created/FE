@@ -52,7 +52,7 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     if (activeTab !== 'product-maps') return null
     return RECOMMEND_API.productPools({
       size: 20,
-      publish_status: 'ADOPTED',
+      adoption_status: 'ADOPTED',
     })
   }, [activeTab])
 
