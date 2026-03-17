@@ -8,6 +8,7 @@ import {
   AdminTableEmpty,
 } from '@/app/admin/_components'
 import AdminCategoryIcon from '@/assets/icons/adminCategory.svg'
+import { processCategoryItems } from '@/app/admin/_utils/categoryUtils'
 
 import { CategoryDeleteButton } from './CategoryDeleteButton'
 
@@ -28,17 +29,13 @@ export async function CategoryTableServer({
   const rootCategory = response?.data?.categories?.[0]
   const rootCategoryItems = rootCategory?.children || []
 
-  // 클라이언트에서 필터링 만
-  const items = rootCategoryItems.filter((item) => {
-    if (!searchParams.q) return true
-    const q = searchParams.q.toLowerCase()
-    return (
-      item.name.kr.toLowerCase().includes(q) ||
-      item.name.en.toLowerCase().includes(q)
-    )
+  // 카테고리는 페이징이 현재 UI상 없어도 로직상 안전하게 처리
+  const { items } = processCategoryItems(rootCategoryItems, {
+    q: searchParams.q,
+    pageSize: 100, // 카테고리는 현재 전체 노출이므로
   })
 
-  if (!items.length) {
+  if (!items || items.length === 0) {
     return <AdminTableEmpty />
   }
 
