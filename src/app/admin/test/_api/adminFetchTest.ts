@@ -6,6 +6,7 @@ export type FormsFetchOptions = {
   size?: number
   publish_status?: string
   profiling_type?: string
+  q?: string
 }
 
 export async function fetchAdminTests(

@@ -2,7 +2,7 @@ import React from 'react'
 import { RECOMMEND_API } from '../_api'
 import { RecommendTabId } from '../_types'
 import { BlendMapsTab, ProductPoolsTab, ProductMapsTab } from '../_page'
-import { AdminTableEmpty } from '@/app/admin/_components'
+import { AdminTableEmpty, AdminPagination } from '@/app/admin/_components'
 
 const MAP_COMPONENTS: Record<RecommendTabId, React.ComponentType<any>> = {
   'blend-maps': BlendMapsTab,
@@ -26,32 +26,34 @@ export async function RecommendTableServer({
   activeTab,
   searchParams,
 }: RecommendTableServerProps) {
-  // Option 없이 전체 데이터를 가져옵니다 (Next.js 캐싱 활용)
-  const response = await RECOMMEND_API.get(activeTab)
+  const currentPage = Math.max(1, Number(searchParams.page) || 1)
+  const pageSize = 10
 
-  const allData = response?.success ? response.data.content : []
+  const options = {
+    page: currentPage,
+    size: pageSize,
+    q: searchParams.q,
+    ...(activeTab === 'product-pools'
+      ? { adoption_status: searchParams.status }
+      : { publish_status: searchParams.status }),
+    input_type: searchParams.input_type,
+  }
 
-  // 받아온 데이터를 기반으로 직접 필터링
-  const recommendData = allData.filter((item: any) => {
-    const q = searchParams.q?.toLowerCase()
-    const matchesSearch = q ? item.id.toString().includes(q) : true
+  const response = await RECOMMEND_API.get(activeTab, options as any)
 
-    // URL에서 온 'status' 파라미터를 사용함
-    const queryStatus = searchParams.status
+  const recommendData = response?.success ? response.data.content : []
+  const totalPages = response?.data?.total_pages ?? 1
 
-    // Product Pools는 adoption_status를 사용하고 나머지는 publish_status를 사용함
-    const itemStatus =
-      activeTab === 'product-pools' ? item.adoption_status : item.publish_status
-
-    const matchesStatus = queryStatus ? itemStatus === queryStatus : true
-
-    return matchesSearch && matchesStatus
-  })
   const ActiveTabContent = MAP_COMPONENTS[activeTab]
 
-  if (!recommendData.length) {
+  if (!recommendData.length && currentPage === 1) {
     return <AdminTableEmpty />
   }
 
-  return <ActiveTabContent data={recommendData} />
+  return (
+    <>
+      <ActiveTabContent data={recommendData} />
+      <AdminPagination currentPage={currentPage} totalPages={totalPages} />
+    </>
+  )
 }

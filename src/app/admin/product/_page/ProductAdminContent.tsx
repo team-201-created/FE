@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { cn } from '@/lib/cn'
 import {
   AdminListCard,
   AdminPageHeader,
@@ -27,16 +27,17 @@ const PRODUCT_TABS: { id: ProductTabId; label: string }[] = [
 type ProductAdminContentProps = {
   activeTab: ProductTabId
   children: React.ReactNode
+  searchParams: { [key: string]: string | undefined }
 }
 
 export default function ProductAdminContent({
   activeTab,
   children,
+  searchParams,
 }: ProductAdminContentProps) {
   const { openModal } = useModalStore()
-  const searchParams = useSearchParams()
 
-  const { searchTerm, setSearchTerm, onFilterChange, onTabChange } =
+  const { searchTerm, setSearchTerm, onFilterChange, onTabChange, isPending } =
     useAdminTable({
       searchDelay: 300,
       resetParamsOnTabChange: ['scent_category_id'],
@@ -62,7 +63,7 @@ export default function ProductAdminContent({
   }
 
   return (
-    <AdminListCard>
+    <AdminListCard className={cn(isPending && 'pointer-events-none')}>
       <AdminPageHeader
         title={`${activeTabLabel} 목록`}
         buttonText="상품 등록"

@@ -6,6 +6,7 @@ import {
   AdminDateCell,
   AdminTypeCell,
   AdminTableEmpty,
+  AdminPagination,
 } from '@/app/admin/_components'
 import { fetchAdminTests } from '../_api/adminFetchTest'
 import { TestDeleteButton } from './TestDeleteButton'
@@ -13,6 +14,8 @@ import { TestStatusCell } from './TestStatusCell'
 
 interface TestTableServerProps {
   searchParams: {
+    page?: string
+    size?: string
     q?: string
     profiling_type?: string
     publish_status?: string
@@ -20,25 +23,21 @@ interface TestTableServerProps {
 }
 
 export async function TestTableServer({ searchParams }: TestTableServerProps) {
-  const response = await fetchAdminTests()
+  const currentPage = Math.max(1, Number(searchParams.page) || 1)
+  const pageSize = 10
 
-  const allTests = response?.data?.content || []
-
-  // 받아온 데이터를 기반으로 직접 필터링 (필요 시)
-  const tests = allTests.filter((test) => {
-    const matchesSearch = searchParams.q
-      ? test.name.toLowerCase().includes(searchParams.q.toLowerCase())
-      : true
-    const matchesType = searchParams.profiling_type
-      ? test.profiling_type === searchParams.profiling_type
-      : true
-    const matchesStatus = searchParams.publish_status
-      ? test.publish_status === searchParams.publish_status
-      : true
-    return matchesSearch && matchesType && matchesStatus
+  const response = await fetchAdminTests({
+    page: currentPage,
+    size: pageSize,
+    profiling_type: searchParams.profiling_type,
+    publish_status: searchParams.publish_status,
+    q: searchParams.q,
   })
 
-  if (!tests.length) {
+  const tests = response?.data?.content || []
+  const totalPages = response?.data?.total_pages ?? 1
+
+  if (!tests.length && currentPage === 1) {
     return <AdminTableEmpty />
   }
 
@@ -52,9 +51,7 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
 
           <TestStatusCell testId={test.id} status={test.publish_status} />
 
-          <AdminTableCell slot={4} className="text-black-secondary">
-            -
-          </AdminTableCell>
+          <AdminTableCell slot={4}>-</AdminTableCell>
 
           <AdminDateCell slot={5} date={test.created_at} />
 
@@ -65,6 +62,8 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
           </AdminTableCell>
         </AdminTableRow>
       ))}
+
+      <AdminPagination currentPage={currentPage} totalPages={totalPages} />
     </>
   )
 }

@@ -12,8 +12,6 @@ import type {
 import Input from '@/components/common/Input'
 
 const LABEL_CLASS = 'flex flex-col gap-2 font-semibold'
-const INPUT_CLASS =
-  'border-gray-light focus:border-black-primary rounded-md border p-2 focus:outline-none'
 
 interface ProductPostModalProps {
   activeTab: ProductTabId

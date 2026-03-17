@@ -3,6 +3,7 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminPagination,
 } from '@/app/admin/_components'
 import { fetchAdminProductList } from '../_api/adminFetchProductList'
 import type {
@@ -14,28 +15,49 @@ import {
   getAccordLabel,
   ACCORD_LABEL_PILL_SM_CLASS,
 } from '@/constants/accordLabelStyles'
-
 import { ProductDeleteButton } from './ProductDeleteButton'
 
 interface ProductTableServerProps {
   activeTab: ProductTabId
-  searchParams: { q?: string; scent_category_id?: string; [key: string]: any }
+  searchParams: {
+    q?: string
+    scent_category_id?: string
+    page?: string
+    [key: string]: any
+  }
 }
 
 export async function ProductTableServer({
   activeTab,
   searchParams,
 }: ProductTableServerProps) {
-  // Option 없이 전체 데이터를 가져옵니다 (Next.js 캐싱 활용)
-  const response = await fetchAdminProductList(activeTab)
+  const currentPage = Math.max(1, Number(searchParams.page) || 1)
+  const pageSize = 10
 
-  const allItems = response?.data?.results || []
-
-  // 받아온 데이터를 기반으로 직접 필터링
-  const items = allItems.filter((item) => {
-    if (!searchParams.q) return true
-    return item.name.toLowerCase().includes(searchParams.q.toLowerCase())
+  // 모든 데이터를 가져옴 (핸들러를 건드리지 않기 위해 임의로 크게 100 요청)
+  const response = await fetchAdminProductList(activeTab, {
+    size: 100,
   })
+
+  const productItems = (response?.data?.results || []) as (
+    | AdminElementProduct
+    | AdminBlendProduct
+  )[]
+
+  // 검색어 필터링 (q)
+  let filtered = productItems.filter((item) => {
+    if (!searchParams.q) return true
+    const q = searchParams.q.toLowerCase()
+    return item.name.toLowerCase().includes(q)
+  })
+
+  filtered = [...filtered].sort((a, b) => a.id - b.id)
+
+  // 페이지네이션 계산
+  const totalElements = filtered.length
+  const totalPages = Math.ceil(totalElements / pageSize) || 1
+  const startIndex = (currentPage - 1) * pageSize
+  const items = filtered.slice(startIndex, startIndex + pageSize)
 
   if (!items.length) {
     return <AdminTableEmpty />
@@ -112,6 +134,8 @@ export async function ProductTableServer({
           </AdminTableRow>
         )
       })}
+
+      <AdminPagination currentPage={currentPage} totalPages={totalPages} />
     </>
   )
 }

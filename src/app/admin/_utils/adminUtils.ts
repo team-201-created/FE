@@ -1,10 +1,10 @@
-import { PublishStatus } from '@/app/admin/test/_types'
-
-export const getStatusStyles = (status: PublishStatus) => {
+export const getStatusStyles = (status: string) => {
   switch (status) {
     case 'PUBLISHED':
+    case 'ADOPTED':
       return 'bg-status-success-bg text-status-success-text cursor-pointer'
     case 'UNPUBLISHED':
+    case 'UNADOPTED':
     default:
       return 'bg-status-neutral-bg text-status-neutral-text cursor-pointer'
   }
@@ -68,5 +68,6 @@ export const getTypeRowBgColor = (type: string) => {
 }
 
 export const formatDate = (dateStr: string) => {
+  if (!dateStr) return '-'
   return dateStr.split('T')[0]
 }

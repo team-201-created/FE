@@ -3,22 +3,14 @@ import type { Metadata } from 'next'
 import RecommendAdminContent from './_page/RecommendAdminContent'
 import { RecommendTableServer } from './_components/RecommendTableServer'
 import { RecommendTabId } from './_types'
-import { AdminTableLoading } from '../_components'
+import { notFound } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: '어드민 추천 관리',
 }
 
-interface PageProps {
-  searchParams: Promise<{
-    tab?: string
-    page?: string
-    size?: string
-    q?: string
-    publish_status?: string
-    input_type?: string
-    sort?: string
-  }>
+interface RecommendAdminPageProps {
+  searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
 const VALID_TABS: RecommendTabId[] = [
@@ -27,18 +19,23 @@ const VALID_TABS: RecommendTabId[] = [
   'product-maps',
 ]
 
-export default async function RecommendAdminPage({ searchParams }: PageProps) {
+export default async function RecommendAdminPage({
+  searchParams,
+}: RecommendAdminPageProps) {
   const params = await searchParams
-  const rawTab = params.tab as string
+  const tabParam = params?.tab
+  const isValidTab =
+    !tabParam || VALID_TABS.includes(tabParam as RecommendTabId)
 
-  // 유효한 탭인지 검사하고 아니면 기본값으로 고정
-  const activeTab = VALID_TABS.includes(rawTab as RecommendTabId)
-    ? (rawTab as RecommendTabId)
-    : 'blend-maps'
+  if (!isValidTab) {
+    notFound()
+  }
+
+  const activeTab: RecommendTabId = (tabParam as RecommendTabId) || 'blend-maps'
 
   return (
-    <Suspense fallback={<AdminTableLoading />}>
-      <RecommendAdminContent activeTab={activeTab}>
+    <Suspense fallback={null}>
+      <RecommendAdminContent activeTab={activeTab} searchParams={params}>
         <RecommendTableServer activeTab={activeTab} searchParams={params} />
       </RecommendAdminContent>
     </Suspense>

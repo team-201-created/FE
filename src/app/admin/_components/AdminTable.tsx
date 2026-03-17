@@ -2,11 +2,8 @@
 
 import { cn } from '@/lib/cn'
 import { AdminTableHeader } from '@/constants/admin'
-import { formatDate, getTypeStyles } from '@/app/admin/test/_utils'
-import {
-  PRODUCT_TYPE_LABELS,
-  TYPE_LABELS,
-} from '@/app/admin/test/_constants/testListLabels'
+import { formatDate, getTypeStyles } from '@/app/admin/_utils'
+import { PRODUCT_TYPE_LABELS, TYPE_LABELS } from '@/app/admin/_constants/labels'
 
 interface AdminTableProps {
   headers: AdminTableHeader[]
@@ -82,12 +79,14 @@ export const AdminStatusCell = ({
   trueLabel = '발행',
   falseLabel = '미발행',
   onClick,
+  isPending,
 }: {
   slot: number
   status: 'PUBLISHED' | 'UNPUBLISHED' | 'ADOPTED' | 'UNADOPTED'
   trueLabel?: string
   falseLabel?: string
   onClick?: () => void
+  isPending?: boolean
 }) => {
   const isPublished = status === 'PUBLISHED' || status === 'ADOPTED'
   const content = (
@@ -98,15 +97,16 @@ export const AdminStatusCell = ({
           isPublished ? 'bg-status-success-text' : 'bg-status-neutral-text'
         )}
       />
-      {isPublished ? trueLabel : falseLabel}
+      {isPending ? '처리 중...' : isPublished ? trueLabel : falseLabel}
     </>
   )
 
   const statusClass = cn(
-    'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-colors',
+    'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-all',
     isPublished
       ? 'bg-status-success-bg text-status-success-text'
-      : 'bg-status-neutral-bg text-status-neutral-text'
+      : 'bg-status-neutral-bg text-status-neutral-text',
+    isPending && 'opacity-50 grayscale-[0.5]'
   )
 
   return (
@@ -115,7 +115,8 @@ export const AdminStatusCell = ({
         <button
           type="button"
           onClick={onClick}
-          className={cn(statusClass, 'cursor-pointer')}
+          disabled={isPending}
+          className={cn(statusClass, !isPending && 'cursor-pointer')}
         >
           {content}
         </button>
