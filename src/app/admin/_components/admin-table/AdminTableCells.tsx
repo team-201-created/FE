@@ -34,7 +34,7 @@ export const AdminFirstCell = ({
   <div
     style={{ gridColumn: 1 }}
     className={cn(
-      'text-black-primary p-3 text-left text-sm font-bold md:p-4 md:text-base',
+      'p-3 text-left text-sm font-bold md:p-4 md:text-base',
       className
     )}
   >
