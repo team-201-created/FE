@@ -27,7 +27,7 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60">
+    <aside className="w-full md:w-[237px]">
       <nav className="rounded-2xl bg-white p-4 shadow-md">
         <ul className="flex flex-col gap-2">
           {ADMIN_SIDEBAR_NAV_LINKS.map((item) => {
