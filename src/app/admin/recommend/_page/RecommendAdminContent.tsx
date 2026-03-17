@@ -18,6 +18,10 @@ import { useModalStore } from '@/store/useModalStore'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 import { cn } from '@/lib/cn'
+import {
+  ADOPTION_STATUS_OPTIONS,
+  PUBLISH_STATUS_OPTIONS,
+} from '@/app/admin/_constants/labels'
 
 interface RecommendAdminContentProps {
   activeTab: RecommendTabId
@@ -34,7 +38,6 @@ export default function RecommendAdminContent({
 
   const { searchTerm, setSearchTerm, onFilterChange, onTabChange, isPending } =
     useAdminTable({
-      searchDelay: 500,
       resetParamsOnTabChange: ['status', 'input_type'],
     })
 
@@ -42,18 +45,9 @@ export default function RecommendAdminContent({
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
 
   const getFilterOptions = () => {
-    if (activeTab === 'product-pools') {
-      return [
-        { label: '전체', value: 'all' },
-        { label: '채택', value: 'ADOPTED' },
-        { label: '미채택', value: 'UNADOPTED' },
-      ]
-    }
-    return [
-      { label: '전체', value: 'all' },
-      { label: '발행', value: 'PUBLISHED' },
-      { label: '미발행', value: 'UNPUBLISHED' },
-    ]
+    return activeTab === 'product-pools'
+      ? ADOPTION_STATUS_OPTIONS
+      : PUBLISH_STATUS_OPTIONS
   }
   const handleOpenPostModal = () => {
     openModal(<RecommendPostModal activeTab={activeTab} />)

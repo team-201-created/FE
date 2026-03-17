@@ -17,3 +17,15 @@ export const FILTER_OPTIONS: { label: string; value: string }[] = [
     value: key,
   })),
 ]
+
+export const PUBLISH_STATUS_OPTIONS = [
+  { label: '전체', value: 'all' },
+  { label: '발행', value: 'PUBLISHED' },
+  { label: '미발행', value: 'UNPUBLISHED' },
+]
+
+export const ADOPTION_STATUS_OPTIONS = [
+  { label: '전체', value: 'all' },
+  { label: '채택', value: 'ADOPTED' },
+  { label: '미채택', value: 'UNADOPTED' },
+]

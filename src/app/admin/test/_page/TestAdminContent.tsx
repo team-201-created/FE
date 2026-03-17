@@ -12,7 +12,7 @@ import {
 import { TEST_TABLE_HEADERS } from '@/constants/admin'
 import { cn } from '@/lib/cn'
 import { useRouter } from 'next/navigation'
-import { FILTER_OPTIONS } from '@/app/admin/_constants/labels'
+import { PUBLISH_STATUS_OPTIONS } from '@/app/admin/_constants/labels'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 
@@ -28,9 +28,7 @@ export default function TestAdminContent({
   const router = useRouter()
 
   const { searchTerm, setSearchTerm, onFilterChange, isPending } =
-    useAdminTable({
-      searchDelay: 300,
-    })
+    useAdminTable()
 
   const handleCreateTest = () => {
     router.push('/admin/test/create')
@@ -47,9 +45,9 @@ export default function TestAdminContent({
       <AdminSearchBar
         searchValue={searchTerm}
         searchPlaceholder="테스트명 검색"
-        filterOptions={FILTER_OPTIONS}
+        filterOptions={PUBLISH_STATUS_OPTIONS}
         onSearchChange={setSearchTerm}
-        onFilterChange={(val) => onFilterChange('profiling_type', val)}
+        onFilterChange={(val) => onFilterChange('publish_status', val)}
       />
 
       <AdminTable headers={TEST_TABLE_HEADERS}>

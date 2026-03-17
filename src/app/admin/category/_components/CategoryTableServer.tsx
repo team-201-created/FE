@@ -8,7 +8,7 @@ import {
   AdminTableEmpty,
 } from '@/app/admin/_components'
 import AdminCategoryIcon from '@/assets/icons/adminCategory.svg'
-import { processCategoryItems } from '@/app/admin/_utils/categoryUtils'
+import { processCategoryItems } from '@/app/admin/category/_utils/categoryUtils'
 
 import { CategoryDeleteButton } from './CategoryDeleteButton'
 
