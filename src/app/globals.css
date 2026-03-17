@@ -67,7 +67,8 @@ body {
 }
 
 html {
-  scrollbar-gutter: stable;
+  font-size: 16px;
+  overflow-y: scroll;
 }
 
 /* 향 세그먼트 네비 - 키캡 느낌 (선택된 탭) */

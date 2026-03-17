@@ -41,7 +41,7 @@ export function CategoryDeleteButton({
       <TrashIcon
         width={16}
         height={16}
-        className="hover:text-black-primary text-gray-400 transition-colors"
+        className="hover:text-danger text-gray-400 transition-colors"
       />
     </Button>
   )

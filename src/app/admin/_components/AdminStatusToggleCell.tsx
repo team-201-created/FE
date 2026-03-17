@@ -1,8 +1,9 @@
 'use client'
 
 import { useOptimistic, useTransition } from 'react'
-import { AdminStatusCell } from './AdminTable'
+import { AdminStatusCell } from './admin-table/AdminTable'
 import { useModalStore } from '@/store/useModalStore'
+import { getNextStatus } from '@/app/admin/_utils'
 
 interface AdminStatusToggleCellProps {
   id: number | string
@@ -29,13 +30,7 @@ export function AdminStatusToggleCell({
   )
 
   const handleToggle = () => {
-    let nextStatus = ''
-
-    if (status === 'PUBLISHED') nextStatus = 'UNPUBLISHED'
-    else if (status === 'UNPUBLISHED') nextStatus = 'PUBLISHED'
-    else if (status === 'ADOPTED') nextStatus = 'UNADOPTED'
-    else if (status === 'UNADOPTED') nextStatus = 'ADOPTED'
-
+    const nextStatus = getNextStatus(status)
     if (!nextStatus) return
 
     startTransition(async () => {

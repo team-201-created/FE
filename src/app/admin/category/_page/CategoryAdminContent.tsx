@@ -1,16 +1,16 @@
 'use client'
 
 import React, { ReactNode, Suspense } from 'react'
-import { AdminPageHeader } from '@/app/admin/_components/AdminPageHeader'
-import { AdminTabGroup } from '@/app/admin/_components/AdminTabGroup'
-import type { CategoryTabId } from '../_types/AdminCategoryType'
 import {
+  AdminPageHeader,
+  AdminTabGroup,
   AdminSearchBar,
   AdminListCard,
   AdminTable,
   AdminTableError,
   AdminTableLoading,
-} from '../../_components'
+} from '@/app/admin/_components'
+import type { CategoryTabId } from '../_types/AdminCategoryType'
 import { CATEGORY_TABLE_HEADERS } from '@/constants/admin'
 import { ErrorBoundary } from 'react-error-boundary'
 import { CategoryPostModal } from '../_components/CategoryPostModal'
@@ -37,7 +37,6 @@ export default function CategoryAdminContent({
   const { openModal } = useModalStore()
 
   const { searchTerm, setSearchTerm, onTabChange, isPending } = useAdminTable({
-    searchDelay: 500,
     resetParamsOnTabChange: ['category_id'],
   })
 

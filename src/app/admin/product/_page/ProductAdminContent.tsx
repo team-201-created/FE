@@ -39,7 +39,6 @@ export default function ProductAdminContent({
 
   const { searchTerm, setSearchTerm, onFilterChange, onTabChange, isPending } =
     useAdminTable({
-      searchDelay: 300,
       resetParamsOnTabChange: ['scent_category_id'],
     })
 
@@ -88,7 +87,7 @@ export default function ProductAdminContent({
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense
             key={`${activeTab}-${searchParams.toString()}`}
-            fallback={<AdminTableLoading />}
+            fallback={<AdminTableLoading type="product" />}
           >
             {children}
           </Suspense>

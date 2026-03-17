@@ -71,3 +71,13 @@ export const formatDate = (dateStr: string) => {
   if (!dateStr) return '-'
   return dateStr.split('T')[0]
 }
+
+export const getNextStatus = (currentStatus: string): string => {
+  const transitionMap: Record<string, string> = {
+    PUBLISHED: 'UNPUBLISHED',
+    UNPUBLISHED: 'PUBLISHED',
+    ADOPTED: 'UNADOPTED',
+    UNADOPTED: 'ADOPTED',
+  }
+  return transitionMap[currentStatus]
+}
