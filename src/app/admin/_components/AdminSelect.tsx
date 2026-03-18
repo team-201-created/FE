@@ -9,6 +9,7 @@ interface AdminSelectProps {
   options: { label: string; value: string; secondaryLabel?: string }[]
   value?: string
   onChange?: (value: string) => void
+  placeholder?: string
   className?: string
   width?: string
 }
@@ -20,14 +21,14 @@ export const AdminSelect = ({
   options,
   value,
   onChange,
+  placeholder,
   className,
   width = 'w-32',
 }: AdminSelectProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const selectedOption =
-    options.find((opt) => opt.value === value) || options[0]
+  const selectedOption = options.find((opt) => opt.value === value)
 
   const toggle = () => setIsOpen((prev) => !prev)
   const close = () => setIsOpen(false)
@@ -50,7 +51,11 @@ export const AdminSelect = ({
           isOpen && 'border-black-primary'
         )}
       >
-        <span className="truncate">{selectedOption?.label}</span>
+        <span
+          className={`truncate ${!selectedOption && placeholder ? 'text-neutral-400' : ''}`}
+        >
+          {selectedOption?.label ?? placeholder ?? options[0]?.label}
+        </span>
         <svg
           width="16"
           height="16"

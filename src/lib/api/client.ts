@@ -39,7 +39,7 @@ export const apiFetch = createFetch({
 })
 
 export const appFetch = createFetch({
-  baseUrl: '',
+  baseUrl: BASE_URL,
   headers: DEFAULT_HEADERS,
   interceptors: {
     request: async (args) => {

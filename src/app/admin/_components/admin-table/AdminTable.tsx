@@ -1,3 +1,4 @@
+import React from 'react'
 import { cn } from '@/lib/cn'
 import { AdminTableHeader } from '@/constants/admin'
 import { TABLE_GRID_LAYOUT } from './AdminTable.constants'
