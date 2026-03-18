@@ -1,11 +1,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import {
-  postSocialCallback,
-  postLogout,
-  postTokenRefresh,
-} from '@/lib/api/auth'
+import { postSocialCallback, postLogout } from '@/lib/api/auth'
 import type { User } from '@/types'
 
 type LoginResult =
@@ -62,38 +58,16 @@ export async function loginWithKakaoAction(
 }
 
 /**
- * 토큰 재발급 Server Action
- * - 쿠키의 refresh_token으로 새 access_token 발급
- * - 새 access_token을 httpOnly 쿠키에 저장
- */
-export async function refreshTokenAction(): Promise<void> {
-  const cookieStore = await cookies()
-  const refreshToken = cookieStore.get('refresh_token')?.value
-
-  if (!refreshToken) {
-    throw new Error('refresh_token이 없습니다.')
-  }
-
-  const data = await postTokenRefresh(refreshToken)
-  cookieStore.set('access_token', data.data.access_token, BASE_COOKIE_OPTIONS)
-}
-
-/**
  * 로그아웃 Server Action
  * - 백엔드 로그아웃 API 호출
  * - httpOnly 쿠키 삭제
  */
 export async function logoutAction(): Promise<void> {
   const cookieStore = await cookies()
-  const accessToken = cookieStore.get('access_token')?.value
-  const refreshToken = cookieStore.get('refresh_token')?.value
-
-  if (accessToken && refreshToken) {
-    try {
-      await postLogout(accessToken, refreshToken)
-    } catch {
-      // 백엔드 로그아웃 실패해도 쿠키는 반드시 삭제
-    }
+  try {
+    await postLogout()
+  } catch {
+    // 백엔드 로그아웃 실패해도 쿠키는 반드시 삭제
   }
 
   cookieStore.delete('access_token')

@@ -12,7 +12,6 @@ import CloseIcon from '@/assets/icons/close.svg'
 import OpenIcon from '@/assets/icons/open.svg'
 import { useModalStore } from '@/store/useModalStore'
 import Modal from './Modal'
-import { logoutAction } from '@/lib/auth/sessionActions'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useState, useEffect } from 'react'
 
@@ -64,9 +63,7 @@ export function Header() {
   }
   const logout = async () => {
     try {
-      await logoutAction()
-      localStorage.removeItem('user')
-      logoutFromStore()
+      await logoutFromStore()
       router.push('/login')
     } catch (error: any) {
       console.error('Logout Error:', error)
