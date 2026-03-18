@@ -19,13 +19,13 @@ export default async function CategoryAdminPage({
   const params = await searchParams
 
   const tabParam = params?.tab
-  const isValidTab = !tabParam || tabParam === 'Element' || tabParam === 'Blend'
+  const isValidTab = !tabParam || tabParam === 'ELEMENT' || tabParam === 'BLEND'
 
   if (!isValidTab) {
     notFound()
   }
 
-  const activeTab: CategoryTabId = (tabParam as CategoryTabId) || 'Element'
+  const activeTab: CategoryTabId = (tabParam as CategoryTabId) || 'ELEMENT'
 
   return (
     <Suspense fallback={null}>

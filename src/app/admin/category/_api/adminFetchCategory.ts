@@ -1,22 +1,28 @@
-import { apiFetch } from '@/lib/api/client'
-import type {
-  AdminCategoryListResponse,
-  CategoryTabId,
-} from '../_types/AdminCategoryType'
-
-type FetchCategoryOptions = {
-  root_category: CategoryTabId
-}
+import { authFetch } from '@/lib/api/client'
+import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 
 /**
- * 어드민 카테고리 정보 조회 API (계층 구조)
- * @param rootCategory 'Element' | 'Blend'
+ * 어드민 단품 카테고리 정보 조회 API
  */
-export const fetchAdminCategories = (
-  options: FetchCategoryOptions
-): Promise<AdminCategoryListResponse> => {
-  return apiFetch.get<AdminCategoryListResponse>('/api/v1/scents/categories', {
-    params: options,
-    cache: 'force-cache',
-  })
-}
+export const fetchAdminElementCategories =
+  (): Promise<AdminCategoryListResponse> => {
+    return authFetch.get<AdminCategoryListResponse>(
+      '/api/v1/scents/categories/element',
+      {
+        cache: 'force-cache',
+      }
+    )
+  }
+
+/**
+ * 어드민 조합 카테고리 정보 조회 API
+ */
+export const fetchAdminBlendCategories =
+  (): Promise<AdminCategoryListResponse> => {
+    return authFetch.get<AdminCategoryListResponse>(
+      '/api/v1/scents/categories/blend',
+      {
+        cache: 'force-cache',
+      }
+    )
+  }

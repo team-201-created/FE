@@ -11,12 +11,17 @@ import {
   AdminTableError,
   AdminTableLoading,
 } from '@/app/admin/_components'
-import type { ProductTabId } from '../_types/AdminProductType'
+import type { ProductTabId } from '@/app/admin/product/_types/AdminProductType'
 import { PRODUCT_TABLE_HEADERS } from '@/constants/admin'
-import { ProductPostModal } from './ProductPostModal'
+import { ProductPostModal } from '@/app/admin/product/_page/ProductPostModal'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useModalStore } from '@/store/useModalStore'
-import { fetchAdminProductList } from '../_api/adminFetchProductList'
+import { fetchAdminProductList } from '@/app/admin/product/_api/adminFetchProductList'
+import {
+  fetchElementCategoriesAction,
+  fetchBlendCategoriesAction,
+} from '@/app/admin/product/_lib/productActions'
+import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 
 const PRODUCT_TABS: { id: ProductTabId; label: string }[] = [
@@ -46,16 +51,28 @@ export default function ProductAdminContent({
     PRODUCT_TABS.find((t) => t.id === activeTab)?.label || '단품'
 
   const handleOpenRegisterModal = () => {
-    const elementPromise =
+    const elementPromiseForBlend =
       activeTab === 'BLEND'
         ? fetchAdminProductList('ELEMENT')
+        : Promise.resolve(null)
+
+    const categoryPromiseForElement: Promise<AdminCategoryListResponse | null> =
+      activeTab === 'ELEMENT'
+        ? fetchElementCategoriesAction()
+        : Promise.resolve(null)
+
+    const categoryPromiseForBlend: Promise<AdminCategoryListResponse | null> =
+      activeTab === 'BLEND'
+        ? fetchBlendCategoriesAction()
         : Promise.resolve(null)
 
     openModal(
       <Suspense fallback={null}>
         <ProductPostModal
           activeTab={activeTab}
-          elementPromise={elementPromise}
+          elementPromiseForBlend={elementPromiseForBlend}
+          categoryPromiseForElement={categoryPromiseForElement}
+          categoryPromiseForBlend={categoryPromiseForBlend}
         />
       </Suspense>
     )
@@ -86,7 +103,7 @@ export default function ProductAdminContent({
       <AdminTable headers={PRODUCT_TABLE_HEADERS}>
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense
-            key={`${activeTab}-${searchParams.toString()}`}
+            key={`${activeTab}-${searchParams.q ?? ''}-${searchParams.page ?? ''}`}
             fallback={<AdminTableLoading type="product" />}
           >
             {children}
