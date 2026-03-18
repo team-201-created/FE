@@ -3,7 +3,7 @@ import type {
   AdminElementListResponse,
   AdminBlendListResponse,
   ProductTabId,
-} from '../_types/AdminProductType'
+} from '@/app/admin/product/_types/AdminProductType'
 
 type FetchProductOptions = {
   q?: string
@@ -36,6 +36,6 @@ export const fetchAdminProductList = <T extends ProductTabId>(
 ): Promise<ProductResponseMap[T]> => {
   return apiFetch.get<ProductResponseMap[T]>(PRODUCT_ENDPOINTS[tabId], {
     params: options,
-    cache: 'force-cache',
+    cache: 'no-store',
   })
 }

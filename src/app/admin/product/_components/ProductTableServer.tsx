@@ -5,26 +5,26 @@ import {
   AdminTableEmpty,
   AdminPagination,
 } from '@/app/admin/_components'
-import { fetchAdminProductList } from '../_api/adminFetchProductList'
+import { fetchAdminProductList } from '@/app/admin/product/_api/adminFetchProductList'
 import type {
   ProductTabId,
   AdminElementProduct,
   AdminBlendProduct,
-} from '../_types/AdminProductType'
+} from '@/app/admin/product/_types/AdminProductType'
 import {
   getAccordLabel,
   ACCORD_LABEL_PILL_SM_CLASS,
 } from '@/constants/accordLabelStyles'
 import { ProductDeleteButton } from './ProductDeleteButton'
-import { processProductItems } from '../_utils/productUtils'
+
+const PAGE_SIZE = 10
 
 interface ProductTableServerProps {
   activeTab: ProductTabId
   searchParams: {
     q?: string
-    scent_category_id?: string
     page?: string
-    [key: string]: any
+    [key: string]: string | undefined
   }
 }
 
@@ -32,21 +32,19 @@ export async function ProductTableServer({
   activeTab,
   searchParams,
 }: ProductTableServerProps) {
-  const PAGE_SIZE = 10
   const response = await fetchAdminProductList(activeTab, {
-    size: 30,
+    q: searchParams.q,
+    page: searchParams.page ? Number(searchParams.page) : 1,
+    size: PAGE_SIZE,
   })
+  console.log('실제 호출', response.data.results)
 
-  const productItems = (response?.data?.results || []) as (
+  const items = (response?.data?.results || []) as (
     | AdminElementProduct
     | AdminBlendProduct
   )[]
-
-  const { items, totalPages, currentPage } = processProductItems(productItems, {
-    q: searchParams.q,
-    page: searchParams.page,
-    pageSize: PAGE_SIZE,
-  })
+  const totalPages = response?.data?.total_pages ?? 1
+  const currentPage = response?.data?.page ?? 1
 
   if (items.length === 0) {
     return <AdminTableEmpty />
@@ -54,7 +52,7 @@ export async function ProductTableServer({
 
   return (
     <>
-      {items.map((item: AdminElementProduct | AdminBlendProduct) => {
+      {items.map((item) => {
         const isSingle = activeTab === 'ELEMENT'
         const elementItem = item as AdminElementProduct
         const blendItem = item as AdminBlendProduct
