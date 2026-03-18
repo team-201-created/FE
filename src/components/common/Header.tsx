@@ -12,7 +12,7 @@ import CloseIcon from '@/assets/icons/close.svg'
 import OpenIcon from '@/assets/icons/open.svg'
 import { useModalStore } from '@/store/useModalStore'
 import Modal from './Modal'
-import { postLogout } from '@/lib/api/auth'
+import { logoutAction } from '@/lib/auth/sessionActions'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useState, useEffect } from 'react'
 
@@ -63,21 +63,8 @@ export function Header() {
     )
   }
   const logout = async () => {
-    const accessToken = localStorage.getItem('accessToken')
-    const refreshToken = localStorage.getItem('refreshToken')
-
-    if (!accessToken || !refreshToken) {
-      alert('로그인 정보가 없습니다.')
-      logoutFromStore()
-      router.push('/login')
-      return
-    }
-
     try {
-      await postLogout(accessToken, refreshToken)
-      alert('로그아웃되었습니다.')
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      await logoutAction()
       localStorage.removeItem('user')
       logoutFromStore()
       router.push('/login')
