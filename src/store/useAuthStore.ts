@@ -3,7 +3,8 @@ import { logoutAction } from '@/lib/auth/sessionActions'
 import type { User } from '@/types'
 
 interface AuthState {
-  isLoggedIn?: boolean // undefined: 초기 상태, true: 로그인, false: 로그아웃
+  isInitialized: boolean
+  isLoggedIn?: boolean
   user: User | null
   login: (user: User) => void
   logout: () => Promise<void>
@@ -11,6 +12,7 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
+  isInitialized: false,
   isLoggedIn: undefined,
   user: null,
   login: (user) => set({ isLoggedIn: true, user }),

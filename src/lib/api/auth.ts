@@ -1,30 +1,37 @@
-import type { ApiResponse, AuthTokens, AuthorizeUrl } from '@/types'
-
-// 소셜 로그인 및 토큰 관련 API 함수 모음
+import type { ApiResponse, AuthTokens, AuthorizeUrl, User } from '@/types'
+import { apiFetch, appFetch } from './client'
+import { FetchError } from './fetchError'
 
 /**
  * 소셜 로그인/회원가입 URL을 요청합니다.
  * @param provider 소셜 제공자 (e.g., 'kakao')
  * @param state CSRF 방지용 랜덤 문자열
- * @param redirectUri 리디렉션 URI
  */
 export async function getSocialAuthorizeUrl(
   provider: string,
   state: string
 ): Promise<ApiResponse<AuthorizeUrl>> {
   const redirectUri = `${window.location.origin}/login/callback`
-  const backendApiUrl = process.env.NEXT_PUBLIC_API_URL
-  const res = await fetch(
-    `${backendApiUrl}/api/v1/auth/social/${provider}/authorize-url?state=${state}&redirect_uri=${encodeURIComponent(redirectUri)}`
-  )
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => null) // 에러 응답이 JSON이 아닐 수도 있음
-    console.error('Error fetching authorize URL:', errorData)
-    throw new Error('Failed to fetch authorize URL')
+  try {
+    return await apiFetch.get<ApiResponse<AuthorizeUrl>>(
+      `/api/v1/auth/social/${provider}/authorize-url`,
+      {
+        params: { state, redirect_uri: redirectUri },
+      }
+    )
+  } catch (error) {
+    // 백엔드 경로가 /auth/{provider}/authorize-url 인 환경을 fallback으로 지원
+    if (error instanceof FetchError && error.status === 404) {
+      return apiFetch.get<ApiResponse<AuthorizeUrl>>(
+        `/api/v1/auth/${provider}/authorize-url`,
+        {
+          params: { state, redirect_uri: redirectUri },
+        }
+      )
+    }
+    throw error
   }
-
-  return res.json()
 }
 
 /**
@@ -61,54 +68,28 @@ export async function postSocialCallback(
 }
 
 /**
- * 토큰 재발급을 요청합니다.
- * @param refreshToken 리프레시 토큰
+ * 로그인 세션 쿠키 저장을 요청합니다.
  */
-export async function postTokenRefresh(
+export function postSessionLogin(
+  accessToken: string,
   refreshToken: string
-): Promise<ApiResponse<Pick<AuthTokens, 'access_token'>>> {
-  const backendApiUrl = process.env.NEXT_PUBLIC_API_URL
-  const res = await fetch(`${backendApiUrl}/api/v1/auth/token/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: refreshToken }),
+): Promise<ApiResponse<null>> {
+  return appFetch.post<ApiResponse<null>>('/api/auth/login', {
+    accessToken,
+    refreshToken,
   })
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => null)
-    console.error('Error refreshing token:', errorData)
-    throw new Error('Failed to refresh token')
-  }
-
-  return res.json()
 }
 
 /**
  * 로그아웃을 요청합니다.
- * @param accessToken 액세스 토큰
- * @param refreshToken 리프레시 토큰
  */
-export async function postLogout(
-  accessToken: string,
-  refreshToken: string
-): Promise<ApiResponse<null>> {
-  const backendApiUrl = process.env.NEXT_PUBLIC_API_URL
-  const response = await fetch(`${backendApiUrl}/api/v1/auth/logout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      refresh_token: refreshToken,
-    }),
-  })
+export function postLogout(): Promise<ApiResponse<null>> {
+  return appFetch.post<ApiResponse<null>>('/api/auth/logout')
+}
 
-  const data = await response.json().catch(() => ({})) // 응답이 JSON이 아닐 수도 있음
-
-  if (!response.ok) {
-    throw new Error(data.error?.message || 'Failed to logout')
-  }
-
-  return data
+/**
+ * 현재 로그인된 사용자 정보를 가져옵니다.
+ */
+export function getMe(): Promise<ApiResponse<User>> {
+  return appFetch.get<ApiResponse<User>>('/api/auth/me')
 }

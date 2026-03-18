@@ -1,6 +1,6 @@
 import { createFetch } from './createFetch'
 import { FetchError } from './fetchError'
-import { ApiErrorResponse } from './types'
+import type { ApiErrorResponse } from './types'
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.trim() || 'http://localhost:3000'
@@ -38,9 +38,8 @@ export const apiFetch = createFetch({
   },
 })
 
-// 인증이 필요한 Fetch 요청
-export const authFetch = createFetch({
-  baseUrl: BASE_URL,
+export const appFetch = createFetch({
+  baseUrl: '',
   headers: DEFAULT_HEADERS,
   interceptors: {
     request: async (args) => {
@@ -63,3 +62,5 @@ export const authFetch = createFetch({
     response: handleResponse,
   },
 })
+
+export const authFetch = appFetch
