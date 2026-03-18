@@ -1,7 +1,11 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { postSocialCallback, postLogout } from '@/lib/api/auth'
+import {
+  postSocialCallback,
+  postLogout,
+  postTokenRefresh,
+} from '@/lib/api/auth'
 import type { User } from '@/types'
 
 type LoginResult =
@@ -10,11 +14,15 @@ type LoginResult =
 
 const BASE_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,
-  expires: 3600,
-  refresh_expires: 259200,
+  secure: false,
+  maxAge: 3600,
   sameSite: 'lax' as const,
   path: '/',
+}
+
+const REFRESH_COOKIE_OPTIONS = {
+  ...BASE_COOKIE_OPTIONS,
+  maxAge: 259200,
 }
 
 /**
@@ -43,8 +51,7 @@ export async function loginWithKakaoAction(
     const cookieStore = await cookies()
 
     cookieStore.set('access_token', access_token, BASE_COOKIE_OPTIONS)
-    cookieStore.set('refresh_token', refresh_token, BASE_COOKIE_OPTIONS)
-
+    cookieStore.set('refresh_token', refresh_token, REFRESH_COOKIE_OPTIONS)
     return { success: true, user }
   } catch (error: any) {
     return {
@@ -52,6 +59,23 @@ export async function loginWithKakaoAction(
       error: error.message || '로그인 처리 중 오류가 발생했습니다.',
     }
   }
+}
+
+/**
+ * 토큰 재발급 Server Action
+ * - 쿠키의 refresh_token으로 새 access_token 발급
+ * - 새 access_token을 httpOnly 쿠키에 저장
+ */
+export async function refreshTokenAction(): Promise<void> {
+  const cookieStore = await cookies()
+  const refreshToken = cookieStore.get('refresh_token')?.value
+
+  if (!refreshToken) {
+    throw new Error('refresh_token이 없습니다.')
+  }
+
+  const data = await postTokenRefresh(refreshToken)
+  cookieStore.set('access_token', data.data.access_token, BASE_COOKIE_OPTIONS)
 }
 
 /**
