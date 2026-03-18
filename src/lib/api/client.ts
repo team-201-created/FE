@@ -2,21 +2,8 @@ import { createFetch } from './createFetch'
 import { FetchError } from './fetchError'
 import { ApiErrorResponse } from './types'
 
-// 서버(RSC/빌드)에서는 상대 URL을 쓸 수 없어, base가 비면 절대 URL로 보정
-const getBaseUrl = () => {
-  const env = process.env.NEXT_PUBLIC_API_BASE_URL?.trim()
-  if (env) return env
-  if (typeof window === 'undefined') {
-    const site = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-    if (site) return site
-    // 빌드/프리렌더 시 fetch에 절대 URL 필요 (상대 URL 파싱 불가)
-    return process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
-  }
-  return ''
-}
-const BASE_URL = getBaseUrl()
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || 'http://localhost:3000'
 
 const DEFAULT_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json',
@@ -57,10 +44,19 @@ export const authFetch = createFetch({
   headers: DEFAULT_HEADERS,
   interceptors: {
     request: async (args) => {
-      // TODO: 로그인 구현 후 토큰 주입
-      // if (token) {
-      //   args.options.headers = { ...args.options.headers, Authorization: `Bearer ${token}` }
-      // }
+      // Server Action 컨텍스트에서만 실행 (typeof window === 'undefined')
+      // next/headers는 서버 전용 → dynamic import로 클라이언트 번들 오염 방지
+      if (typeof window === 'undefined') {
+        const { cookies } = await import('next/headers')
+        const cookieStore = await cookies()
+        const token = cookieStore.get('access_token')?.value
+        if (token) {
+          args.options.headers = {
+            ...args.options.headers,
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      }
       return args
     },
     response: handleResponse,

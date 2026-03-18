@@ -36,22 +36,19 @@ export async function getSocialAuthorizeUrl(
 export async function postSocialCallback(
   provider: string,
   code: string,
-  state: string | null
+  state: string | null,
+  redirect_uri: string
 ): Promise<ApiResponse<AuthTokens>> {
-  const redirectUri = `${window.location.origin}/login/callback`
-  const backendApiUrl = process.env.NEXT_PUBLIC_API_URL
-  const response = await fetch(
-    `${backendApiUrl}/api/v1/auth/${provider}/callback`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        code,
-        state,
-        redirect_uri: redirectUri,
-      }),
-    }
-  )
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL
+  const response = await fetch(`${baseUrl}/api/v1/auth/${provider}/callback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      code,
+      state,
+      redirect_uri,
+    }),
+  })
 
   const data = await response.json()
 

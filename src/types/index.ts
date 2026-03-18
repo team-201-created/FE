@@ -31,6 +31,8 @@ export interface User {
 export interface AuthTokens {
   access_token: string
   refresh_token: string
+  expires_in: number // access_token 만료 시간 (초)
+  refresh_expires_in: number // refresh_token 만료 시간 (초)
   user: User
 }
 

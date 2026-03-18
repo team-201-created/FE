@@ -1,19 +1,23 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
-import { postSocialCallback } from '@/lib/api/auth'
+import { loginWithKakaoAction } from '@/lib/auth/sessionActions'
 import { useAuthStore } from '@/store/useAuthStore'
 
 export default function CallbackClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { login } = useAuthStore()
+  const hasHandled = useRef(false)
 
   useEffect(() => {
+    if (hasHandled.current) return
+    hasHandled.current = true
+
     const code = searchParams.get('code')
-    const state = searchParams.get('state') // 백엔드에서 state 검증을 요구할 경우를 대비해 함께 전달
+    const state = searchParams.get('state')
 
     const handleLogin = async () => {
       if (!code) {
@@ -23,19 +27,18 @@ export default function CallbackClient() {
       }
 
       try {
-        const data = await postSocialCallback('kakao', code, state)
+        // 토큰은 httpOnly 쿠키에 저장, user 정보만 반환
+        const result = await loginWithKakaoAction(code, state)
 
-        if (data.success) {
-          const { access_token, refresh_token, user } = data.data
-          localStorage.setItem('accessToken', access_token)
-          localStorage.setItem('refreshToken', refresh_token)
-          localStorage.setItem('user', JSON.stringify(user))
-          login(user)
+        if (result.success) {
+          // user 정보는 UI 표시용으로 localStorage에 저장
+          localStorage.setItem('user', JSON.stringify(result.user))
+          login(result.user)
 
-          alert(`${user.nickname}님, 환영합니다!`)
+          alert(`${result.user.nickname}님, 환영합니다!`)
           router.replace('/')
         } else {
-          throw new Error(data.error?.message || '로그인에 실패했습니다.')
+          throw new Error(result.error)
         }
       } catch (error: any) {
         alert(error.message || '로그인 처리 중 오류가 발생했습니다.')
