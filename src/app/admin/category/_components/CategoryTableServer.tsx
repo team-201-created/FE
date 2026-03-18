@@ -1,5 +1,11 @@
-import { fetchAdminCategories } from '../_api/adminFetchCategory'
-import type { CategoryChild, CategoryTabId } from '../_types/AdminCategoryType'
+import {
+  fetchAdminElementCategories,
+  fetchAdminBlendCategories,
+} from '@/app/admin/category/_api/adminFetchCategory'
+import type {
+  CategoryChild,
+  CategoryTabId,
+} from '@/app/admin/category/_types/AdminCategoryType'
 import {
   AdminTableRow,
   AdminFirstCell,
@@ -23,7 +29,10 @@ export async function CategoryTableServer({
   activeTab,
   searchParams,
 }: CategoryTableServerProps) {
-  const response = await fetchAdminCategories({ root_category: activeTab })
+  const response =
+    activeTab === 'ELEMENT'
+      ? await fetchAdminElementCategories()
+      : await fetchAdminBlendCategories()
 
   // response.data.categories[0] 계층 구조
   const rootCategory = response?.data?.categories?.[0]

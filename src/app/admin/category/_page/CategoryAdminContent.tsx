@@ -10,17 +10,17 @@ import {
   AdminTableError,
   AdminTableLoading,
 } from '@/app/admin/_components'
-import type { CategoryTabId } from '../_types/AdminCategoryType'
+import type { CategoryTabId } from '@/app/admin/category/_types/AdminCategoryType'
 import { CATEGORY_TABLE_HEADERS } from '@/constants/admin'
 import { ErrorBoundary } from 'react-error-boundary'
-import { CategoryPostModal } from '../_components/CategoryPostModal'
+import { CategoryPostModal } from '@/app/admin/category/_components/CategoryPostModal'
 import { useModalStore } from '@/store/useModalStore'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 import { cn } from '@/lib/cn'
 
 export const CATEGORY_TABS: { id: CategoryTabId; label: string }[] = [
-  { id: 'Element', label: '단품 관리' },
-  { id: 'Blend', label: '조합 관리' },
+  { id: 'ELEMENT', label: '단품 관리' },
+  { id: 'BLEND', label: '조합 관리' },
 ]
 
 interface CategoryAdminContentProps {

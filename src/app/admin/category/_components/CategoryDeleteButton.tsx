@@ -1,9 +1,8 @@
 'use client'
 
-import React from 'react'
 import Button from '@/components/common/Button'
 import TrashIcon from '@/assets/icons/trash.svg'
-import { deleteCategoryAction } from '../_lib/categoryAction'
+import { deleteCategoryAction } from '@/app/admin/category/_lib/categoryAction'
 import { useModalStore } from '@/store/useModalStore'
 
 interface CategoryDeleteButtonProps {

@@ -5,8 +5,8 @@ import Modal from '@/components/common/Modal/Modal'
 import Input from '@/components/common/Input'
 import Button from '@/components/common/Button'
 import { useModalStore } from '@/store/useModalStore'
-import type { CategoryTabId } from '../_types/AdminCategoryType'
-import { postCategoryAction } from '../_lib/categoryAction'
+import type { CategoryTabId } from '@/app/admin/category/_types/AdminCategoryType'
+import { postCategoryAction } from '@/app/admin/category/_lib/categoryAction'
 
 const LABEL_CLASS = 'flex flex-col gap-2 font-semibold'
 
@@ -22,7 +22,7 @@ export function CategoryPostModal({
   const [nameEn, setNameEn] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const isElement = activeTab === 'Element'
+  const isElement = activeTab === 'ELEMENT'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,11 +30,11 @@ export function CategoryPostModal({
 
     setIsLoading(true)
     try {
-      const parent_id = activeTab === 'Element' ? 1 : 2
+      const parent_id = activeTab === 'ELEMENT' ? 1 : 2
 
       const result = await postCategoryAction({
         parent_id,
-        level: '중분류',
+        level: '소분류',
         name: {
           kr: nameKr,
           en: nameEn,
