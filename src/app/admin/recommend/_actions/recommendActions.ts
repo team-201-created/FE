@@ -2,9 +2,15 @@
 
 import { revalidatePath } from 'next/cache'
 import { deleteAdminRecommend } from '../_api/adminDeleteRecommend'
-import { patchAdminBlendMapPublish } from '../_api/adminPatchRecommend'
-import { createAdminBlendMap } from '../_api/adminCreateRecommend'
-import { RecommendTabId } from '../_types'
+import {
+  patchAdminBlendMapPublish,
+  patchAdminProductPoolAdopt,
+} from '../_api/adminPatchRecommend'
+import {
+  createAdminBlendMap,
+  createAdminProductPool,
+} from '../_api/adminCreateRecommend'
+import { RecommendTabId, ProductPoolCreateBody } from '../_types'
 
 /**
  * 추천 관련 데이터 삭제 Server Action
@@ -35,8 +41,27 @@ export async function toggleRecommendStatusAction(
   try {
     if (tabId === 'blend-maps') {
       await patchAdminBlendMapPublish(id, status as 'PUBLISHED' | 'UNPUBLISHED')
+    } else if (tabId === 'product-pools') {
+      await patchAdminProductPoolAdopt(id, status as 'ADOPTED' | 'UNADOPTED')
     }
-    // TODO: product-pools, product-maps PATCH 연동 시 추가
+    // TODO: product-maps PATCH 연동 시 추가
+
+    revalidatePath('/admin/recommend')
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : null,
+    }
+  }
+}
+
+/**
+ * 제품 후보군 생성 Server Action
+ */
+export async function createProductPoolAction(body: ProductPoolCreateBody) {
+  try {
+    await createAdminProductPool(body)
 
     revalidatePath('/admin/recommend')
     return { success: true }

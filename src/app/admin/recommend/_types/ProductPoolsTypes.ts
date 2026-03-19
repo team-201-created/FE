@@ -1,5 +1,23 @@
 import { RecommendApiResponse } from './RecommendData'
 
+export interface ProductPoolCreateBody {
+  crawl_source: string
+  crawl_count: number
+  crawl_sort:
+    | 'REVIEW_RATING'
+    | 'REVIEW_COUNT'
+    | 'SALES_VOLUME'
+    | 'PRICE_HIGH'
+    | 'PRICE_LOW'
+  product_type: 'DIFFUSER' | 'PERFUME'
+  crawl_config: {
+    min_price: number
+    max_price: number
+    min_rating: number
+    min_review_count: number
+  }
+}
+
 export interface ProductPoolsItemResponse {
   id: number
   product_type: 'DIFFUSER' | 'PERFUME'
