@@ -1,6 +1,7 @@
 'use client'
 
 import React, { ReactNode, Suspense } from 'react'
+import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 import {
   AdminPageHeader,
   AdminTabGroup,
@@ -10,7 +11,7 @@ import {
   AdminTableError,
   AdminTableLoading,
 } from '@/app/admin/_components'
-import type { CategoryTabId } from '@/app/admin/category/_types/AdminCategoryType'
+import type { RootCategory } from '@/app/admin/category/_types/AdminCategoryType'
 import { CATEGORY_TABLE_HEADERS } from '@/constants/admin'
 import { ErrorBoundary } from 'react-error-boundary'
 import { CategoryPostModal } from '@/app/admin/category/_components/CategoryPostModal'
@@ -18,19 +19,21 @@ import { useModalStore } from '@/store/useModalStore'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 import { cn } from '@/lib/cn'
 
-export const CATEGORY_TABS: { id: CategoryTabId; label: string }[] = [
-  { id: 'ELEMENT', label: '단품 관리' },
-  { id: 'BLEND', label: '조합 관리' },
+export const CATEGORY_TABS: { id: RootCategory; label: string }[] = [
+  { id: 'element', label: '단품 관리' },
+  { id: 'blend', label: '조합 관리' },
 ]
 
 interface CategoryAdminContentProps {
-  activeTab: CategoryTabId
+  rootCategory: RootCategory
+  categoryResponsePromise: Promise<AdminCategoryListResponse>
   children: ReactNode
   searchParams: { [key: string]: string | undefined }
 }
 
 export default function CategoryAdminContent({
-  activeTab,
+  rootCategory,
+  categoryResponsePromise,
   children,
   searchParams,
 }: CategoryAdminContentProps) {
@@ -40,10 +43,6 @@ export default function CategoryAdminContent({
     resetParamsOnTabChange: ['category_id'],
   })
 
-  const handleCreateSuccess = () => {
-    // TODO: 모달 띄우기
-  }
-
   return (
     <AdminListCard className={cn(isPending && 'pointer-events-none')}>
       <AdminPageHeader
@@ -51,10 +50,13 @@ export default function CategoryAdminContent({
         buttonText="카테고리 등록"
         onButtonClick={() =>
           openModal(
-            <CategoryPostModal
-              activeTab={activeTab}
-              onSuccess={handleCreateSuccess}
-            />
+            // Promise가 미해결인 채로 모달이 열릴 경우를 대비한 Suspense
+            <Suspense fallback={null}>
+              <CategoryPostModal
+                rootCategory={rootCategory}
+                categoryResponsePromise={categoryResponsePromise}
+              />
+            </Suspense>
           )
         }
       />
@@ -67,14 +69,14 @@ export default function CategoryAdminContent({
 
       <AdminTabGroup
         tabs={CATEGORY_TABS}
-        activeTab={activeTab}
+        activeTab={rootCategory}
         onChange={onTabChange}
       />
 
       <AdminTable headers={CATEGORY_TABLE_HEADERS}>
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense
-            key={`${activeTab}-${JSON.stringify(searchParams)}`}
+            key={`${rootCategory}-${JSON.stringify(searchParams)}`}
             fallback={<AdminTableLoading />}
           >
             {children}

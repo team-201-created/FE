@@ -1,4 +1,4 @@
-export type CategoryTabId = 'ELEMENT' | 'BLEND'
+export type RootCategory = 'element' | 'blend'
 
 export interface CategoryName {
   kr: string

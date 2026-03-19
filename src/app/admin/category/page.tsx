@@ -1,8 +1,12 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import CategoryAdminContent from './_page/CategoryAdminContent'
-import type { CategoryTabId } from './_types/AdminCategoryType'
+import type { RootCategory } from './_types/AdminCategoryType'
 import { CategoryTableServer } from './_components/CategoryTableServer'
+import {
+  fetchAdminElementCategories,
+  fetchAdminBlendCategories,
+} from './_api/adminFetchCategory'
 import { notFound } from 'next/navigation'
 
 export const metadata: Metadata = {
@@ -19,18 +23,32 @@ export default async function CategoryAdminPage({
   const params = await searchParams
 
   const tabParam = params?.tab
-  const isValidTab = !tabParam || tabParam === 'ELEMENT' || tabParam === 'BLEND'
+  const isValidTab = !tabParam || tabParam === 'element' || tabParam === 'blend'
 
   if (!isValidTab) {
     notFound()
   }
 
-  const activeTab: CategoryTabId = (tabParam as CategoryTabId) || 'ELEMENT'
+  const rootCategory: RootCategory = (tabParam as RootCategory) || 'element'
+
+  // Promise만 생성
+  const categoryResponsePromise =
+    rootCategory === 'element'
+      ? fetchAdminElementCategories()
+      : fetchAdminBlendCategories()
 
   return (
     <Suspense fallback={null}>
-      <CategoryAdminContent activeTab={activeTab} searchParams={params}>
-        <CategoryTableServer activeTab={activeTab} searchParams={params} />
+      <CategoryAdminContent
+        rootCategory={rootCategory}
+        categoryResponsePromise={categoryResponsePromise}
+        searchParams={params}
+      >
+        <CategoryTableServer
+          rootCategory={rootCategory}
+          categoryResponsePromise={categoryResponsePromise}
+          searchParams={params}
+        />
       </CategoryAdminContent>
     </Suspense>
   )
