@@ -16,9 +16,7 @@ export default function AdminLayout({
         <div className="w-full md:w-auto">
           <AdminSidebar />
         </div>
-        <main className="min-h-[500px] w-full flex-1 overflow-x-auto">
-          {children}
-        </main>
+        <main className="min-h-[500px] w-full flex-1">{children}</main>
       </div>
     </div>
   )
