@@ -28,7 +28,7 @@ export const GlobalModal = () => {
           >
             <ModalOverlay onClose={handleOverlayClose}>
               {modal.alertConfig ? (
-                <div onClick={(e) => e.stopPropagation()}>
+                <div className="contents" onClick={(e) => e.stopPropagation()}>
                   <AlertModal
                     isOpen
                     onClose={closeModal}
@@ -36,7 +36,9 @@ export const GlobalModal = () => {
                   />
                 </div>
               ) : modal.content ? (
-                <div onClick={(e) => e.stopPropagation()}>{modal.content}</div>
+                <div className="contents" onClick={(e) => e.stopPropagation()}>
+                  {modal.content}
+                </div>
               ) : null}
             </ModalOverlay>
           </div>

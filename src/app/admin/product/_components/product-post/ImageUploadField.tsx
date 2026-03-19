@@ -1,4 +1,5 @@
 import type { RefObject } from 'react'
+import Image from 'next/image'
 
 const LABEL_CLASS = 'flex flex-col gap-2 font-semibold'
 const REQUIRED_MARK = <span className="ml-0.5 text-red-500">*</span>
@@ -33,7 +34,7 @@ export function ImageUploadField({
       />
       {imagePreview ? (
         <div className="relative w-full overflow-hidden rounded-lg border border-neutral-200">
-          <img
+          <Image
             src={imagePreview}
             alt="미리보기"
             className="h-36 w-full object-cover"
