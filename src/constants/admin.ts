@@ -39,9 +39,9 @@ export const TEST_TABLE_HEADERS: AdminTableHeader[] = [
   { label: '테스트명' },
   { label: '유형' },
   { label: '노출 상태' },
-  { label: '참여자 수' },
-  { label: '생성일' },
-  { label: '수정일' },
+  { label: '' },
+  { label: '생성 일시' },
+  { label: '수정 일시' },
   { label: '작업' },
 ]
 
@@ -80,8 +80,8 @@ export const PRODUCT_POOLS_HEADERS: AdminTableHeader[] = [
   { label: '제품 유형' },
   { label: '채택 상태' },
   { label: '' },
-  { label: '생성일시' },
-  { label: '수정일시' },
+  { label: '생성 일시' },
+  { label: '수정 일시' },
   { label: '작업' },
 ]
 
@@ -90,8 +90,8 @@ export const PRODUCT_MAPS_HEADERS: AdminTableHeader[] = [
   { label: '' },
   { label: '노출 상태' },
   { label: '' },
-  { label: '생성일시' },
-  { label: '수정일시' },
+  { label: '생성 일시' },
+  { label: '수정 일시' },
   { label: '작업' },
 ]
 

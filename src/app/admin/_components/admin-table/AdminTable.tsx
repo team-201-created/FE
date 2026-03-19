@@ -30,7 +30,7 @@ export const AdminTable = ({ headers, children }: AdminTableProps) => (
               key={header.label || idx}
               className={cn(
                 'p-3 text-xs font-semibold md:p-4 md:text-sm',
-                idx === 0 ? 'px-4 text-left md:px-6' : 'text-center'
+                idx === 0 ? 'text-left' : 'text-center'
               )}
               style={{ gridColumn: idx + 1 }}
             >
@@ -51,14 +51,17 @@ export const AdminTableRow = ({
   children,
   className,
   type = 'default',
+  onClick,
 }: {
   children: React.ReactNode
   className?: string
   type?: 'default' | 'product'
+  onClick?: () => void
 }) => (
   <div
+    onClick={onClick}
     className={cn(
-      'border-gray-white grid cursor-pointer items-center border-b transition-colors hover:bg-neutral-100',
+      'border-gray-white grid cursor-pointer items-center border-b transition-colors hover:bg-neutral-50/50',
       type === 'product' ? 'min-h-[112px]' : 'min-h-[72px]',
       TABLE_GRID_LAYOUT,
       className

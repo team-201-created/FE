@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  AdminTableRow,
   AdminTableCell,
   AdminFirstCell,
   AdminDateCell,
@@ -9,8 +8,9 @@ import {
   AdminPagination,
 } from '@/app/admin/_components'
 import { fetchAdminTests } from '../_api/adminFetchTest'
-import { TestDeleteButton } from './TestDeleteButton'
 import { TestStatusCell } from './TestStatusCell'
+import { TestTableRow } from './TestTableRow'
+// import { TestDeleteButton } from './TestDeleteButton' // TODO: DELETE API 미개발, 추후 활성화
 
 interface TestTableServerProps {
   searchParams: {
@@ -31,10 +31,10 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
     size: pageSize,
     profiling_type: searchParams.profiling_type,
     publish_status: searchParams.publish_status,
-    q: searchParams.q,
+    search: searchParams.q,
   })
 
-  const tests = response?.data?.content || []
+  const tests = response?.data?.results || []
   const totalPages = response?.data?.total_pages ?? 1
 
   if (!tests.length && currentPage === 1) {
@@ -44,23 +44,21 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
   return (
     <>
       {tests.map((test) => (
-        <AdminTableRow key={test.id}>
+        <TestTableRow key={test.id} testId={test.id}>
           <AdminFirstCell>{test.name}</AdminFirstCell>
 
           <AdminTypeCell slot={2} type={test.profiling_type} />
 
           <TestStatusCell testId={test.id} status={test.publish_status} />
 
-          <AdminTableCell slot={4}>-</AdminTableCell>
-
           <AdminDateCell slot={5} date={test.created_at} />
 
           <AdminDateCell slot={6} date={test.updated_at} />
 
           <AdminTableCell slot={7}>
-            <TestDeleteButton testId={test.id} />
+            {/* <TestDeleteButton testId={test.id} /> TODO: DELETE API 미개발, 추후 활성화 */}
           </AdminTableCell>
-        </AdminTableRow>
+        </TestTableRow>
       ))}
 
       <AdminPagination currentPage={currentPage} totalPages={totalPages} />
