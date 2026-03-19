@@ -10,6 +10,9 @@ const DEFAULT_HEADERS: Record<string, string> = {
   Accept: 'application/json',
 }
 
+const AUTH_REFRESH_PATH = '/api/auth/refresh'
+const RETRY_HEADER = 'x-auth-retried'
+
 // 공통 Response Interceptor
 export const handleResponse = async (response: Response): Promise<Response> => {
   if (response.ok) return response
@@ -59,7 +62,43 @@ export const appFetch = createFetch({
       }
       return args
     },
-    response: handleResponse,
+    response: async (response, requestArgs) => {
+      if (
+        response.status === 401 &&
+        typeof window !== 'undefined' &&
+        !requestArgs.url.includes(AUTH_REFRESH_PATH)
+      ) {
+        const headers = new Headers(requestArgs.options.headers as HeadersInit)
+        const hasRetried = headers.get(RETRY_HEADER) === '1'
+
+        if (!hasRetried) {
+          const refreshResponse = await fetch(AUTH_REFRESH_PATH, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          })
+
+          if (refreshResponse.ok) {
+            headers.set(RETRY_HEADER, '1')
+
+            const retryResponse = await fetch(requestArgs.url, {
+              ...requestArgs.options,
+              headers: Object.fromEntries(headers.entries()),
+            })
+
+            if (retryResponse.ok) {
+              return retryResponse
+            }
+
+            return handleResponse(retryResponse)
+          }
+        }
+      }
+
+      return handleResponse(response)
+    },
   },
 })
 
