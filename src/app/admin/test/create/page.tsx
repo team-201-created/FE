@@ -17,7 +17,7 @@ export default function TestCreatePage() {
   const { state, actions } = useTestCreate()
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex min-w-[600px] flex-col gap-8">
       <AdminPageHeader
         title="새 테스트 생성"
         leftContent={
@@ -33,6 +33,7 @@ export default function TestCreatePage() {
             <Button
               rounded="sm"
               className="border-gray-light text-black-primary border bg-white font-bold"
+              onClick={actions.handlePreview}
             >
               미리보기
             </Button>
@@ -41,7 +42,7 @@ export default function TestCreatePage() {
             </Button>
           </div>
         }
-        containerClassName="rounded-[20px] bg-white p-8 m-0"
+        containerClassName="rounded-[20px] bg-white p-8 m-0 sticky top-16 z-20"
       />
 
       <AdminListCard>
@@ -63,7 +64,7 @@ export default function TestCreatePage() {
                 value={state.formData.name}
                 onChange={(e) => actions.updateField('name', e.target.value)}
                 placeholder="테스트 이름을 입력하세요 ex) 취향 테스트 v1.1"
-                className="border-gray-light w-full rounded-2xl border bg-gray-50/50 p-4 text-sm outline-none focus:border-violet-300 focus:bg-white"
+                className="border-gray-light focus:border-black-primary w-full rounded-2xl border bg-gray-50/50 p-4 outline-none focus:bg-white"
               />
             </div>
 
