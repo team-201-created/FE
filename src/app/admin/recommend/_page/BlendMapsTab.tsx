@@ -1,5 +1,3 @@
-'use client'
-
 import {
   AdminTableRow,
   AdminTableCell,
@@ -7,7 +5,7 @@ import {
   AdminFirstCell,
   AdminTypeCell,
 } from '@/app/admin/_components'
-import { RecommendDeleteButton } from '../_components/RecommendDeleteButton'
+// import { RecommendDeleteButton } from '../_components/RecommendDeleteButton' // TODO: DELETE API 미개발, 추후 활성화
 import { RecommendStatusCell } from '../_components/RecommendStatusCell'
 import {
   BlendMapsItemResponse,
@@ -35,7 +33,7 @@ export const BlendMapsTab = ({
           <AdminDateCell slot={5} date={row.created_at} />
           <AdminDateCell slot={6} date={row.updated_at} />
           <AdminTableCell slot={7}>
-            <RecommendDeleteButton tabId="blend-maps" id={row.id} />
+            {/* <RecommendDeleteButton tabId="blend-maps" id={row.id} /> TODO: DELETE API 미개발, 추후 활성화 */}
           </AdminTableCell>
         </AdminTableRow>
       ))}
