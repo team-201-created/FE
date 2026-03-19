@@ -15,7 +15,7 @@ export async function POST() {
     const refreshToken = cookieStore.get('refresh_token')?.value
 
     if (!refreshToken) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           success: false,
           data: null,
@@ -26,6 +26,11 @@ export async function POST() {
         },
         { status: 401 }
       )
+
+      response.cookies.set('access_token', '', { maxAge: 0, path: '/' })
+      response.cookies.set('refresh_token', '', { maxAge: 0, path: '/' })
+
+      return response
     }
 
     const refreshed = await postTokenRefresh(refreshToken)
