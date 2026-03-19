@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { deleteAdminRecommend } from '../_api/adminDeleteRecommend'
+import { patchAdminBlendMapPublish } from '../_api/adminPatchRecommend'
+import { createAdminBlendMap } from '../_api/adminCreateRecommend'
 import { RecommendTabId } from '../_types'
 
 /**
@@ -11,12 +13,14 @@ export async function deleteRecommendAction(tabId: RecommendTabId, id: number) {
   try {
     await deleteAdminRecommend(tabId, id)
 
-    // 추천 관리 페이지 데이터 갱신
     revalidatePath('/admin/recommend')
 
     return { success: true }
   } catch (error) {
-    return { success: false, error }
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : null,
+    }
   }
 }
 
@@ -29,13 +33,34 @@ export async function toggleRecommendStatusAction(
   status: string
 ) {
   try {
-    // TODO: 실제 API 연동 시 tabId에 따라 endpoint 분기
-    // 1. await authFetch.patch(`/api/v1/admin/matches/${tabId}/${id}`, { [statusKey]: status })
+    if (tabId === 'blend-maps') {
+      await patchAdminBlendMapPublish(id, status as 'PUBLISHED' | 'UNPUBLISHED')
+    }
+    // TODO: product-pools, product-maps PATCH 연동 시 추가
 
-    // 현재는 revalidatePath만 수행하여 서버 컴포넌트를 갱신하도록 함
     revalidatePath('/admin/recommend')
     return { success: true }
   } catch (error) {
-    return { success: false, error }
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : null,
+    }
+  }
+}
+
+/**
+ * 향조합 추천맵 생성 Server Action
+ */
+export async function createBlendMapAction(input_type: string) {
+  try {
+    await createAdminBlendMap(input_type)
+
+    revalidatePath('/admin/recommend')
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : null,
+    }
   }
 }

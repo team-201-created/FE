@@ -32,7 +32,6 @@ export async function RecommendTableServer({
   const options = {
     page: currentPage,
     size: pageSize,
-    q: searchParams.q,
     ...(activeTab === 'product-pools'
       ? { adoption_status: searchParams.status }
       : { publish_status: searchParams.status }),
@@ -41,8 +40,13 @@ export async function RecommendTableServer({
 
   const response = await RECOMMEND_API.get(activeTab, options as any)
 
-  const recommendData = response?.success ? response.data.content : []
+  const responseData = response?.success ? response.data.results : []
   const totalPages = response?.data?.total_pages ?? 1
+
+  const q = searchParams.q?.toLowerCase()
+  const recommendData = q
+    ? responseData.filter((item: any) => String(item.id).includes(q))
+    : responseData
 
   const ActiveTabContent = MAP_COMPONENTS[activeTab]
 
