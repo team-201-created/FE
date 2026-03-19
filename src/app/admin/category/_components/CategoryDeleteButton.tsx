@@ -4,12 +4,15 @@ import Button from '@/components/common/Button'
 import TrashIcon from '@/assets/icons/trash.svg'
 import { deleteCategoryAction } from '@/app/admin/category/_lib/categoryAction'
 import { useModalStore } from '@/store/useModalStore'
+import type { RootCategory } from '@/app/admin/category/_types/AdminCategoryType'
 
 interface CategoryDeleteButtonProps {
+  rootCategory: RootCategory
   categoryId: number
 }
 
 export function CategoryDeleteButton({
+  rootCategory,
   categoryId,
 }: CategoryDeleteButtonProps) {
   const { openAlert, closeModal } = useModalStore()
@@ -22,14 +25,26 @@ export function CategoryDeleteButton({
       confirmText: '삭제',
       onConfirm: async () => {
         try {
-          const result = await deleteCategoryAction(categoryId)
+          const result = await deleteCategoryAction(rootCategory, categoryId)
           if (result.success) {
             closeModal()
           } else {
-            alert('삭제에 실패했습니다.')
+            openAlert({
+              type: 'danger',
+              title: '카테고리 삭제 실패',
+              content:
+                result.message ??
+                '카테고리 삭제에 실패했습니다. 다시 시도해 주세요.',
+              confirmText: '확인',
+            })
           }
         } catch {
-          alert('삭제 중 오류가 발생했습니다.')
+          openAlert({
+            type: 'danger',
+            title: '카테고리 삭제 실패',
+            content: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+            confirmText: '확인',
+          })
         }
       },
     })

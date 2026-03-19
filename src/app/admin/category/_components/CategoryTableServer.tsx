@@ -1,10 +1,8 @@
-import {
-  fetchAdminElementCategories,
-  fetchAdminBlendCategories,
-} from '@/app/admin/category/_api/adminFetchCategory'
+import { use } from 'react'
 import type {
+  AdminCategoryListResponse,
   CategoryChild,
-  CategoryTabId,
+  RootCategory,
 } from '@/app/admin/category/_types/AdminCategoryType'
 import {
   AdminTableRow,
@@ -19,24 +17,21 @@ import { processCategoryItems } from '@/app/admin/category/_utils/categoryUtils'
 import { CategoryDeleteButton } from './CategoryDeleteButton'
 
 interface CategoryTableServerProps {
-  activeTab: CategoryTabId
+  rootCategory: RootCategory
+  categoryResponsePromise: Promise<AdminCategoryListResponse>
   searchParams: {
     q?: string
   }
 }
 
-export async function CategoryTableServer({
-  activeTab,
+export function CategoryTableServer({
+  rootCategory,
+  categoryResponsePromise,
   searchParams,
 }: CategoryTableServerProps) {
-  const response =
-    activeTab === 'ELEMENT'
-      ? await fetchAdminElementCategories()
-      : await fetchAdminBlendCategories()
-
-  // response.data.categories[0] 계층 구조
-  const rootCategory = response?.data?.categories?.[0]
-  const rootCategoryItems = rootCategory?.children || []
+  const categoryResponse = use(categoryResponsePromise)
+  const rootCategoryData = categoryResponse?.data?.categories?.[0]
+  const rootCategoryItems = rootCategoryData?.children || []
 
   // 카테고리는 페이징이 현재 UI상 없어도 로직상 안전하게 처리
   const { items } = processCategoryItems(rootCategoryItems, {
@@ -70,7 +65,10 @@ export async function CategoryTableServer({
 
           <AdminTableCell slot={7}>
             <div className="flex justify-center">
-              <CategoryDeleteButton categoryId={item.category_id} />
+              <CategoryDeleteButton
+                rootCategory={rootCategory}
+                categoryId={item.category_id}
+              />
             </div>
           </AdminTableCell>
         </AdminTableRow>

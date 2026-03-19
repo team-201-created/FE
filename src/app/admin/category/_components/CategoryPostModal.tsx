@@ -1,39 +1,53 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import Modal from '@/components/common/Modal/Modal'
 import Input from '@/components/common/Input'
 import Button from '@/components/common/Button'
 import { useModalStore } from '@/store/useModalStore'
-import type { CategoryTabId } from '@/app/admin/category/_types/AdminCategoryType'
+import type {
+  AdminCategoryListResponse,
+  RootCategory,
+} from '@/app/admin/category/_types/AdminCategoryType'
 import { postCategoryAction } from '@/app/admin/category/_lib/categoryAction'
 
 const LABEL_CLASS = 'flex flex-col gap-2 font-semibold'
 
 export function CategoryPostModal({
-  activeTab,
-  onSuccess,
+  rootCategory,
+  categoryResponsePromise,
 }: {
-  activeTab: CategoryTabId
-  onSuccess: () => void
+  rootCategory: RootCategory
+  categoryResponsePromise: Promise<AdminCategoryListResponse>
 }) {
-  const { closeModal } = useModalStore()
+  const categoryResponse = use(categoryResponsePromise)
+  const rootCategoryId = categoryResponse?.data?.categories?.[0]?.category_id
+
+  const { closeModal, openAlert } = useModalStore()
   const [nameKr, setNameKr] = useState('')
   const [nameEn, setNameEn] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const isElement = activeTab === 'ELEMENT'
+  const isElement = rootCategory === 'element'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!nameKr || !nameEn) return
+    if (!nameKr || !nameEn || rootCategoryId === undefined) return
+
+    if (nameEn.includes(' ')) {
+      openAlert({
+        type: 'danger',
+        title: '영문명 오류',
+        content: '영문명에 공백이 포함되어 있습니다. 공백을 제거해 주세요.',
+        confirmText: '확인',
+      })
+      return
+    }
 
     setIsLoading(true)
     try {
-      const parent_id = activeTab === 'ELEMENT' ? 1 : 2
-
-      const result = await postCategoryAction({
-        parent_id,
+      const result = await postCategoryAction(rootCategory, {
+        parent_id: rootCategoryId,
         level: '소분류',
         name: {
           kr: nameKr,
@@ -42,13 +56,24 @@ export function CategoryPostModal({
       })
 
       if (result.success) {
-        onSuccess() // 추가적인 클라이언트 로직이 필요할 경우 호출
         closeModal()
-        setNameKr('')
-        setNameEn('')
+      } else {
+        openAlert({
+          type: 'danger',
+          title: '카테고리 등록 실패',
+          content:
+            result.message ??
+            '카테고리 등록에 실패했습니다. 다시 시도해 주세요.',
+          confirmText: '확인',
+        })
       }
     } catch {
-      // 여기서는 로딩 해제만
+      openAlert({
+        type: 'danger',
+        title: '카테고리 등록 실패',
+        content: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+        confirmText: '확인',
+      })
     } finally {
       setIsLoading(false)
     }
