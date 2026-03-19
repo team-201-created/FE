@@ -12,10 +12,10 @@ export interface TestListItem {
 export interface TestListResponse {
   success: boolean
   data: {
-    content: TestListItem[]
+    results: TestListItem[]
     page: number
     size: number
-    total_elements: number
+    count: number
     total_pages: number
   }
 }
