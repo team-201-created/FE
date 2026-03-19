@@ -9,7 +9,7 @@ export interface Question {
   key: string // 내부 체크용 키
   question_key: string
   question_text: string
-  selection_type: 'SINGLE' | 'MULTI' | 'PHOTO'
+  selection_type: 'SINGLE' | 'MULTI'
   is_required: boolean
   sort_order: number
   options: Option[]

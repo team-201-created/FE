@@ -49,7 +49,10 @@ export const AdminStatusCell = ({
       {onClick ? (
         <button
           type="button"
-          onClick={onClick}
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick?.()
+          }}
           disabled={isPending}
           className={cn(statusClass, !isPending && 'cursor-pointer')}
         >

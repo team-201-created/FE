@@ -62,8 +62,8 @@ export const QuestionForm = ({
   }
 
   return (
-    <div className="border-gray-light rounded-[20px] border bg-white p-6 shadow-sm">
-      <div className="mb-6 flex items-center gap-4">
+    <div className="border-gray-light rounded-[20px] border bg-white p-4 shadow-sm md:p-6">
+      <div className="mb-6 flex items-center gap-2 md:gap-4">
         <DragHolder />
 
         <div className="bg-black-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white">
@@ -90,7 +90,7 @@ export const QuestionForm = ({
         </button>
       </div>
 
-      <div className="mb-6 flex items-center gap-10 pl-10">
+      <div className="mb-6 flex flex-col items-start gap-3 pl-4 md:flex-row md:items-center md:gap-6 md:pl-10">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="text-md text-gray font-bold">유형</span>
@@ -118,33 +118,31 @@ export const QuestionForm = ({
           </div>
         </div>
 
-        {question.selection_type !== 'PHOTO' && (
-          <div className="flex items-center gap-4">
-            <label className="text-success text-[11px] font-bold tracking-tight uppercase">
-              선택형태
-            </label>
-            <div className="flex gap-1">
-              {[
-                { label: '단일선택', value: 'SINGLE' },
-                { label: '다중선택', value: 'MULTI' },
-              ].map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleSelectionTypeChange(opt.value)}
-                  className={cn(
-                    'cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-bold',
-                    question.selection_type === opt.value
-                      ? 'bg-success border-success text-white'
-                      : 'border-gray-light bg-white text-gray-400'
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+        <div className="flex items-center gap-4">
+          <label className="text-success text-[11px] font-bold tracking-tight uppercase">
+            선택형태
+          </label>
+          <div className="flex gap-1">
+            {[
+              { label: '단일선택', value: 'SINGLE' },
+              { label: '다중선택', value: 'MULTI' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => handleSelectionTypeChange(opt.value)}
+                className={cn(
+                  'cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-bold',
+                  question.selection_type === opt.value
+                    ? 'bg-success border-success text-white'
+                    : 'border-gray-light bg-white text-gray-400'
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
 
         <div className="flex items-center gap-4">
           <label className="text-danger text-[11px] font-bold">필수여부</label>
@@ -171,74 +169,66 @@ export const QuestionForm = ({
         </div>
       </div>
 
-      {question.selection_type === 'PHOTO' ? (
-        <div className="border-gray-light mt-4 rounded-xl border border-dashed bg-gray-50/50 p-10 text-center">
-          <p className="text-gray text-sm">
-            사용자가 사진을 업로드할 수 있는 영역입니다.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="text-gray text-xs font-bold">답변 선택지</label>
-            <button
-              onClick={onAddOption}
-              className="text-black-primary cursor-pointer text-xs font-bold underline"
-            >
-              선택지 추가
-            </button>
-          </div>
-
-          <Reorder.Group
-            axis="y"
-            values={question.options}
-            onReorder={onReorderOptions}
-            className="space-y-2"
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="text-gray text-xs font-bold">답변 선택지</label>
+          <button
+            onClick={onAddOption}
+            className="text-black-primary cursor-pointer text-xs font-bold underline"
           >
-            {question.options.map((option, oIdx) => (
-              <Reorder.Item
-                key={option.key}
-                value={option}
-                className="flex items-center gap-3 bg-white"
-                initial={false}
-                transition={{ duration: 0 }}
-              >
-                <DragHolder />
-
-                <div className="flex flex-1 items-center gap-2">
-                  <input
-                    type="text"
-                    value={option.answer_option_text}
-                    onChange={(e) =>
-                      onUpdateOption(option.key, {
-                        answer_option_text: e.target.value,
-                      })
-                    }
-                    placeholder={`선택지 ${oIdx + 1}`}
-                    className="border-gray-light flex-1 rounded-xl border bg-gray-50/50 px-4 py-3 text-sm outline-none focus:border-violet-300 focus:bg-white"
-                  />
-                  <AdminSelect
-                    width="w-[171px]"
-                    options={availableOptions}
-                    value={option.answer_option_key}
-                    onChange={(val: string) => {
-                      onUpdateOption(option.key, {
-                        answer_option_key: val,
-                      })
-                    }}
-                  />
-                </div>
-                <button
-                  onClick={() => onRemoveOption(option.key)}
-                  className="hover:text-danger cursor-pointer text-gray-300"
-                >
-                  <TrashIcon width={16} height={16} />
-                </button>
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
+            선택지 추가
+          </button>
         </div>
-      )}
+
+        <Reorder.Group
+          axis="y"
+          values={question.options}
+          onReorder={onReorderOptions}
+          className="space-y-2"
+        >
+          {question.options.map((option, oIdx) => (
+            <Reorder.Item
+              key={option.key}
+              value={option}
+              className="flex items-center gap-3 bg-white"
+              initial={false}
+              transition={{ duration: 0 }}
+            >
+              <DragHolder />
+
+              <div className="flex flex-1 items-center gap-2">
+                <input
+                  type="text"
+                  value={option.answer_option_text}
+                  onChange={(e) =>
+                    onUpdateOption(option.key, {
+                      answer_option_text: e.target.value,
+                    })
+                  }
+                  placeholder={`선택지 ${oIdx + 1}`}
+                  className="border-gray-light flex-1 rounded-xl border bg-gray-50/50 px-4 py-3 text-sm outline-none focus:border-violet-300 focus:bg-white"
+                />
+                <AdminSelect
+                  width="w-[120px] md:w-[171px]"
+                  options={availableOptions}
+                  value={option.answer_option_key}
+                  onChange={(val: string) => {
+                    onUpdateOption(option.key, {
+                      answer_option_key: val,
+                    })
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => onRemoveOption(option.key)}
+                className="hover:text-danger cursor-pointer text-gray-300"
+              >
+                <TrashIcon width={16} height={16} />
+              </button>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      </div>
     </div>
   )
 }

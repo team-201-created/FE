@@ -1,10 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { TestFormData, Question, Option } from '../_types'
 import { DEFAULT_TEMPLATES } from '../_constants/presets'
+import { createTestAction } from '../../_actions/testActions'
+import { useModalStore } from '@/store/useModalStore'
+import { TestPreviewModal } from '../_components/TestPreviewModal'
 
 export const useTestCreate = () => {
+  const router = useRouter()
+  const { openAlert, openModal, closeModal } = useModalStore()
   const [uiCategory, setUiCategory] = useState<string>('PREFERENCE')
 
   const generateUniqueId = (prefix: string) =>
@@ -35,11 +41,9 @@ export const useTestCreate = () => {
   const updateCategory = (categoryName: string) => {
     setUiCategory(categoryName)
 
-    const apiType = categoryName
-
     setFormData((prev) => ({
       ...prev,
-      profiling_type: apiType,
+      profiling_type: categoryName,
       questions: (DEFAULT_TEMPLATES[categoryName] || []).map((q, idx) => ({
         ...q,
         key: generateUniqueId(q.question_key),
@@ -142,7 +146,61 @@ export const useTestCreate = () => {
     updateQuestion(qKey, { options: reordered })
   }
 
-  const handleSave = () => {
+  const validate = (): string | null => {
+    if (!formData.name.trim()) {
+      return '테스트 이름을 입력해주세요.'
+    }
+
+    if (formData.questions.length === 0) {
+      return '테스트 질문을 1개 이상 추가해주세요.'
+    }
+
+    const questionKeys = formData.questions.map((q) => q.question_key)
+    if (new Set(questionKeys).size !== questionKeys.length) {
+      return '중복된 유형의 질문이 있습니다. 각 질문 유형은 한 번만 사용할 수 있습니다.'
+    }
+
+    for (let i = 0; i < formData.questions.length; i++) {
+      const q = formData.questions[i]
+
+      if (!q.question_text.trim()) {
+        return `${i + 1}번 질문의 내용을 입력해주세요.`
+      }
+
+      if (q.question_text.length > 50) {
+        return `${i + 1}번 질문의 내용이 제한 글자수를 초과했습니다. \n(최대 50자)`
+      }
+
+      if (q.options.length === 0) {
+        return `${i + 1}번 질문의 답변 선택지를 1개 이상 추가해주세요.`
+      }
+
+      for (let j = 0; j < q.options.length; j++) {
+        if (!q.options[j].answer_option_text.trim()) {
+          return `${i + 1}번 질문의 ${j + 1}번 선택지 내용을 입력해주세요.`
+        }
+
+        if (q.options[j].answer_option_text.length > 50) {
+          return `${i + 1}번 질문의 ${j + 1}번 선택지 내용이 제한 글자수를 초과했습니다. \n (최대 50자)`
+        }
+      }
+    }
+
+    return null
+  }
+
+  const handleSave = async () => {
+    const validationError = validate()
+    if (validationError) {
+      openAlert({
+        type: 'danger',
+        title: '입력 오류',
+        content: validationError,
+        confirmText: '확인',
+      })
+      return
+    }
+
     const payload = {
       name: formData.name,
       description: formData.description,
@@ -160,7 +218,31 @@ export const useTestCreate = () => {
         })),
       })),
     }
-    console.log('요청 페이로드 : ', payload)
+
+    try {
+      const result = await createTestAction(payload)
+      if (result.success) {
+        router.push('/admin/test')
+      } else {
+        openAlert({
+          type: 'danger',
+          title: '테스트 생성 실패',
+          content: result.message ?? '테스트 생성에 실패했습니다.',
+          confirmText: '확인',
+        })
+      }
+    } catch {
+      openAlert({
+        type: 'danger',
+        title: '테스트 생성 실패',
+        content: '테스트 생성 중 오류가 발생했습니다.',
+        confirmText: '확인',
+      })
+    }
+  }
+
+  const handlePreview = () => {
+    openModal(<TestPreviewModal formData={formData} onClose={closeModal} />)
   }
 
   return {
@@ -172,6 +254,7 @@ export const useTestCreate = () => {
       updateField,
       updateCategory,
       handleSave,
+      handlePreview,
       question: {
         add: addQuestion,
         remove: removeQuestion,
