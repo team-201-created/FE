@@ -2,6 +2,14 @@ import type { ApiResponse, AuthTokens, AuthorizeUrl, User } from '@/types'
 import { apiFetch, appFetch } from './client'
 import { FetchError } from './fetchError'
 
+type TokenRefreshData = {
+  access_token: string
+  refresh_token: string
+  token_type: string
+  expires_in: number
+  refresh_expires_in: number
+}
+
 /**
  * 소셜 로그인/회원가입 URL을 요청합니다.
  * @param provider 소셜 제공자 (e.g., 'kakao')
@@ -78,6 +86,30 @@ export function postSessionLogin(
     accessToken,
     refreshToken,
   })
+}
+
+/**
+ * 리프레시 토큰으로 토큰 재발급을 요청합니다.
+ */
+export async function postTokenRefresh(
+  refreshToken: string
+): Promise<ApiResponse<TokenRefreshData>> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL
+  const response = await fetch(`${baseUrl}/api/v1/auth/token/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  })
+
+  const data = (await response
+    .json()
+    .catch(() => null)) as ApiResponse<TokenRefreshData> | null
+
+  if (!response.ok || !data) {
+    throw new Error(data?.error?.message || 'Failed to refresh token')
+  }
+
+  return data
 }
 
 /**
