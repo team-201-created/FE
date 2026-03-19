@@ -13,6 +13,14 @@ const DEFAULT_HEADERS: Record<string, string> = {
 const AUTH_REFRESH_PATH = '/api/auth/refresh'
 const RETRY_HEADER = 'x-auth-retried'
 
+type RefreshErrorPayload = {
+  success?: boolean
+  error?: {
+    code?: string
+    message?: string
+  }
+}
+
 // 공통 Response Interceptor
 export const handleResponse = async (response: Response): Promise<Response> => {
   if (response.ok) return response
@@ -94,6 +102,23 @@ export const appFetch = createFetch({
 
             return handleResponse(retryResponse)
           }
+
+          const refreshError = (await refreshResponse
+            .json()
+            .catch(() => null)) as RefreshErrorPayload | null
+
+          const { useModalStore } = await import('@/store/useModalStore')
+          useModalStore.getState().openAlert({
+            type: 'danger',
+            title: '인증이 만료되었습니다.',
+            content:
+              refreshError?.error?.message ||
+              '세션이 만료되었습니다. 다시 로그인해 주세요.',
+            confirmText: '로그인으로 이동',
+            onConfirm: () => {
+              window.location.href = '/login'
+            },
+          })
         }
       }
 
