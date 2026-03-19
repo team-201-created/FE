@@ -115,11 +115,20 @@ export function useAdminTable({
     [updateUrl, resetParamsOnTabChange]
   )
 
+  const resetParams = useCallback(
+    (keys: string[]) => {
+      const resets = Object.fromEntries(keys.map((k) => [k, null]))
+      updateUrl({ ...resets, page: null })
+    },
+    [updateUrl]
+  )
+
   return {
     searchTerm,
     setSearchTerm,
     onFilterChange,
     onTabChange,
+    resetParams,
     searchParams,
     isPending,
   }

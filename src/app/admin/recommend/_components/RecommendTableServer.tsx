@@ -15,7 +15,6 @@ interface RecommendTableServerProps {
   searchParams: {
     page?: string
     size?: string
-    q?: string
     status?: string
     input_type?: string
     sort?: string
@@ -27,11 +26,10 @@ export async function RecommendTableServer({
   searchParams,
 }: RecommendTableServerProps) {
   const currentPage = Math.max(1, Number(searchParams.page) || 1)
-  const pageSize = 10
 
   const options = {
     page: currentPage,
-    size: pageSize,
+    size: 10,
     ...(activeTab === 'product-pools'
       ? { adoption_status: searchParams.status }
       : { publish_status: searchParams.status }),
@@ -40,13 +38,8 @@ export async function RecommendTableServer({
 
   const response = await RECOMMEND_API.get(activeTab, options as any)
 
-  const responseData = response?.success ? response.data.results : []
+  const recommendData = response?.success ? response.data.results : []
   const totalPages = response?.data?.total_pages ?? 1
-
-  const q = searchParams.q?.toLowerCase()
-  const recommendData = q
-    ? responseData.filter((item: any) => String(item.id).includes(q))
-    : responseData
 
   const ActiveTabContent = MAP_COMPONENTS[activeTab]
 
