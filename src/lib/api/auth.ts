@@ -123,5 +123,5 @@ export function postLogout(): Promise<ApiResponse<null>> {
  * 현재 로그인된 사용자 정보를 가져옵니다.
  */
 export function getMe(): Promise<ApiResponse<User>> {
-  return appFetch.get<ApiResponse<User>>('/api/auth/me')
+  return appFetch.get<ApiResponse<User>>('/api/v1/users/me')
 }

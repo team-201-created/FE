@@ -4,7 +4,7 @@ import type { User } from '@/types'
 
 interface AuthState {
   isInitialized: boolean
-  /** 로그인 시 /api/auth/me 동기화 완료 여부(헤더·관리자 메뉴 판단용) */
+  /** 로그인 시 /api/v1/users/me 동기화 완료 여부(헤더·관리자 메뉴 판단용) */
   userProfileLoaded: boolean
   isLoggedIn?: boolean
   user: User | null

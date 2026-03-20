@@ -37,7 +37,7 @@ export async function GET() {
       )
     }
 
-    const response = await fetch(`${baseUrl}/api/v1/auth/me`, {
+    const response = await fetch(`${baseUrl}/api/v1/users/me`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -56,7 +56,7 @@ export async function GET() {
           success: false,
           data: null,
           error: {
-            code: data?.error?.code ?? 'ME_FETCH_FAILED',
+            code: data?.error?.code ?? 'USERS_ME_FETCH_FAILED',
             message: data?.error?.message ?? 'Failed to fetch user profile.',
           },
         },
@@ -66,13 +66,13 @@ export async function GET() {
 
     return NextResponse.json(data, { status: response.status })
   } catch (error) {
-    console.error('Me API error:', error)
+    console.error('Users me API error:', error)
     return NextResponse.json(
       {
         success: false,
         data: null,
         error: {
-          code: 'ME_FAILED',
+          code: 'USERS_ME_FAILED',
           message: 'An error occurred while fetching profile.',
         },
       },
