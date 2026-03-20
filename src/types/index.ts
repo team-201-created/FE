@@ -23,6 +23,8 @@ export interface User {
   nickname: string
   email?: string
   profileImageUrl?: string
+  /** 내 정보 조회 등에서 내려오는 관리자 여부 */
+  is_admin?: boolean
 }
 
 /**

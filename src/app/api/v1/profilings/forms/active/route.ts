@@ -5,11 +5,11 @@
  * - 그 외: httpOnly access_token 으로 백엔드 프록시
  */
 import { NextResponse } from 'next/server'
+import { authFetch, FetchError } from '@/lib/api'
 import {
   mockProfilingFormPREFERENCE,
   mockProfilingFormHEALTH,
 } from '@/mocks/data/profilingForms'
-import { proxyToProfilingUpstream } from '../../_lib/upstreamProxy'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
 
@@ -70,10 +70,36 @@ export async function GET(request: Request) {
     profiling_type: profilingType,
     product_type: productType,
   })
-  return proxyToProfilingUpstream(
-    `/api/v1/profilings/forms/active?${q.toString()}`,
-    {
-      method: 'GET',
+  try {
+    const data = await authFetch.get<unknown>(
+      `/api/v1/profilings/forms/active?${q.toString()}`,
+      { cache: 'no-store' }
+    )
+    return NextResponse.json(data)
+  } catch (error) {
+    if (error instanceof FetchError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+            details: error.details ?? null,
+          },
+        },
+        { status: error.status || 500 }
+      )
     }
-  )
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'UPSTREAM_UNKNOWN',
+          message: '서버 요청 중 오류가 발생했습니다.',
+          details: null,
+        },
+      },
+      { status: 500 }
+    )
+  }
 }

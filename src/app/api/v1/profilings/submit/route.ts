@@ -4,9 +4,9 @@
  * - 그 외: 백엔드 프록시
  */
 import { NextResponse } from 'next/server'
+import { authFetch, FetchError } from '@/lib/api'
 import { MOCK_PIPELINE_SNAPSHOT_ID } from '@/mocks/data/profilingConstants'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
-import { proxyToProfilingUpstream } from '../_lib/upstreamProxy'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
 
@@ -37,10 +37,41 @@ export async function POST(request: Request) {
   }
 
   if (!USE_MOCK) {
-    return proxyToProfilingUpstream('/api/v1/profilings/submit', {
-      method: 'POST',
-      body: JSON.stringify(body),
-    })
+    try {
+      const data = await authFetch.post<unknown>(
+        '/api/v1/profilings/submit',
+        body,
+        {
+          cache: 'no-store',
+        }
+      )
+      return NextResponse.json(data)
+    } catch (error) {
+      if (error instanceof FetchError) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: error.code,
+              message: error.message,
+              details: error.details ?? null,
+            },
+          },
+          { status: error.status || 500 }
+        )
+      }
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UPSTREAM_UNKNOWN',
+            message: '서버 요청 중 오류가 발생했습니다.',
+            details: null,
+          },
+        },
+        { status: 500 }
+      )
+    }
   }
 
   if (
