@@ -15,7 +15,7 @@ export function CategoryDeleteButton({
   rootCategory,
   categoryId,
 }: CategoryDeleteButtonProps) {
-  const { openAlert, closeModal } = useModalStore()
+  const { openAlert, closeAll } = useModalStore()
 
   const handleDelete = async () => {
     openAlert({
@@ -24,26 +24,18 @@ export function CategoryDeleteButton({
       content: '해당 카테고리를 정말 삭제하시겠습니까?',
       confirmText: '삭제',
       onConfirm: async () => {
-        try {
-          const result = await deleteCategoryAction(rootCategory, categoryId)
-          if (result.success) {
-            closeModal()
-          } else {
-            openAlert({
-              type: 'danger',
-              title: '카테고리 삭제 실패',
-              content:
-                result.message ??
-                '카테고리 삭제에 실패했습니다. 다시 시도해 주세요.',
-              confirmText: '확인',
-            })
-          }
-        } catch {
+        const result = await deleteCategoryAction(rootCategory, categoryId)
+        if (result.success) {
+          closeAll()
+        } else {
           openAlert({
             type: 'danger',
-            title: '카테고리 삭제 실패',
-            content: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+            title: result.message ?? '카테고리 삭제 실패',
+            content: result.reason ?? '카테고리 삭제에 실패했습니다.',
             confirmText: '확인',
+            onConfirm: () => {
+              closeAll()
+            },
           })
         }
       },

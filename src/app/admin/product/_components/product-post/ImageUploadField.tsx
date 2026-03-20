@@ -33,11 +33,12 @@ export function ImageUploadField({
         className="hidden"
       />
       {imagePreview ? (
-        <div className="relative w-full overflow-hidden rounded-lg border border-neutral-200">
+        <div className="relative h-36 w-36 overflow-hidden rounded-lg border border-neutral-200">
           <Image
             src={imagePreview}
             alt="미리보기"
-            className="h-36 w-full object-cover"
+            fill
+            className="object-cover"
           />
           {isPending && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -65,10 +66,10 @@ export function ImageUploadField({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isPending}
-          className="flex h-28 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-400 transition hover:border-violet-400 hover:bg-violet-50 hover:text-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="border-gray-light bg-gray-white text-gray-secondary flex h-36 w-36 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed hover:border-violet-400 hover:bg-violet-50 hover:text-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <span className="text-xs font-medium">클릭하여 이미지 선택</span>
-          <span className="text-xs opacity-60">JPG · PNG · WEBP</span>
+          <span>클릭하여 이미지 선택</span>
+          <span>JPG · PNG</span>
         </button>
       )}
     </div>

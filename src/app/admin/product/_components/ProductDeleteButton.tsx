@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import Button from '@/components/common/Button'
 import TrashIcon from '@/assets/icons/trash.svg'
 import { deleteProductAction } from '../_lib/productActions'
@@ -13,7 +12,7 @@ interface ProductDeleteButtonProps {
 }
 
 export function ProductDeleteButton({ type, id }: ProductDeleteButtonProps) {
-  const { openAlert, closeModal } = useModalStore()
+  const { openAlert, closeAll } = useModalStore()
 
   const handleDelete = async () => {
     openAlert({
@@ -22,15 +21,19 @@ export function ProductDeleteButton({ type, id }: ProductDeleteButtonProps) {
       content: `해당 상품을 정말 삭제하시겠습니까?`,
       confirmText: '삭제',
       onConfirm: async () => {
-        try {
-          const result = await deleteProductAction(type, id)
-          if (result.success) {
-            closeModal()
-          } else {
-            alert('삭제에 실패했습니다.')
-          }
-        } catch {
-          alert('삭제 중 오류가 발생했습니다.')
+        const result = await deleteProductAction(type, id)
+        if (result.success) {
+          closeAll()
+        } else {
+          openAlert({
+            type: 'danger',
+            title: result.message ?? '삭제 실패',
+            content: result.reason ?? '상품 삭제에 실패했습니다.',
+            confirmText: '확인',
+            onConfirm: () => {
+              closeAll()
+            },
+          })
         }
       },
     })

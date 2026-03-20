@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { FetchError } from '@/lib/api'
 import { createAdminCategory } from '../_api/adminCreateCategory'
 import { deleteAdminCategory } from '../_api/adminDeleteCategory'
 import type {
@@ -18,10 +19,12 @@ export async function postCategoryAction(
   try {
     await createAdminCategory(rootCategory, payload)
     revalidatePath('/admin/category')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    const message = error instanceof Error ? error.message : null
-    return { success: false, message }
+    if (error instanceof Error) {
+      return { success: false, message: error.message }
+    }
+    return { success: false as const, message: null, reason: null }
   }
 }
 
@@ -37,7 +40,13 @@ export async function deleteCategoryAction(
     revalidatePath('/admin/category')
     return { success: true }
   } catch (error) {
-    const message = error instanceof Error ? error.message : null
-    return { success: false, message }
+    if (error instanceof FetchError) {
+      return {
+        success: false as const,
+        message: error.message,
+        reason: error.details?.reason,
+      }
+    }
+    return { success: false as const, message: null, reason: null }
   }
 }

@@ -21,6 +21,17 @@ export function useImageUpload() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!allowed.includes(file.type)) {
+      openAlert({
+        type: 'danger',
+        title: '지원하지 않는 파일 형식',
+        content: 'JPG, PNG 파일만 업로드할 수 있습니다.',
+      })
+      e.target.value = ''
+      return
+    }
+
     if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImagePreview(URL.createObjectURL(file))
     setImageUrl(undefined)
