@@ -20,10 +20,7 @@ export const ProductPoolsForm = ({
             value={formData.crawl_source}
             onChange={(val) => onFieldChange('crawl_source', val)}
             width="w-full"
-            options={[
-              { label: '네이버 스토어', value: 'NAVER_STORE' },
-              { label: '카카오 페이지', value: 'KAKAO_PAGE' },
-            ]}
+            options={[{ label: '네이버 쇼핑', value: 'naver_shopping' }]}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -59,7 +56,8 @@ export const ProductPoolsForm = ({
               { label: '리뷰 평점순', value: 'REVIEW_RATING' },
               { label: '리뷰 개수순', value: 'REVIEW_COUNT' },
               { label: '판매량순', value: 'SALES_VOLUME' },
-              { label: '낮은 가격순', value: 'PRICE_ASC' },
+              { label: '높은 가격순', value: 'PRICE_HIGH' },
+              { label: '낮은 가격순', value: 'PRICE_LOW' },
             ]}
           />
         </div>

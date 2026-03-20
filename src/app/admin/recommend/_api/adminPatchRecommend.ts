@@ -10,3 +10,14 @@ export const patchAdminBlendMapPublish = (
   authFetch.patch(`/api/v1/admin/matches/blend-maps/${id}/publish`, {
     publish_status,
   })
+
+/**
+ * 제품 후보군 채택 설정 PATCH API
+ */
+export const patchAdminProductPoolAdopt = (
+  id: number,
+  adoption_status: 'ADOPTED' | 'UNADOPTED'
+) =>
+  authFetch.patch(`/api/v1/admin/matches/product-pools/${id}/adopt`, {
+    adoption_status,
+  })

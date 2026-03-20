@@ -3,13 +3,20 @@
 import React, { useState, Suspense, useMemo } from 'react'
 import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
-import { RecommendTabId, RECOMMEND_TABS } from '@/app/admin/recommend/_types'
+import {
+  RecommendTabId,
+  RECOMMEND_TABS,
+  ProductPoolCreateBody,
+} from '@/app/admin/recommend/_types'
 import { RECOMMEND_API } from '@/app/admin/recommend/_api'
 import { BlendMapsForm } from './BlendMapsForm'
 import { ProductPoolsForm } from './ProductPoolsForm'
 import { ProductMapsForm } from './ProductMapsForm'
 import { useModalStore } from '@/store/useModalStore'
-import { createBlendMapAction } from '../_actions/recommendActions'
+import {
+  createBlendMapAction,
+  createProductPoolAction,
+} from '../_actions/recommendActions'
 
 interface RecommendPostModalProps {
   activeTab: RecommendTabId
@@ -34,10 +41,10 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     inputType: 'PREFERENCE',
 
     // 2. 제품 후보군
-    crawl_source: 'NAVER_STORE',
+    crawl_source: 'naver_shopping',
     crawl_count: 50,
-    crawl_sort: 'REVIEW_RATING',
-    product_type: 'DIFFUSER',
+    crawl_sort: 'REVIEW_RATING' as ProductPoolCreateBody['crawl_sort'],
+    product_type: 'DIFFUSER' as ProductPoolCreateBody['product_type'],
     crawl_config: {
       min_price: 10000,
       max_price: 100000,
@@ -82,8 +89,25 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
         })
         return
       }
+    } else if (activeTab === 'product-pools') {
+      const result = await createProductPoolAction({
+        crawl_source: formData.crawl_source,
+        crawl_count: formData.crawl_count,
+        crawl_sort: formData.crawl_sort,
+        product_type: formData.product_type,
+        crawl_config: formData.crawl_config,
+      })
+      if (!result.success) {
+        openAlert({
+          type: 'danger',
+          title: '등록 실패',
+          content: result.message ?? '제품 후보군 등록에 실패했습니다.',
+          confirmText: '확인',
+        })
+        return
+      }
     }
-    // TODO: product-pools, product-maps 등록 연동 시 추가
+    // TODO: product-maps 등록 연동 시 추가
 
     closeModal()
   }
