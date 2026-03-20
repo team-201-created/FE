@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, Suspense, useMemo } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
 import {
@@ -8,7 +8,6 @@ import {
   RECOMMEND_TABS,
   ProductPoolCreateBody,
 } from '@/app/admin/recommend/_types'
-import { RECOMMEND_API } from '@/app/admin/recommend/_api'
 import { BlendMapsForm } from './BlendMapsForm'
 import { ProductPoolsForm } from './ProductPoolsForm'
 import { ProductMapsForm } from './ProductMapsForm'
@@ -16,6 +15,8 @@ import { useModalStore } from '@/store/useModalStore'
 import {
   createBlendMapAction,
   createProductPoolAction,
+  createProductMapAction,
+  fetchAdoptedPoolsAction,
 } from '../_actions/recommendActions'
 
 interface RecommendPostModalProps {
@@ -53,15 +54,18 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     },
 
     // 3. 제품 추천맵
-    product_pool_id: 1,
+    product_pool_id: 0,
   })
 
-  const poolsPromise = useMemo(() => {
-    if (activeTab !== 'product-maps') return null
-    return RECOMMEND_API.productPools({
-      size: 20,
-      adoption_status: 'ADOPTED',
-    })
+  const [poolsPromise, setPoolsPromise] = useState<ReturnType<
+    typeof fetchAdoptedPoolsAction
+  > | null>(null)
+
+  useEffect(() => {
+    if (activeTab === 'product-maps') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPoolsPromise(fetchAdoptedPoolsAction())
+    }
   }, [activeTab])
 
   // 일반 필드 업데이트
@@ -106,8 +110,18 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
         })
         return
       }
+    } else if (activeTab === 'product-maps') {
+      const result = await createProductMapAction(formData.product_pool_id)
+      if (!result.success) {
+        openAlert({
+          type: 'danger',
+          title: '등록 실패',
+          content: result.message ?? '제품 추천맵 등록에 실패했습니다.',
+          confirmText: '확인',
+        })
+        return
+      }
     }
-    // TODO: product-maps 등록 연동 시 추가
 
     closeModal()
   }
