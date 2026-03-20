@@ -26,6 +26,8 @@ export type ProfilingQuestion = {
 /** API 응답 - 질문 폼 구조 (활성 폼 조회 응답의 data) */
 export type ProfilingForm = {
   form_id: number
+  /** 제출 시 POST submit에 동일 값으로 포함 */
+  pipeline_snapshot_id: number
   name: string
   profiling_type: ProfilingType
   questions: ProfilingQuestion[]
@@ -54,6 +56,7 @@ export type QuizQuestion = {
 
 /** POST /api/v1/profilings/submit 요청 */
 export type ProfilingSubmitRequest = {
+  pipeline_snapshot_id: number
   profiling_type: ProfilingType
   product_type: 'DIFFUSER' | 'PERFUME'
   responses: { question_key: string; answer_option_keys: string[] }[]

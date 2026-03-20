@@ -11,6 +11,9 @@ import type { ProfilingType, QuizQuestion } from '../_types'
 
 export function useProfilingForm(profilingType: ProfilingType) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
+  const [pipelineSnapshotId, setPipelineSnapshotId] = useState<number | null>(
+    null
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const loadRef = useRef<() => void | Promise<void>>(() => {})
@@ -20,15 +23,18 @@ export function useProfilingForm(profilingType: ProfilingType) {
     loadRef.current = async () => {
       setError(null)
       setQuestions([])
+      setPipelineSnapshotId(null)
       setIsLoading(true)
       try {
         const res = await fetchProfilingFormActive(profilingType)
         if (cancelled) return
         setQuestions(toQuizQuestions(res.data))
+        setPipelineSnapshotId(res.data.pipeline_snapshot_id)
       } catch (err) {
         if (!cancelled)
           setError(err instanceof FetchError ? err : new Error(String(err)))
         if (!cancelled) setQuestions([])
+        if (!cancelled) setPipelineSnapshotId(null)
       } finally {
         if (!cancelled) setIsLoading(false)
       }
@@ -41,6 +47,7 @@ export function useProfilingForm(profilingType: ProfilingType) {
 
   return {
     questions,
+    pipelineSnapshotId,
     isLoading,
     error,
     refetch: () => loadRef.current?.(),
