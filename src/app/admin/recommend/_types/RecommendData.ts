@@ -1,8 +1,8 @@
 export interface RecommendPaginationData<T> {
-  content: T[]
+  results: T[]
   page: number
   size: number
-  total_elements: number
+  count: number
   total_pages: number
 }
 

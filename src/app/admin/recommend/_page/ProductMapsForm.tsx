@@ -10,9 +10,9 @@ export const ProductMapsForm = ({
   poolsPromise,
 }: ProductMapsFormProps) => {
   const res = use(poolsPromise)
-  const pools = res.data.content
+  const pools = res.data.results
 
-  const options = pools.map((p) => ({
+  const options = pools.map((p: any) => ({
     label: `${p.id} - ${PRODUCT_TYPE_LABELS[p.product_type]} [${p.product_count}개]`,
     secondaryLabel: formatDate(p.updated_at),
     value: String(p.id),

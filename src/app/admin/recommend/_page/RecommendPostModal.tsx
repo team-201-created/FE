@@ -9,6 +9,7 @@ import { BlendMapsForm } from './BlendMapsForm'
 import { ProductPoolsForm } from './ProductPoolsForm'
 import { ProductMapsForm } from './ProductMapsForm'
 import { useModalStore } from '@/store/useModalStore'
+import { createBlendMapAction } from '../_actions/recommendActions'
 
 interface RecommendPostModalProps {
   activeTab: RecommendTabId
@@ -22,17 +23,17 @@ const ProductMapsFormFallback = () => (
 )
 
 export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
-  const { closeModal } = useModalStore()
+  const { closeModal, openAlert } = useModalStore()
 
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
 
   // 각 탭별 폼 default 값 설정
   const [formData, setFormData] = useState({
-    // 1. 향조합 (Blend Maps)
+    // 1. 향조합 추천맵
     inputType: 'PREFERENCE',
 
-    // 2. 제품 후보군 (Product Pools)
+    // 2. 제품 후보군
     crawl_source: 'NAVER_STORE',
     crawl_count: 50,
     crawl_sort: 'REVIEW_RATING',
@@ -44,7 +45,7 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
       min_review_count: 10,
     },
 
-    // 3. 제품 추천맵 (Product Maps)
+    // 3. 제품 추천맵
     product_pool_id: 1,
   })
 
@@ -69,24 +70,21 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     }))
   }
 
-  const handleRegister = () => {
-    // 탭별 전송 데이터 가공
-    let submitData: any = {}
+  const handleRegister = async () => {
     if (activeTab === 'blend-maps') {
-      submitData = { input_type: formData.inputType }
-    } else if (activeTab === 'product-pools') {
-      submitData = {
-        crawl_source: formData.crawl_source,
-        crawl_count: formData.crawl_count,
-        crawl_sort: formData.crawl_sort,
-        product_type: formData.product_type,
-        crawl_config: formData.crawl_config,
+      const result = await createBlendMapAction(formData.inputType)
+      if (!result.success) {
+        openAlert({
+          type: 'danger',
+          title: '등록 실패',
+          content: result.message ?? '향조합 추천맵 등록에 실패했습니다.',
+          confirmText: '확인',
+        })
+        return
       }
-    } else if (activeTab === 'product-maps') {
-      submitData = { product_pool_id: formData.product_pool_id }
     }
+    // TODO: product-pools, product-maps 등록 연동 시 추가
 
-    console.log(`[${activeTab}] 등록 데이터 TEST : `, submitData)
     closeModal()
   }
 

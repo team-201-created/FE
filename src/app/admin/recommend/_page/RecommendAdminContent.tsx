@@ -5,7 +5,6 @@ import {
   AdminListCard,
   AdminPageHeader,
   AdminTable,
-  AdminSearchBar,
   AdminTabGroup,
   AdminTableError,
   AdminTableLoading,
@@ -13,15 +12,12 @@ import {
 import { RECOMMEND_TAB_HEADERS } from '@/constants/admin'
 import { RecommendTabId, RECOMMEND_TABS } from '@/app/admin/recommend/_types'
 import { RecommendPostModal } from '@/app/admin/recommend/_page'
+import { AdminRecommendFilter } from '@/app/admin/recommend/_components/AdminRecommendFilter'
 
 import { useModalStore } from '@/store/useModalStore'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAdminTable } from '@/app/admin/_hooks/useAdminTable'
 import { cn } from '@/lib/cn'
-import {
-  ADOPTION_STATUS_OPTIONS,
-  PUBLISH_STATUS_OPTIONS,
-} from '@/app/admin/_constants/labels'
 
 interface RecommendAdminContentProps {
   activeTab: RecommendTabId
@@ -32,11 +28,10 @@ interface RecommendAdminContentProps {
 export default function RecommendAdminContent({
   activeTab,
   children,
-  searchParams,
 }: RecommendAdminContentProps) {
   const { openModal } = useModalStore()
 
-  const { searchTerm, setSearchTerm, onFilterChange, onTabChange, isPending } =
+  const { onFilterChange, onTabChange, resetParams, isPending, searchParams } =
     useAdminTable({
       resetParamsOnTabChange: ['status', 'input_type'],
     })
@@ -44,11 +39,6 @@ export default function RecommendAdminContent({
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
 
-  const getFilterOptions = () => {
-    return activeTab === 'product-pools'
-      ? ADOPTION_STATUS_OPTIONS
-      : PUBLISH_STATUS_OPTIONS
-  }
   const handleOpenPostModal = () => {
     openModal(<RecommendPostModal activeTab={activeTab} />)
   }
@@ -60,12 +50,12 @@ export default function RecommendAdminContent({
         buttonText={'등록'}
         onButtonClick={handleOpenPostModal}
       />
-      <AdminSearchBar
-        searchValue={searchTerm}
-        searchPlaceholder={`${activeTabLabel} 검색`}
-        filterOptions={getFilterOptions()}
-        onSearchChange={setSearchTerm}
-        onFilterChange={(val) => onFilterChange('status', val)}
+      <AdminRecommendFilter
+        activeTab={activeTab}
+        statusVal={searchParams.get('status')}
+        inputTypeVal={searchParams.get('input_type')}
+        onFilterChange={onFilterChange}
+        onReset={() => resetParams(['status', 'input_type'])}
       />
       <AdminTabGroup
         tabs={RECOMMEND_TABS}

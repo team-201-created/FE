@@ -29,3 +29,11 @@ export const ADOPTION_STATUS_OPTIONS = [
   { label: '채택', value: 'ADOPTED' },
   { label: '미채택', value: 'UNADOPTED' },
 ]
+
+export const INPUT_TYPE_OPTIONS = [
+  { label: '전체', value: 'all' },
+  { label: '취향', value: 'PREFERENCE' },
+  { label: '건강', value: 'HEALTH' },
+  { label: 'OOTD', value: 'OOTD' },
+  { label: '인테리어', value: 'INTERIOR' },
+]
