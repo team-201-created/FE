@@ -12,6 +12,7 @@ import {
 } from '../_api/productsClient'
 import { mapBlendDetailToModalProduct } from '../_api/productDetailMappers'
 import { useProductDetailModal, type CombinationItem } from '../_hooks'
+import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 
 type ComboPageClientProps = {
   initialItems: CombinationItem[]
@@ -78,7 +79,7 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
               <ProductCard
                 variant="combo"
                 name={item.name}
-                imageUrl={item.thumbnail_image_url}
+                imageUrl={resolveApiMediaUrl(item.thumbnail_image_url)}
                 scentFamilyId="woody"
                 scentFamilyIds={[]}
                 scentNotes={scentNotes}

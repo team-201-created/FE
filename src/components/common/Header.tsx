@@ -13,7 +13,6 @@ import OpenIcon from '@/assets/icons/open.svg'
 import { useModalStore } from '@/store/useModalStore'
 import Modal from './Modal'
 import { useAuthStore } from '@/store/useAuthStore'
-import { useState, useEffect } from 'react'
 
 const styles = {
   header:
@@ -30,7 +29,7 @@ const styles = {
   chevronWrap: 'ml-0.5 shrink-0',
 } as const
 export function Header() {
-  const { isLoggedIn, user, logout: logoutFromStore } = useAuthStore()
+  const { isLoggedIn, logout: logoutFromStore } = useAuthStore()
   const router = useRouter()
 
   const { openModal, closeModal, closeAll } = useModalStore()
@@ -65,9 +64,12 @@ export function Header() {
     try {
       await logoutFromStore()
       router.push('/login')
-    } catch (error: any) {
-      console.error('Logout Error:', error)
-      alert(error.message || '로그아웃 처리 중 오류가 발생했습니다.')
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '로그아웃 처리 중 오류가 발생했습니다.'
+      alert(message)
     }
   }
 
@@ -77,34 +79,6 @@ export function Header() {
   }
 
   const renderRightMenu = () => {
-    // 개발 환경에서는 로그인 상태와 관계없이 로그인 링크와 프로필 메뉴를 모두 보여줌
-    if (process.env.NODE_ENV === 'development') {
-      return (
-        <>
-          <Link href="/login" className={styles.rightLink}>
-            로그인
-          </Link>
-          <Dropdown
-            trigger={
-              <Image
-                src="/profile.svg"
-                alt="프로필 메뉴"
-                width={36}
-                height={36}
-                className="size-9"
-                aria-hidden
-              />
-            }
-            items={headerNavLinks.profile}
-            variant="profile"
-            menuMinWidth="min-w-[200px]"
-            aria-label="프로필 메뉴"
-            onProfileAction={handleProfileMenu}
-          />
-        </>
-      )
-    }
-
     if (isLoggedIn) {
       return (
         <Dropdown
@@ -146,6 +120,8 @@ export function Header() {
                 width={189}
                 height={29}
                 className="h-7 w-auto"
+                priority
+                loading="eager"
               />
             </Link>
 

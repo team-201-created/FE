@@ -33,7 +33,17 @@ export type ProfilingForm = {
   questions: ProfilingQuestion[]
 }
 
-/** API 응답 - 활성 폼 조회 */
+/**
+ * GET /api/v1/profilings/forms/active 실패 시 error 스키마
+ * (성공 시에는 handleResponse 이후 data만 사용)
+ */
+export type ProfilingFormsActiveError = {
+  code: string
+  message: string
+  details: { field: string; reason: string } | null
+}
+
+/** API 응답 - 활성 폼 조회 (성공 본문) */
 export type ProfilingFormResponse = {
   success: boolean
   data: ProfilingForm
@@ -54,11 +64,14 @@ export type QuizQuestion = {
   }[]
 }
 
+/** 활성 폼 조회·제출 시 제품 유형 (API: PERFUME | DIFFUSER) */
+export type ProductTypeChoice = 'DIFFUSER' | 'PERFUME'
+
 /** POST /api/v1/profilings/submit 요청 */
 export type ProfilingSubmitRequest = {
   pipeline_snapshot_id: number
   profiling_type: ProfilingType
-  product_type: 'DIFFUSER' | 'PERFUME'
+  product_type: ProductTypeChoice
   responses: { question_key: string; answer_option_keys: string[] }[]
 }
 
@@ -69,7 +82,7 @@ export type ProfilingSubmitResponse = {
   error?: { code: string; message: string; details?: Record<string, unknown> }
 }
 
-/** GET /api/v1/profilings/results/{result_id} 응답 - recommended_blend 등 */
+/** GET /api/v1/profilings/results/{result_id} — recommended_blend */
 export type ProfilingResultBlend = {
   name: string
   image_url: string
@@ -90,10 +103,17 @@ export type ProfilingResultDetail = {
   created_at: string
 }
 
+/** 결과 상세 조회 실패 시 error (details 는 null 또는 { field, reason }) */
+export type ProfilingResultDetailError = {
+  code: string
+  message: string
+  details: { field: string; reason: string } | null
+}
+
 export type ProfilingResultDetailResponse = {
   success: boolean
   data?: ProfilingResultDetail
-  error?: { code: string; message: string; details?: Record<string, unknown> }
+  error?: ProfilingResultDetailError
 }
 
 /** ProfilingType과 동일 (UI용 alias) */

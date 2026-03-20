@@ -136,7 +136,7 @@ export function ProductDetailModal({
               <span>로딩 중...</span>
             </div>
           )}
-          {!isLoading && product && (
+          {!isLoading && product?.imageUrl?.trim() && (
             <Image
               src={product.imageUrl}
               alt={product.name}

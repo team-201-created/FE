@@ -141,14 +141,31 @@ export const blendDetailHandler = http.get(
 
 /**
  * 향기 성향 테스트 항목 조회 GET /api/v1/profilings/forms/active
- * Query: profiling_type (required) PREFERENCE | HEALTH
- * - 200: success, 400: 잘못된 파라미터, 404: 활성화된 테스트 없음(목에서는 미사용)
+ * - Query: profiling_type (PREFERENCE | HEALTH), product_type (PERFUME | DIFFUSER)
+ * - Header: Authorization Bearer (MSW 직접 호출 시 profilingClient 가 mock-dev-token 부착)
+ * - 실패 스키마: { success: false, error: { code, message, details } }, details 는 null 또는 { field, reason }
  */
 export const profilingFormActiveHandler = http.get(
   '/api/v1/profilings/forms/active',
   ({ request }) => {
+    const auth = request.headers.get('Authorization')
+    if (!auth || !/^Bearer\s+\S+/.test(auth)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authorization Bearer 토큰이 필요합니다.',
+            details: null,
+          },
+        },
+        { status: 401 }
+      )
+    }
+
     const url = new URL(request.url)
     const profilingType = url.searchParams.get('profiling_type')
+    const productType = url.searchParams.get('product_type')
 
     if (!profilingType) {
       return HttpResponse.json(
@@ -172,6 +189,34 @@ export const profilingFormActiveHandler = http.get(
             code: 'INVALID_PARAMETER',
             message: `profiling_type은 ${PROFILING_TYPES.join(' 또는 ')}여야 합니다.`,
             details: { field: 'profiling_type', reason: 'invalid_value' },
+          },
+        },
+        { status: 400 }
+      )
+    }
+
+    if (!productType) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMETER',
+            message: 'product_type은 필수입니다.',
+            details: { field: 'product_type', reason: 'required' },
+          },
+        },
+        { status: 400 }
+      )
+    }
+
+    if (!PRODUCT_TYPES.includes(productType as ProductType)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMETER',
+            message: `product_type은 ${PRODUCT_TYPES.join(' 또는 ')}이어야 합니다.`,
+            details: { field: 'product_type', reason: 'invalid_value' },
           },
         },
         { status: 400 }
@@ -273,12 +318,31 @@ export const profilingSubmitHandler = http.post(
 
 /**
  * 결과 상세 조회 GET /api/v1/profilings/results/:resultId
+ * - 200: 성공 스키마
+ * - 401: Authorization Bearer 없음/무효 (profilingFetchJson 이 MSW 모드에서 mock 토큰 부착)
+ * - 404: result_id 가 양의 정수가 아니거나 리소스 없음
  */
 export const profilingResultDetailHandler = http.get(
   '/api/v1/profilings/results/:resultId',
-  ({ params }) => {
-    const resultId = params.resultId
-    if (!resultId) {
+  ({ request, params }) => {
+    const auth = request.headers.get('Authorization')
+    if (!auth || !/^Bearer\s+\S+/.test(auth)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authorization Bearer 토큰이 필요합니다.',
+            details: null,
+          },
+        },
+        { status: 401 }
+      )
+    }
+
+    const rawId = params.resultId
+    const id = Number(rawId)
+    if (!rawId || !Number.isInteger(id) || id < 1) {
       return HttpResponse.json(
         {
           success: false,
@@ -291,11 +355,12 @@ export const profilingResultDetailHandler = http.get(
         { status: 404 }
       )
     }
+
     return HttpResponse.json({
       success: true,
       data: {
         ...mockProfilingResultDetail,
-        id: Number(resultId) || mockProfilingResultDetail.id,
+        id,
       },
     })
   }

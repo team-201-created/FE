@@ -1,11 +1,16 @@
 /**
  * 향기 성향 테스트 API
- * - GET forms/active, POST submit, GET results/:id
- * - 목데이터(MSW): NEXT_PUBLIC_USE_MOCK_API=true 시 같은 origin 요청 → MSW가 가로챔
+ *
+ * 활성 폼 조회 GET `/api/v1/profilings/forms/active`
+ * - Query: `profiling_type` (PREFERENCE | HEALTH), `product_type` (PERFUME | DIFFUSER)
+ * - Header: `Authorization: Bearer <token>` — 실서버는 Next Route 프록시가 쿠키의 access_token 으로 부착,
+ *   MSW 모드(`NEXT_PUBLIC_USE_MOCK_API`)에서는 브라우저가 `Bearer mock-dev-token` 전달
+ * - 브라우저: 같은 오리진 + `credentials: 'include'` / RSC: 내부 URL + `Cookie` 헤더
  */
-import { apiFetch } from '@/lib/api'
+import { handleResponse } from '@/lib/api/client'
 import type {
   AnswersState,
+  ProductTypeChoice,
   ProfilingFormResponse,
   ProfilingQuestion,
   ProfilingResultDetail,
@@ -37,18 +42,80 @@ export function toQuizQuestions(
   return data.questions.map(toQuizQuestion)
 }
 
+async function profilingFetchJson<T>(
+  path: string,
+  init: RequestInit = {}
+): Promise<T> {
+  const isBrowser = typeof window !== 'undefined'
+
+  const hasBody =
+    init.body != null && init.method !== 'GET' && init.method !== undefined
+
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
+  }
+  if (
+    init.headers &&
+    typeof init.headers === 'object' &&
+    !Array.isArray(init.headers)
+  ) {
+    const h = init.headers as Record<string, string>
+    for (const [k, v] of Object.entries(h)) {
+      if (v != null) headers[k] = v
+    }
+  }
+
+  let url: string
+  const fetchInit: RequestInit = {
+    ...init,
+    headers,
+    ...(isBrowser
+      ? { credentials: 'include' as RequestCredentials }
+      : { cache: 'no-store' }),
+  }
+
+  if (isBrowser && process.env.NEXT_PUBLIC_USE_MOCK_API === 'true') {
+    // MSW/브라우저 직접 호출 시 스펙상 Bearer 필요 — Route 프록시 경로는 쿠키 사용
+    headers.Authorization = 'Bearer mock-dev-token'
+  }
+
+  if (isBrowser) {
+    url = path.startsWith('/') ? path : `/${path}`
+  } else {
+    const { headers: nextHeaders } = await import('next/headers')
+    const h = await nextHeaders()
+    const host = h.get('host') ?? 'localhost:3000'
+    const proto = h.get('x-forwarded-proto') ?? 'http'
+    const rel = path.startsWith('/') ? path : `/${path}`
+    url = `${proto}://${host}${rel}`
+    const cookie = h.get('cookie')
+    if (cookie) {
+      headers.cookie = cookie
+    }
+  }
+
+  const response = await fetch(url, fetchInit)
+  const finalRes = await handleResponse(response)
+  return finalRes.json() as Promise<T>
+}
+
 /**
  * 향기 성향 테스트 항목 조회
- * GET /api/v1/profilings/forms/active?profiling_type={PREFERENCE|HEALTH}
+ * GET /api/v1/profilings/forms/active?profiling_type=&product_type=
+ * 헤더: 실서버는 Route 프록시가 Bearer 부착 / MSW는 클라이언트에서 mock Bearer
  */
 export async function fetchProfilingFormActive(
-  profilingType: ProfilingType
+  profilingType: ProfilingType,
+  productType: ProductTypeChoice
 ): Promise<ProfilingFormResponse> {
-  return apiFetch.get<ProfilingFormResponse>(
-    '/api/v1/profilings/forms/active',
-    {
-      params: { profiling_type: profilingType },
-    }
+  const q = new URLSearchParams({
+    profiling_type: profilingType,
+    product_type: productType,
+  })
+  return profilingFetchJson<ProfilingFormResponse>(
+    `/api/v1/profilings/forms/active?${q.toString()}`,
+    { method: 'GET' }
   )
 }
 
@@ -61,7 +128,7 @@ export function buildSubmitPayload(
   answers: AnswersState,
   pipelineSnapshotId: number,
   profilingType: ProfilingType,
-  productType: 'DIFFUSER' | 'PERFUME'
+  productType: ProductTypeChoice
 ): ProfilingSubmitRequest {
   const responses = questions.map((q) => {
     const selectedIds = answers[q.id] ?? []
@@ -85,21 +152,26 @@ export function buildSubmitPayload(
 export async function submitProfiling(
   body: ProfilingSubmitRequest
 ): Promise<ProfilingSubmitResponse> {
-  return apiFetch.post<ProfilingSubmitResponse>(
+  return profilingFetchJson<ProfilingSubmitResponse>(
     '/api/v1/profilings/submit',
-    body
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }
   )
 }
 
 /**
- * 결과 상세 조회
- * GET /api/v1/profilings/results/{result_id}
+ * 결과 상세 조회 GET `/api/v1/profilings/results/{result_id}`
+ * - 200 / 401 / 404 — 실패 시 `error.details` 는 null 또는 `{ field, reason }`
+ * - MSW·프록시 경로는 활성 폼 조회와 동일 (Bearer: 목은 mock-dev-token / 실서버는 쿠키 프록시)
  */
 export async function fetchProfilingResult(
   resultId: number
 ): Promise<ProfilingResultDetailResponse> {
-  return apiFetch.get<ProfilingResultDetailResponse>(
-    `/api/v1/profilings/results/${resultId}`
+  return profilingFetchJson<ProfilingResultDetailResponse>(
+    `/api/v1/profilings/results/${resultId}`,
+    { method: 'GET' }
   )
 }
 

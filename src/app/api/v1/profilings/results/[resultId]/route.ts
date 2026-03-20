@@ -1,12 +1,16 @@
 /**
- * 결과 상세 조회 (MSW 미가로챔 시 fallback)
- * GET /api/v1/profilings/results/:resultId
+ * 결과 상세 조회
+ * - NEXT_PUBLIC_USE_MOCK_API=true: 목 응답
+ * - 그 외: 백엔드 프록시
  */
 import { NextResponse } from 'next/server'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
+import { proxyToProfilingUpstream } from '../../_lib/upstreamProxy'
+
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ resultId: string }> }
 ) {
   const { resultId } = await params
@@ -25,8 +29,14 @@ export async function GET(
     )
   }
 
-  return NextResponse.json({
-    success: true,
-    data: { ...mockProfilingResultDetail, id },
+  if (USE_MOCK) {
+    return NextResponse.json({
+      success: true,
+      data: { ...mockProfilingResultDetail, id },
+    })
+  }
+
+  return proxyToProfilingUpstream(`/api/v1/profilings/results/${id}`, {
+    method: 'GET',
   })
 }

@@ -26,5 +26,14 @@ export class FetchError extends Error {
   }
 }
 
+/** 비로그인·세션 없음 등 로그인 유도가 필요한 API 오류인지 */
+export function isLoginRequiredFetchError(err: unknown): err is FetchError {
+  if (!(err instanceof FetchError)) return false
+  if (err.status === 401 || err.status === 403) return true
+  return /로그인|login|unauthorized|unauthenticated|인증|authentication|세션|session/i.test(
+    err.message
+  )
+}
+
 // re-export for convenience
 export type { ApiErrorResponse }
