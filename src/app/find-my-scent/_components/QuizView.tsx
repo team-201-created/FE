@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { QuizQuestion, TestType } from '../_types'
+import type { ProfilingType, QuizQuestion, TestType } from '../_types'
+import type { ProductTypeChoice } from './ProductTypeSelectModal'
 import { useQuizStep } from '../_hooks'
 import { buildSubmitPayload, submitProfiling } from '../_api/profilingClient'
 import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
@@ -36,9 +37,15 @@ const styles = {
 export function QuizView({
   testType,
   questions,
+  pipelineSnapshotId,
+  productType,
 }: {
   testType: TestType
   questions: QuizQuestion[]
+  /** 활성 폼 조회 응답의 pipeline_snapshot_id */
+  pipelineSnapshotId: number
+  /** 진입 전 모달에서 선택한 추천 유형 */
+  productType: ProductTypeChoice
 }) {
   const {
     question,
@@ -67,8 +74,9 @@ export function QuizView({
         const payload = buildSubmitPayload(
           questions,
           answers,
-          testType,
-          'DIFFUSER'
+          pipelineSnapshotId,
+          testType as ProfilingType,
+          productType
         )
         const res = await submitProfiling(payload)
         if (!res.success || !res.data?.result_id) {

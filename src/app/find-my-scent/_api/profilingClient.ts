@@ -54,12 +54,14 @@ export async function fetchProfilingFormActive(
 
 /**
  * 퀴즈 답변(questions + answers)을 API 제출용 payload로 변환
+ * pipeline_snapshot_id는 활성 폼 조회 응답의 data.pipeline_snapshot_id와 동일해야 함
  */
 export function buildSubmitPayload(
   questions: QuizQuestion[],
   answers: AnswersState,
+  pipelineSnapshotId: number,
   profilingType: ProfilingType,
-  productType: 'DIFFUSER' | 'PERFUME' = 'DIFFUSER'
+  productType: 'DIFFUSER' | 'PERFUME'
 ): ProfilingSubmitRequest {
   const responses = questions.map((q) => {
     const selectedIds = answers[q.id] ?? []
@@ -68,7 +70,12 @@ export function buildSubmitPayload(
       .filter((k): k is string => Boolean(k))
     return { question_key: q.questionKey ?? q.id, answer_option_keys }
   })
-  return { profiling_type: profilingType, product_type: productType, responses }
+  return {
+    pipeline_snapshot_id: pipelineSnapshotId,
+    profiling_type: profilingType,
+    product_type: productType,
+    responses,
+  }
 }
 
 /**

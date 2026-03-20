@@ -1,12 +1,17 @@
 /**
  * 향기 성향 테스트 항목 조회 목 데이터
- * API 명세: GET /api/v1/profilings/forms/active?profiling_type=PREFERENCE|HEALTH
+ *
+ * GET /api/v1/profilings/forms/active?profiling_type=PREFERENCE|HEALTH
+ * Response data: ProfilingForm
+ * - pipeline_snapshot_id: 제출(POST /profilings/submit) 시 동일 값을 pipeline_snapshot_id로 전달
  */
 import type { ProfilingForm } from '@/app/find-my-scent/_types'
+import { MOCK_PIPELINE_SNAPSHOT_ID } from './profilingConstants'
 
 /** 취향 테스트(PREFERENCE) 활성 폼 목 데이터 */
 export const mockProfilingFormPREFERENCE: ProfilingForm = {
   form_id: 1,
+  pipeline_snapshot_id: MOCK_PIPELINE_SNAPSHOT_ID.PREFERENCE,
   name: '취향 테스트 v1',
   profiling_type: 'PREFERENCE',
   questions: [
@@ -159,6 +164,7 @@ export const mockProfilingFormPREFERENCE: ProfilingForm = {
 /** 건강 테스트(HEALTH) 활성 폼 목 데이터 */
 export const mockProfilingFormHEALTH: ProfilingForm = {
   form_id: 2,
+  pipeline_snapshot_id: MOCK_PIPELINE_SNAPSHOT_ID.HEALTH,
   name: '웰니스 케어 진단 v1',
   profiling_type: 'HEALTH',
   questions: [

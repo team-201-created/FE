@@ -13,6 +13,7 @@ import {
   mockProfilingFormPREFERENCE,
   mockProfilingFormHEALTH,
 } from './data/profilingForms'
+import { MOCK_PIPELINE_SNAPSHOT_ID } from './data/profilingConstants'
 import { mockProfilingResultDetail } from './data/profilingResults'
 import { adminCategoryHandlers } from './handlers/adminCategoryHandlers'
 import {
@@ -189,11 +190,18 @@ export const profilingSubmitHandler = http.post(
   '/api/v1/profilings/submit',
   async ({ request }) => {
     const body = (await request.json()) as {
+      pipeline_snapshot_id?: number
       profiling_type?: string
       product_type?: string
       responses?: unknown[]
     }
-    if (!body?.profiling_type || !body?.responses) {
+    if (
+      body?.pipeline_snapshot_id == null ||
+      typeof body.pipeline_snapshot_id !== 'number' ||
+      !body?.profiling_type ||
+      !body?.product_type ||
+      !Array.isArray(body?.responses)
+    ) {
       return HttpResponse.json(
         {
           success: false,
@@ -201,6 +209,50 @@ export const profilingSubmitHandler = http.post(
             code: 'BAD_REQUEST',
             message: '필수 항목이 누락되었습니다.',
             details: null,
+          },
+        },
+        { status: 400 }
+      )
+    }
+    if (!PRODUCT_TYPES.includes(body.product_type as ProductType)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'BAD_REQUEST',
+            message: `product_type은 ${PRODUCT_TYPES.join(' 또는 ')}이어야 합니다.`,
+            details: { field: 'product_type', reason: 'invalid' },
+          },
+        },
+        { status: 400 }
+      )
+    }
+    if (!PROFILING_TYPES.includes(body.profiling_type as ProfilingType)) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'BAD_REQUEST',
+            message: `profiling_type은 ${PROFILING_TYPES.join(' 또는 ')}여야 합니다.`,
+            details: { field: 'profiling_type', reason: 'invalid' },
+          },
+        },
+        { status: 400 }
+      )
+    }
+    const expectedSnapshot =
+      body.profiling_type === 'HEALTH'
+        ? MOCK_PIPELINE_SNAPSHOT_ID.HEALTH
+        : MOCK_PIPELINE_SNAPSHOT_ID.PREFERENCE
+    if (body.pipeline_snapshot_id !== expectedSnapshot) {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'BAD_REQUEST',
+            message:
+              'pipeline_snapshot_id가 활성 폼과 일치하지 않습니다. 최신 폼을 다시 불러오세요.',
+            details: { field: 'pipeline_snapshot_id', reason: 'invalid' },
           },
         },
         { status: 400 }
