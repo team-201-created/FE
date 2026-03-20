@@ -1,7 +1,7 @@
 /**
  * 향(단품/조합) API — 명세 최종본 기준
  * - 목데이터(MSW): NEXT_PUBLIC_USE_MOCK_API=true 시 같은 origin 요청 → MSW가 가로챔
- * - 실제 API: NEXT_PUBLIC_API_BASE_URL 사용
+ * - 실제 API: NEXT_PUBLIC_API_URL 사용 (lib/api client와 동일)
  */
 import { apiFetch } from '@/lib/api'
 

@@ -9,6 +9,7 @@ import { ProductDetailModal } from '@/components/products/ProductDetailModal'
 import { fetchElementDetail, scentCategoryKrToId } from '../_api/productsClient'
 import { mapElementDetailToModalProduct } from '../_api/productDetailMappers'
 import { useProductDetailModal, type SingleItem } from '../_hooks'
+import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 
 type SinglePageClientProps = {
   initialItems: SingleItem[]
@@ -63,7 +64,7 @@ export function SinglePageClient({ initialItems }: SinglePageClientProps) {
               <ProductCard
                 variant="single"
                 name={item.name}
-                imageUrl={item.thumbnail_image_url}
+                imageUrl={resolveApiMediaUrl(item.thumbnail_image_url)}
                 scentFamilyId={scentFamilyId}
                 onClick={() => openDetail(item.id)}
                 priority={index === 0}

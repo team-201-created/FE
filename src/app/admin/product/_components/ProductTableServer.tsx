@@ -16,6 +16,7 @@ import {
   ACCORD_LABEL_PILL_SM_CLASS,
 } from '@/constants/accordLabelStyles'
 import { ProductDeleteButton } from './ProductDeleteButton'
+import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 
 const PAGE_SIZE = 10
 
@@ -37,8 +38,6 @@ export async function ProductTableServer({
     page: searchParams.page ? Number(searchParams.page) : 1,
     size: PAGE_SIZE,
   })
-  console.log('실제 호출', response.data.results)
-
   const items = (response?.data?.results || []) as (
     | AdminElementProduct
     | AdminBlendProduct
@@ -61,13 +60,17 @@ export async function ProductTableServer({
           <AdminTableRow key={item.id} type="product">
             <AdminTableCell slot={1}>
               <div className="flex items-center gap-3">
-                <Image
-                  src={item.thumbnail_image_url || ''}
-                  alt={item.name}
-                  width={40}
-                  height={40}
-                  className="h-20 w-20 rounded-md object-cover"
-                />
+                {resolveApiMediaUrl(item.thumbnail_image_url) ? (
+                  <Image
+                    src={resolveApiMediaUrl(item.thumbnail_image_url)}
+                    alt={item.name}
+                    width={40}
+                    height={40}
+                    className="h-20 w-20 rounded-md object-cover"
+                  />
+                ) : (
+                  <div className="h-20 w-20 rounded-md bg-neutral-100" />
+                )}
                 <span className="text-[16px] font-bold">{item.name}</span>
               </div>
             </AdminTableCell>

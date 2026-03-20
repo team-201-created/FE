@@ -6,20 +6,20 @@ import type { ProductDetailModalProduct } from '@/components/products/ProductDet
 import {
   blendCategoryKrToNoteLabel,
   scentCategoryKrToId,
+  type BlendDetailResponse,
+  type ElementDetailResponse,
 } from './productsClient'
-import type {
-  BlendDetailResponse,
-  ElementDetailResponse,
-} from './productsClient'
+import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 
 export function mapElementDetailToModalProduct(
   res: ElementDetailResponse
 ): ProductDetailModalProduct {
   const data = res.data
-  const imageUrl =
+  const raw =
     typeof data.image_url === 'string'
       ? data.image_url
       : (data.image_url?.[0] ?? '')
+  const imageUrl = resolveApiMediaUrl(raw)
   const kr = data.element_category?.name?.kr ?? ''
   const scentFamilyId = scentCategoryKrToId[kr] ?? 'woody'
   return {
@@ -44,7 +44,7 @@ export function mapBlendDetailToModalProduct(
     .filter(Boolean)
   return {
     name: data.name,
-    imageUrl: data.image_url,
+    imageUrl: resolveApiMediaUrl(data.image_url),
     scentFamilyIds,
     noteLabels,
     oneLineDescription: data.description ?? '',

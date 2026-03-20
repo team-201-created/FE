@@ -3,8 +3,9 @@
 /** 테스트 진입 전: 향수(퍼퓸) vs 디퓨저 추천 유형 선택 */
 import Image from 'next/image'
 import { ModalOverlay, ModalPortal } from '@/components/common/Modal'
+import type { ProductTypeChoice } from '../_types'
 
-export type ProductTypeChoice = 'DIFFUSER' | 'PERFUME'
+export type { ProductTypeChoice }
 
 type ProductTypeSelectModalProps = {
   isOpen: boolean

@@ -2,7 +2,7 @@
  * MSW 핸들러 검증용 상수 (문자열 비교 대신 일원화하여 유지보수 용이)
  */
 
-/** GET /api/v1/profilings/forms/active — profiling_type */
+/** GET /api/v1/profilings/forms/active — profiling_type, product_type */
 export const PROFILING_TYPES = ['PREFERENCE', 'HEALTH'] as const
 export type ProfilingType = (typeof PROFILING_TYPES)[number]
 

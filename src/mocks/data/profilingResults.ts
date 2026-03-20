@@ -1,30 +1,28 @@
 /**
- * GET /api/v1/profilings/results/:result_id 목 데이터
+ * GET /api/v1/profilings/results/{result_id} 목 데이터
  *
- * ProfilingResultDetail — 제출 시 선택한 product_type(DIFFUSER | PERFUME)에 따라
- * 실서버는 결과가 달라질 수 있음. 목에서는 공통 샘플 1건 사용.
+ * API 성공 스키마와 동일. 제출(product_type 등)에 따라 실서버는 필드가 달라질 수 있음.
  */
 import type { ProfilingResultDetail } from '@/app/find-my-scent/_types'
 
+/** 명세 Success Response Example 기준 기본 샘플 */
 export const mockProfilingResultDetail: ProfilingResultDetail = {
   id: 42,
-  /** PREFERENCE | HEALTH | AI 등 */
   input_data_type: 'PREFERENCE',
-  /** 제출 시 선택한 product_type과 맞추려면 MSW에서 submit 직후 별도 저장 로직 필요 */
   product_type: 'DIFFUSER',
-  input_data_summary:
-    '차분한 무드와 가을 숲을 선호하는 당신에게 포근한 우디 향을 추천합니다.',
+  input_data_summary: '차분한 무드와 가을 숲을 선호하는 당신에게...',
   recommended_blend: {
     name: '포근한 숲',
-    image_url: '/img/17.svg',
-    description:
-      '따뜻한 우디 향. 깊고 신비로운 오리엔탈 조합 향기가 당신만의 개성을 표현합니다.',
+    image_url: '/images/blend_5.jpg',
+    description: '따뜻한 우디 향',
     contained_elements: [
       { name: '시더우드', category: { kr: '우디', en: 'Woody' } },
       { name: '라벤더', category: { kr: '아로마틱', en: 'Aromatic' } },
     ],
   },
-  recommended_products: [{ purchase_url: 'https://www.coupang.com/' }],
+  recommended_products: [
+    { purchase_url: 'https://shop.example.com/product/1' },
+  ],
   created_at: '2026-02-28T14:30:00Z',
 }
 

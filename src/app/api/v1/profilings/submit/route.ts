@@ -1,10 +1,14 @@
 /**
- * 테스트 제출 (MSW 미가로챔 시 fallback)
- * POST /api/v1/profilings/submit
+ * 테스트 제출
+ * - NEXT_PUBLIC_USE_MOCK_API=true: 기존 목 검증·응답
+ * - 그 외: 백엔드 프록시
  */
 import { NextResponse } from 'next/server'
 import { MOCK_PIPELINE_SNAPSHOT_ID } from '@/mocks/data/profilingConstants'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
+import { proxyToProfilingUpstream } from '../_lib/upstreamProxy'
+
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
 
 const PRODUCT_TYPES = ['DIFFUSER', 'PERFUME'] as const
 const PROFILING_TYPES = ['PREFERENCE', 'HEALTH'] as const
@@ -30,6 +34,13 @@ export async function POST(request: Request) {
       },
       { status: 400 }
     )
+  }
+
+  if (!USE_MOCK) {
+    return proxyToProfilingUpstream('/api/v1/profilings/submit', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
   }
 
   if (

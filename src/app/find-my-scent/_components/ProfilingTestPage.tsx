@@ -1,17 +1,18 @@
 'use client'
 
-/** 취향/건강 테스트 공통 페이지 — 진입 전 제품 유형(향수/디퓨저) 선택 후 퀴즈 */
+/** 취향/건강 테스트 공통 페이지 — 진입 전 제품 유형(향수/디퓨저) 선택 후 활성 폼 조회·퀴즈 */
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PageCenter } from '@/components/common/PageCenter'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { ErrorFeedbackModal } from '@/components/common/ErrorFeedback'
+import { LoginRequiredTestModal } from './LoginRequiredTestModal'
 import { ProductTypeSelectModal } from './ProductTypeSelectModal'
-import type { ProductTypeChoice } from './ProductTypeSelectModal'
+import type { ProductTypeChoice, TestType } from '../_types'
 import { QuizView } from './QuizView'
 import { useProfilingForm } from '../_hooks/useProfilingForm'
 import { useErrorPopup } from '../_hooks/useErrorPopup'
-import type { TestType } from '../_types'
+import { isLoginRequiredFetchError } from '@/lib/api'
 
 const styles = {
   emptyText: 'text-neutral-500',
@@ -21,33 +22,62 @@ const styles = {
 
 export function ProfilingTestPage({ testType }: { testType: TestType }) {
   const router = useRouter()
-  const { questions, pipelineSnapshotId, isLoading, error, refetch } =
-    useProfilingForm(testType)
   const [productType, setProductType] = useState<ProductTypeChoice | null>(null)
+  const { questions, pipelineSnapshotId, isLoading, error, refetch } =
+    useProfilingForm(testType, productType)
   const { isOpen: showErrorPopup, close: closeErrorPopup } =
     useErrorPopup(error)
 
+  if (productType === null) {
+    return (
+      <>
+        <PageCenter>
+          <p className="text-center text-sm text-neutral-500">
+            추천 받을 제품 유형을 선택해 주세요.
+          </p>
+        </PageCenter>
+        <ProductTypeSelectModal
+          isOpen
+          onSelect={setProductType}
+          onClose={() => router.back()}
+        />
+      </>
+    )
+  }
+
   if (error) {
+    const needLogin = isLoginRequiredFetchError(error)
     return (
       <>
         <PageCenter>
           <div className="flex flex-col items-center gap-2 text-center">
-            <p className="text-neutral-500">질문을 불러오지 못했어요.</p>
+            <p className="text-neutral-500">
+              {needLogin
+                ? '로그인 후 이용할 수 있어요.'
+                : '질문을 불러오지 못했어요.'}
+            </p>
             <button
               type="button"
-              onClick={refetch}
+              onClick={() => (needLogin ? router.push('/login') : refetch())}
               className={styles.retryBtn}
-              aria-label="테스트 다시 하기"
+              aria-label={needLogin ? '로그인하기' : '테스트 다시 하기'}
             >
-              테스트 다시 하기
+              {needLogin ? '로그인하기' : '테스트 다시 하기'}
             </button>
           </div>
         </PageCenter>
-        <ErrorFeedbackModal
-          message={error.message}
-          isOpen={showErrorPopup}
-          onClose={closeErrorPopup}
-        />
+        {needLogin ? (
+          <LoginRequiredTestModal
+            isOpen={showErrorPopup}
+            onClose={closeErrorPopup}
+          />
+        ) : (
+          <ErrorFeedbackModal
+            message={error.message}
+            isOpen={showErrorPopup}
+            onClose={closeErrorPopup}
+          />
+        )}
       </>
     )
   }
@@ -69,20 +99,11 @@ export function ProfilingTestPage({ testType }: { testType: TestType }) {
   }
 
   return (
-    <>
-      <ProductTypeSelectModal
-        isOpen={productType === null}
-        onSelect={setProductType}
-        onClose={() => router.back()}
-      />
-      {productType != null && (
-        <QuizView
-          testType={testType}
-          questions={questions}
-          pipelineSnapshotId={pipelineSnapshotId}
-          productType={productType}
-        />
-      )}
-    </>
+    <QuizView
+      testType={testType}
+      questions={questions}
+      pipelineSnapshotId={pipelineSnapshotId}
+      productType={productType}
+    />
   )
 }

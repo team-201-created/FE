@@ -1,7 +1,7 @@
 /**
  * 향기 성향 테스트 항목 조회 목 데이터
  *
- * GET /api/v1/profilings/forms/active?profiling_type=PREFERENCE|HEALTH
+ * GET /api/v1/profilings/forms/active?profiling_type=&product_type= (PERFUME|DIFFUSER)
  * Response data: ProfilingForm
  * - pipeline_snapshot_id: 제출(POST /profilings/submit) 시 동일 값을 pipeline_snapshot_id로 전달
  */
@@ -18,34 +18,19 @@ export const mockProfilingFormPREFERENCE: ProfilingForm = {
     {
       id: 1,
       question_key: 'mood',
-      question_text: '평소 선호하는 분위기는 무엇인가요?',
-      selection_type: 'SINGLE',
+      question_text: '선호하는 무드를 선택해주세요',
+      selection_type: 'MULTI',
       is_required: true,
       options: [
         {
           id: 1,
           answer_option_key: 'calm',
-          answer_option_text: '차분하고 편안한',
+          answer_option_text: '차분',
         },
         {
           id: 2,
           answer_option_key: 'energetic',
-          answer_option_text: '활기차고 경쾌한',
-        },
-        {
-          id: 3,
-          answer_option_key: 'elegant',
-          answer_option_text: '우아하고 세련된',
-        },
-        {
-          id: 4,
-          answer_option_key: 'mysterious',
-          answer_option_text: '신비롭고 깊은',
-        },
-        {
-          id: 5,
-          answer_option_key: 'fresh',
-          answer_option_text: '자연스럽고 청량한',
+          answer_option_text: '활기',
         },
       ],
     },

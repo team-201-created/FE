@@ -32,6 +32,7 @@ export function ProductCard({
   onClick,
   priority = false,
 }: ProductCardProps) {
+  const hasImage = Boolean(imageUrl?.trim())
   const accordIds: string[] =
     variant === 'combo' && scentFamilyIds?.length
       ? scentFamilyIds
@@ -47,14 +48,18 @@ export function ProductCard({
       <article className="rounded-2xl bg-white shadow-md">
         <div className="aspect-square w-full overflow-hidden rounded-t-2xl">
           <Lens className="h-full w-full">
-            <Image
-              src={imageUrl}
-              alt={name}
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="block rounded-[20px_20px_0_0] object-contain p-1"
-              priority={priority}
-            />
+            {hasImage ? (
+              <Image
+                src={imageUrl}
+                alt={name}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="block rounded-[20px_20px_0_0] object-contain p-1"
+                priority={priority}
+              />
+            ) : (
+              <div className="h-full w-full rounded-[20px_20px_0_0] bg-neutral-100" />
+            )}
           </Lens>
         </div>
         <div className="p-3">

@@ -7,18 +7,30 @@ import {
   fetchProfilingFormActive,
   toQuizQuestions,
 } from '../_api/profilingClient'
-import type { ProfilingType, QuizQuestion } from '../_types'
+import type { ProductTypeChoice, ProfilingType, QuizQuestion } from '../_types'
 
-export function useProfilingForm(profilingType: ProfilingType) {
+export function useProfilingForm(
+  profilingType: ProfilingType,
+  productType: ProductTypeChoice | null
+) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [pipelineSnapshotId, setPipelineSnapshotId] = useState<number | null>(
     null
   )
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const loadRef = useRef<() => void | Promise<void>>(() => {})
 
   useEffect(() => {
+    if (productType == null) {
+      setQuestions([])
+      setPipelineSnapshotId(null)
+      setError(null)
+      setIsLoading(false)
+      loadRef.current = async () => {}
+      return
+    }
+
     let cancelled = false
     loadRef.current = async () => {
       setError(null)
@@ -26,7 +38,7 @@ export function useProfilingForm(profilingType: ProfilingType) {
       setPipelineSnapshotId(null)
       setIsLoading(true)
       try {
-        const res = await fetchProfilingFormActive(profilingType)
+        const res = await fetchProfilingFormActive(profilingType, productType)
         if (cancelled) return
         setQuestions(toQuizQuestions(res.data))
         setPipelineSnapshotId(res.data.pipeline_snapshot_id)
@@ -43,7 +55,7 @@ export function useProfilingForm(profilingType: ProfilingType) {
     return () => {
       cancelled = true
     }
-  }, [profilingType])
+  }, [profilingType, productType])
 
   return {
     questions,
