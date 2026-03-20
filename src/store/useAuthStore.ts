@@ -18,12 +18,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   userProfileLoaded: false,
   isLoggedIn: undefined,
   user: null,
-  login: (user) => set({ isLoggedIn: true, user, userProfileLoaded: true }),
+  login: (user) =>
+    set({
+      isInitialized: true,
+      isLoggedIn: true,
+      user,
+      userProfileLoaded: true,
+    }),
   logout: async () => {
     // httpOnly 쿠키 삭제는 Server Action에서만 가능
     await logoutAction()
     localStorage.removeItem('user')
-    set({ isLoggedIn: false, user: null, userProfileLoaded: true })
+    set({
+      isInitialized: true,
+      isLoggedIn: false,
+      user: null,
+      userProfileLoaded: true,
+    })
   },
   initialize: () => {
     if (typeof window !== 'undefined') {
@@ -37,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       } catch {
         localStorage.removeItem('user')
       }
-      set({ isLoggedIn: !!user, user })
+      set({ isInitialized: true, isLoggedIn: !!user, user })
     }
   },
 }))
