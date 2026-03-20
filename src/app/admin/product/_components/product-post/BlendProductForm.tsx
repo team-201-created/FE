@@ -9,7 +9,7 @@ import { useModalStore } from '@/store/useModalStore'
 import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 import type { AdminElementListResponse } from '../../_types/AdminProductType'
 import type { CreateBlendBody } from '../../_api/adminCreateProduct'
-import { createBlendAction } from '../../_lib/productActions'
+import { createBlendAction, patchBlendAction } from '../../_lib/productActions'
 import { useImageUpload } from '../../_hooks/useImageUpload'
 import { ImageUploadField } from './ImageUploadField'
 import { CategoryMultiSelectWrapper } from './CategoryMultiSelectWrapper'
@@ -23,18 +23,27 @@ interface BlendProductFormProps {
   elementPromise: Promise<AdminElementListResponse | null>
   categoryPromise: Promise<AdminCategoryListResponse | null>
   onClose: () => void
+  initialData?: {
+    name: string
+    description?: string
+    blend_category_ids: number[]
+    image_url: string
+  }
+  productId?: number
 }
 
 export function BlendProductForm({
   elementPromise,
   categoryPromise,
   onClose,
+  initialData,
+  productId,
 }: BlendProductFormProps) {
   const { openAlert } = useModalStore()
   const [data, setData] = useState<CreateBlendBody>({
-    name: '',
-    description: '',
-    blend_category_ids: [],
+    name: initialData?.name ?? '',
+    description: initialData?.description ?? '',
+    blend_category_ids: initialData?.blend_category_ids ?? [],
     element_ids: [],
     image_url: undefined,
   })
@@ -46,7 +55,7 @@ export function BlendProductForm({
     fileInputRef,
     handleImageChange,
     handleRemoveImage,
-  } = useImageUpload()
+  } = useImageUpload(initialData?.image_url)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -100,15 +109,21 @@ export function BlendProductForm({
       return
     }
 
-    const result = await createBlendAction({ ...data, image_url: imageUrl })
+    const body = { ...data, image_url: imageUrl }
+    const result = productId
+      ? await patchBlendAction(productId, body)
+      : await createBlendAction(body)
+
     if (!result.success) {
       openAlert({
         type: 'danger',
-        title: '등록 실패',
+        title: productId ? '수정 실패' : '등록 실패',
         content:
           result.error instanceof Error
             ? result.error.message
-            : '조합 등록 중 오류가 발생했습니다.',
+            : productId
+              ? '조합 수정 중 오류가 발생했습니다.'
+              : '조합 등록 중 오류가 발생했습니다.',
       })
       return
     }
@@ -200,7 +215,7 @@ export function BlendProductForm({
           취소
         </Button>
         <Button color="primary" onClick={handleSubmit} disabled={isPending}>
-          조합 등록
+          {productId ? '조합 수정' : '조합 등록'}
         </Button>
       </Modal.Footer>
     </>

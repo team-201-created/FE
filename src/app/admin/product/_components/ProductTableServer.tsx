@@ -16,6 +16,7 @@ import {
   ACCORD_LABEL_PILL_SM_CLASS,
 } from '@/constants/accordLabelStyles'
 import { ProductDeleteButton } from './ProductDeleteButton'
+import { ProductEditButton } from './ProductEditButton'
 import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 
 const PAGE_SIZE = 10
@@ -119,7 +120,10 @@ export async function ProductTableServer({
             </AdminTableCell>
 
             <AdminTableCell slot={7}>
-              <ProductDeleteButton type={activeTab} id={item.id} />
+              <div className="flex items-center gap-1">
+                <ProductEditButton type={activeTab} id={item.id} />
+                <ProductDeleteButton type={activeTab} id={item.id} />
+              </div>
             </AdminTableCell>
           </AdminTableRow>
         )

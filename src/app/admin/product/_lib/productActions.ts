@@ -10,6 +10,11 @@ import {
   type CreateElementBody,
   type CreateBlendBody,
 } from '../_api/adminCreateProduct'
+import { patchAdminElement, patchAdminBlend } from '../_api/adminPatchProduct'
+import {
+  fetchAdminElementDetail,
+  fetchAdminBlendDetail,
+} from '../_api/adminFetchProductDetail'
 import {
   fetchAdminElementCategories,
   fetchAdminBlendCategories,
@@ -85,6 +90,46 @@ export async function createElementAction(body: CreateElementBody) {
 export async function createBlendAction(body: CreateBlendBody) {
   try {
     await createAdminBlend(body)
+    revalidatePath('/admin/product')
+    return { success: true }
+  } catch (error) {
+    return { success: false, error }
+  }
+}
+
+/**
+ * 향 단품 상세 조회 Server Action
+ */
+export async function fetchElementDetailAction(id: number) {
+  return fetchAdminElementDetail(id)
+}
+
+/**
+ * 향 조합 상세 조회 Server Action
+ */
+export async function fetchBlendDetailAction(id: number) {
+  return fetchAdminBlendDetail(id)
+}
+
+/**
+ * 향 단품 수정 Server Action
+ */
+export async function patchElementAction(id: number, body: CreateElementBody) {
+  try {
+    await patchAdminElement(id, body)
+    revalidatePath('/admin/product')
+    return { success: true }
+  } catch (error) {
+    return { success: false, error }
+  }
+}
+
+/**
+ * 향 조합 수정 Server Action
+ */
+export async function patchBlendAction(id: number, body: CreateBlendBody) {
+  try {
+    await patchAdminBlend(id, body)
     revalidatePath('/admin/product')
     return { success: true }
   } catch (error) {
