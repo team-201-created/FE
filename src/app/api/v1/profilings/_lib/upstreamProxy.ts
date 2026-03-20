@@ -1,7 +1,12 @@
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { getServerAccessToken } from '@/lib/auth/getServerAccessToken'
 
-/** MSW/목 응답 경로 외 실서버 연동 시 쿠키 access_token 을 Bearer 로 붙여 백엔드로 전달 */
+/**
+ * MSW/목 외 실서버 연동: Bearer로 백엔드에 전달 후 응답·상태를 그대로 클라이언트에 반환.
+ *
+ * lib/api의 authFetch는 실패 시 handleResponse로 throw·정상 시 json()만 반환하므로
+ * 업스트림 4xx 본문을 그대로 넘기는 BFF 프록시 용도로는 사용할 수 없습니다.
+ */
 export async function proxyToProfilingUpstream(
   upstreamPathWithQuery: string,
   init: RequestInit = {}
@@ -21,9 +26,7 @@ export async function proxyToProfilingUpstream(
     )
   }
 
-  const cookieStore = await cookies()
-  const token = cookieStore.get('access_token')?.value
-
+  const token = await getServerAccessToken()
   if (!token) {
     return NextResponse.json(
       {

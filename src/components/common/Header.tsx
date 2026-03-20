@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -29,8 +30,20 @@ const styles = {
   chevronWrap: 'ml-0.5 shrink-0',
 } as const
 export function Header() {
-  const { isLoggedIn, logout: logoutFromStore } = useAuthStore()
+  const {
+    isLoggedIn,
+    user,
+    userProfileLoaded,
+    logout: logoutFromStore,
+  } = useAuthStore()
   const router = useRouter()
+
+  const profileMenuItems = useMemo(() => {
+    const showAdmin =
+      userProfileLoaded && user != null && user.is_admin === true
+    if (showAdmin) return [...headerNavLinks.profile]
+    return headerNavLinks.profile.filter((item) => item.href !== '/admin')
+  }, [user, userProfileLoaded])
 
   const { openModal, closeModal, closeAll } = useModalStore()
   const openProfileModal = () => {
@@ -92,7 +105,7 @@ export function Header() {
               aria-hidden
             />
           }
-          items={headerNavLinks.profile}
+          items={profileMenuItems}
           variant="profile"
           menuMinWidth="min-w-[200px]"
           aria-label="프로필 메뉴"

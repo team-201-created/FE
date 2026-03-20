@@ -57,9 +57,9 @@ export const appFetch = createFetch({
       // Server Action 컨텍스트에서만 실행 (typeof window === 'undefined')
       // next/headers는 서버 전용 → dynamic import로 클라이언트 번들 오염 방지
       if (typeof window === 'undefined') {
-        const { cookies } = await import('next/headers')
-        const cookieStore = await cookies()
-        const token = cookieStore.get('access_token')?.value
+        const { getServerAccessToken } =
+          await import('@/lib/auth/getServerAccessToken')
+        const token = await getServerAccessToken()
 
         if (token) {
           args.options.headers = {
