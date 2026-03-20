@@ -13,6 +13,7 @@ import { QuizView } from './QuizView'
 import { useProfilingForm } from '../_hooks/useProfilingForm'
 import { useErrorPopup } from '../_hooks/useErrorPopup'
 import { isLoginRequiredFetchError } from '@/lib/api'
+import { useAuthStore } from '@/store/useAuthStore'
 
 const styles = {
   emptyText: 'text-neutral-500',
@@ -22,6 +23,7 @@ const styles = {
 
 export function ProfilingTestPage({ testType }: { testType: TestType }) {
   const router = useRouter()
+  const { isLoggedIn, isInitialized } = useAuthStore()
   const [productType, setProductType] = useState<ProductTypeChoice | null>(null)
   const { questions, pipelineSnapshotId, isLoading, error, refetch } =
     useProfilingForm(testType, productType)
@@ -41,6 +43,27 @@ export function ProfilingTestPage({ testType }: { testType: TestType }) {
           onSelect={setProductType}
           onClose={() => router.back()}
         />
+      </>
+    )
+  }
+
+  if (isInitialized && isLoggedIn === false) {
+    return (
+      <>
+        <PageCenter>
+          <div className="flex flex-col items-center gap-2 text-center">
+            <p className="text-neutral-500">로그인 후 이용할 수 있어요.</p>
+            <button
+              type="button"
+              onClick={() => router.push('/login')}
+              className={styles.retryBtn}
+              aria-label="로그인하기"
+            >
+              로그인하기
+            </button>
+          </div>
+        </PageCenter>
+        <LoginRequiredTestModal isOpen onClose={() => router.push('/login')} />
       </>
     )
   }
