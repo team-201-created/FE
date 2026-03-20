@@ -4,10 +4,10 @@ import { useState, useTransition, useEffect, useRef } from 'react'
 import { useModalStore } from '@/store/useModalStore'
 import { getProductPresignedUrlAction } from '@/app/admin/product/_lib/productActions'
 
-export function useImageUpload() {
+export function useImageUpload(initialImageUrl?: string) {
   const { openAlert } = useModalStore()
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
+  const [imageUrl, setImageUrl] = useState<string | undefined>(initialImageUrl)
   const [isPending, startTransition] = useTransition()
   const fileInputRef = useRef<HTMLInputElement>(null)
 

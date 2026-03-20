@@ -32,10 +32,10 @@ export function ImageUploadField({
         disabled={isPending}
         className="hidden"
       />
-      {imagePreview ? (
+      {(imagePreview ?? imageUrl) ? (
         <div className="relative h-36 w-36 overflow-hidden rounded-lg border border-neutral-200">
           <Image
-            src={imagePreview}
+            src={(imagePreview ?? imageUrl)!}
             alt="미리보기"
             fill
             className="object-cover"

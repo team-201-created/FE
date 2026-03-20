@@ -7,7 +7,10 @@ import Input from '@/components/common/Input'
 import { useModalStore } from '@/store/useModalStore'
 import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 import type { CreateElementBody } from '../../_api/adminCreateProduct'
-import { createElementAction } from '../../_lib/productActions'
+import {
+  createElementAction,
+  patchElementAction,
+} from '../../_lib/productActions'
 import { useImageUpload } from '../../_hooks/useImageUpload'
 import { ImageUploadField } from './ImageUploadField'
 import { CategorySelectWrapper } from './CategorySelectWrapper'
@@ -19,17 +22,26 @@ const REQUIRED_MARK = <span className="ml-0.5 text-red-500">*</span>
 interface ElementProductFormProps {
   categoryPromise: Promise<AdminCategoryListResponse | null>
   onClose: () => void
+  initialData?: {
+    name: string
+    description?: string
+    category_id: number
+    image_url: string
+  }
+  productId?: number
 }
 
 export function ElementProductForm({
   categoryPromise,
   onClose,
+  initialData,
+  productId,
 }: ElementProductFormProps) {
   const { openAlert } = useModalStore()
   const [data, setData] = useState<CreateElementBody>({
-    name: '',
-    description: '',
-    category_id: 0,
+    name: initialData?.name ?? '',
+    description: initialData?.description ?? '',
+    category_id: initialData?.category_id ?? 0,
     image_url: undefined,
   })
 
@@ -40,7 +52,7 @@ export function ElementProductForm({
     fileInputRef,
     handleImageChange,
     handleRemoveImage,
-  } = useImageUpload()
+  } = useImageUpload(initialData?.image_url)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -73,15 +85,21 @@ export function ElementProductForm({
       return
     }
 
-    const result = await createElementAction({ ...data, image_url: imageUrl })
+    const body = { ...data, image_url: imageUrl }
+    const result = productId
+      ? await patchElementAction(productId, body)
+      : await createElementAction(body)
+
     if (!result.success) {
       openAlert({
         type: 'danger',
-        title: '등록 실패',
+        title: productId ? '수정 실패' : '등록 실패',
         content:
           result.error instanceof Error
             ? result.error.message
-            : '단품 등록 중 오류가 발생했습니다.',
+            : productId
+              ? '단품 수정 중 오류가 발생했습니다.'
+              : '단품 등록 중 오류가 발생했습니다.',
       })
       return
     }
@@ -144,7 +162,7 @@ export function ElementProductForm({
           취소
         </Button>
         <Button color="primary" onClick={handleSubmit} disabled={isPending}>
-          단품 등록
+          {productId ? '단품 수정' : '단품 등록'}
         </Button>
       </Modal.Footer>
     </>

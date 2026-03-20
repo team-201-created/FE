@@ -4,10 +4,10 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/store/useAuthStore'
 import type { User } from '@/types'
 
-/** 쿠키 기준 최신 프로필(is_admin 등) 동기화 — same-origin /api/auth/me */
+/** 쿠키 기준 최신 프로필(is_admin 등) 동기화 — same-origin /api/v1/users/me */
 async function syncUserProfileFromApi(): Promise<void> {
   try {
-    const res = await fetch('/api/auth/me', {
+    const res = await fetch('/api/v1/users/me', {
       credentials: 'include',
       headers: { Accept: 'application/json' },
     })
