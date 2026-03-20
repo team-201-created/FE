@@ -1,8 +1,8 @@
-import React, { use } from 'react'
-import { AdminSelect } from '@/app/admin/_components'
+import React, { use, useEffect } from 'react'
 import { ProductMapsFormProps } from '@/app/admin/recommend/_types'
 import { PRODUCT_TYPE_LABELS } from '@/app/admin/_constants/labels'
 import { formatDate } from '@/app/admin/_utils'
+import { cn } from '@/lib/cn'
 
 export const ProductMapsForm = ({
   value,
@@ -12,30 +12,53 @@ export const ProductMapsForm = ({
   const res = use(poolsPromise)
   const pools = res.data.results
 
-  const options = pools.map((p: any) => ({
-    label: `${p.id} - ${PRODUCT_TYPE_LABELS[p.product_type]} [${p.product_count}개]`,
-    secondaryLabel: formatDate(p.updated_at),
-    value: String(p.id),
-  }))
+  useEffect(() => {
+    if (pools.length > 0 && value === 0) {
+      onChange(pools[0].id)
+    }
+  }, [pools])
 
   return (
     <div className="flex flex-col gap-4 py-6">
       <div className="flex flex-col gap-2">
         <label className="text-lg font-bold">대상 후보군 선택</label>
         {pools.length > 0 ? (
-          <AdminSelect
-            value={String(value)}
-            onChange={(val: string) => onChange(Number(val))}
-            width="w-full"
-            options={options}
-          />
+          <div className="flex flex-col gap-1.5">
+            {pools.map((p: any) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => onChange(p.id)}
+                className={cn(
+                  'border-gray-light flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
+                  value === p.id ? 'bg-gray-white' : 'text-gray-primary'
+                )}
+              >
+                <span
+                  className={cn(
+                    'h-3.5 w-3.5 rounded-full border-2',
+                    value === p.id
+                      ? 'border-black-primary bg-black-primary'
+                      : 'border-gray-light'
+                  )}
+                />
+                <span>
+                  #{p.id} · {PRODUCT_TYPE_LABELS[p.product_type]} ·{' '}
+                  {p.product_count}개
+                </span>
+                <span className="text-gray-secondary ml-auto text-xs">
+                  {formatDate(p.updated_at)}
+                </span>
+              </button>
+            ))}
+          </div>
         ) : (
-          <div className="bg-gray-light/30 rounded-xl py-8 text-center text-gray-400">
+          <div className="bg-gray-white text-gray-secondary rounded-lg py-8 text-center">
             채택 완료된 후보군이 없습니다. 제품 후보군 탭에서 채택을 먼저 진행해
             주세요.
           </div>
         )}
-        <p className="text-sm text-gray-500">
+        <p className="text-gray-secondary text-sm">
           채택 완료된 후보군을 선택하면, 해당 후보군 내의 제품들로 추천 맵을
           생성합니다.
         </p>

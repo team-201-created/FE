@@ -21,3 +21,14 @@ export const patchAdminProductPoolAdopt = (
   authFetch.patch(`/api/v1/admin/matches/product-pools/${id}/adopt`, {
     adoption_status,
   })
+
+/**
+ * 제품 추천맵 발행 설정 PATCH API
+ */
+export const patchAdminProductMapPublish = (
+  id: number,
+  publish_status: 'PUBLISHED' | 'UNPUBLISHED'
+) =>
+  authFetch.patch(`/api/v1/admin/matches/product-maps/${id}/publish`, {
+    publish_status,
+  })

@@ -5,12 +5,28 @@ import { deleteAdminRecommend } from '../_api/adminDeleteRecommend'
 import {
   patchAdminBlendMapPublish,
   patchAdminProductPoolAdopt,
+  patchAdminProductMapPublish,
 } from '../_api/adminPatchRecommend'
 import {
   createAdminBlendMap,
   createAdminProductPool,
+  createAdminProductMap,
 } from '../_api/adminCreateRecommend'
-import { RecommendTabId, ProductPoolCreateBody } from '../_types'
+import { RECOMMEND_API } from '../_api'
+import {
+  RecommendTabId,
+  ProductPoolCreateBody,
+  ProductPoolsListResponse,
+} from '../_types'
+
+/**
+ * 채택된 제품 후보군 목록 조회 Server Action
+ * — 클라이언트에서 authFetch를 직접 호출하면 토큰이 주입되지 않으므로
+ *   서버 컨텍스트에서 실행되는 Server Action으로 감쌈
+ */
+export async function fetchAdoptedPoolsAction(): Promise<ProductPoolsListResponse> {
+  return RECOMMEND_API.productPools({ size: 5, adoption_status: 'ADOPTED' })
+}
 
 /**
  * 추천 관련 데이터 삭제 Server Action
@@ -43,8 +59,12 @@ export async function toggleRecommendStatusAction(
       await patchAdminBlendMapPublish(id, status as 'PUBLISHED' | 'UNPUBLISHED')
     } else if (tabId === 'product-pools') {
       await patchAdminProductPoolAdopt(id, status as 'ADOPTED' | 'UNADOPTED')
+    } else if (tabId === 'product-maps') {
+      await patchAdminProductMapPublish(
+        id,
+        status as 'PUBLISHED' | 'UNPUBLISHED'
+      )
     }
-    // TODO: product-maps PATCH 연동 시 추가
 
     revalidatePath('/admin/recommend')
     return { success: true }
@@ -62,6 +82,23 @@ export async function toggleRecommendStatusAction(
 export async function createProductPoolAction(body: ProductPoolCreateBody) {
   try {
     await createAdminProductPool(body)
+
+    revalidatePath('/admin/recommend')
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : null,
+    }
+  }
+}
+
+/**
+ * 제품 추천맵 생성 Server Action
+ */
+export async function createProductMapAction(product_pool_id: number) {
+  try {
+    await createAdminProductMap(product_pool_id)
 
     revalidatePath('/admin/recommend')
     return { success: true }

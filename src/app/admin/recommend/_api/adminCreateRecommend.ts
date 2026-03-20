@@ -12,3 +12,9 @@ export const createAdminBlendMap = (input_type: string) =>
  */
 export const createAdminProductPool = (body: ProductPoolCreateBody) =>
   authFetch.post('/api/v1/admin/matches/product-pools', body)
+
+/**
+ * 제품 추천맵 생성 POST API
+ */
+export const createAdminProductMap = (product_pool_id: number) =>
+  authFetch.post('/api/v1/admin/matches/product-maps', { product_pool_id })
