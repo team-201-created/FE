@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { FetchError } from '@/lib/api'
 import { deleteAdminProduct } from '../_api/adminDeleteProduct'
 import {
   createAdminElement,
@@ -37,9 +38,16 @@ export async function deleteProductAction(type: ProductTabId, id: number) {
   try {
     await deleteAdminProduct(type, id)
     revalidatePath('/admin/product')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return { success: false, error }
+    if (error instanceof FetchError) {
+      return {
+        success: false as const,
+        message: error.message,
+        reason: error.details?.reason,
+      }
+    }
+    return { success: false as const, message: null, reason: null }
   }
 }
 
