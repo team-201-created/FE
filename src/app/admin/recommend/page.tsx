@@ -5,6 +5,8 @@ import { RecommendTableServer } from './_components/RecommendTableServer'
 import { RecommendTabId } from './_types'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: '어드민 추천 관리',
 }
