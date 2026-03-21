@@ -3,7 +3,9 @@ import {
   AdminTableRow,
   AdminTableCell,
   AdminTableEmpty,
+  AdminTableError,
   AdminPagination,
+  AdminPageGuard,
 } from '@/app/admin/_components'
 import { fetchAdminProductList } from '@/app/admin/product/_api/adminFetchProductList'
 import type {
@@ -34,19 +36,29 @@ export async function ProductTableServer({
   activeTab,
   searchParams,
 }: ProductTableServerProps) {
-  const response = await fetchAdminProductList(activeTab, {
-    q: searchParams.q,
-    page: searchParams.page ? Number(searchParams.page) : 1,
-    size: PAGE_SIZE,
-  })
-  const items = (response?.data?.results || []) as (
-    | AdminElementProduct
-    | AdminBlendProduct
-  )[]
-  const totalPages = response?.data?.total_pages ?? 1
-  const currentPage = response?.data?.page ?? 1
+  const currentPage = Math.max(1, Number(searchParams.page) || 1)
+
+  let items: (AdminElementProduct | AdminBlendProduct)[] = []
+  let totalPages = 1
+
+  try {
+    const response = await fetchAdminProductList(activeTab, {
+      q: searchParams.q,
+      page: currentPage,
+      size: PAGE_SIZE,
+    })
+    items = (response?.data?.results || []) as (
+      | AdminElementProduct
+      | AdminBlendProduct
+    )[]
+    totalPages = response?.data?.total_pages ?? 1
+  } catch {
+    if (currentPage > 1) return <AdminPageGuard currentPage={currentPage} />
+    return <AdminTableError />
+  }
 
   if (items.length === 0) {
+    if (currentPage > 1) return <AdminPageGuard currentPage={currentPage} />
     return <AdminTableEmpty />
   }
 
