@@ -43,7 +43,15 @@ export function CategoryDeleteButton({
   }
 
   return (
-    <Button color="none" size="w32h32" rounded="sm" onClick={handleDelete}>
+    <Button
+      color="none"
+      size="w32h32"
+      rounded="sm"
+      onClick={(e) => {
+        e.stopPropagation()
+        handleDelete()
+      }}
+    >
       <TrashIcon
         width={16}
         height={16}
