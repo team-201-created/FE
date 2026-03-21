@@ -97,7 +97,10 @@ export function ProductEditButton({ type, id }: ProductEditButtonProps) {
       color="none"
       size="w32h32"
       rounded="sm"
-      onClick={handleEdit}
+      onClick={(e) => {
+        e.stopPropagation()
+        handleEdit()
+      }}
       disabled={isLoading}
     >
       <PenIcon width={16} height={16} className="text-gray-secondary" />
