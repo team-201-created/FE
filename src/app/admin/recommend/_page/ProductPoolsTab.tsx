@@ -7,7 +7,7 @@ import {
   AdminFirstCell,
   AdminTypeCell,
 } from '@/app/admin/_components'
-// import { RecommendDeleteButton } from '../_components/RecommendDeleteButton' // TODO: DELETE API 미개발, 추후 활성화
+import { RecommendDeleteButton } from '../_components/RecommendDeleteButton'
 import { RecommendStatusCell } from '../_components/RecommendStatusCell'
 import {
   ProductPoolsItemResponse,
@@ -37,7 +37,7 @@ export const ProductPoolsTab = ({
           <AdminDateCell slot={5} date={row.created_at} />
           <AdminDateCell slot={6} date={row.updated_at} />
           <AdminTableCell slot={7}>
-            {/* <RecommendDeleteButton tabId="product-pools" id={row.id} /> TODO: DELETE API 미개발, 추후 활성화 */}
+            <RecommendDeleteButton tabId="product-pools" id={row.id} />
           </AdminTableCell>
         </AdminTableRow>
       ))}

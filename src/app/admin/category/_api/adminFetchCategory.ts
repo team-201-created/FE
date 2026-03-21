@@ -9,7 +9,7 @@ export const fetchAdminElementCategories =
     return authFetch.get<AdminCategoryListResponse>(
       '/api/v1/scents/categories/element',
       {
-        cache: 'force-cache',
+        cache: 'no-store',
       }
     )
   }
@@ -22,7 +22,7 @@ export const fetchAdminBlendCategories =
     return authFetch.get<AdminCategoryListResponse>(
       '/api/v1/scents/categories/blend',
       {
-        cache: 'force-cache',
+        cache: 'no-store',
       }
     )
   }
