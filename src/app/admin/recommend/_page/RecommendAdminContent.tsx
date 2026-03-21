@@ -65,7 +65,7 @@ export default function RecommendAdminContent({
       <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense
-            key={`${activeTab}-${JSON.stringify(searchParams)}`}
+            key={`${activeTab}-${searchParams.toString()}`}
             fallback={<AdminTableLoading />}
           >
             {children}
