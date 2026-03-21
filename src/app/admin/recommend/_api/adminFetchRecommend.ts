@@ -49,8 +49,7 @@ export const fetchAdminRecommendList = <T extends RecommendTabId>(
 ): Promise<RecommendResponseMap[T]> =>
   authFetch.get<RecommendResponseMap[T]>(`/api/v1/admin/matches/${tabId}`, {
     params: options,
-    cache: 'force-cache',
-    next: { tags: [`${tabId}`] },
+    cache: 'no-store',
   })
 
 // 탭별 API 함수 모음

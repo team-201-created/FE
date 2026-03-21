@@ -14,5 +14,6 @@ export async function fetchAdminTests(
 ): Promise<TestListResponse> {
   return authFetch.get<TestListResponse>('/api/v1/admin/profilings/forms', {
     params: options,
+    cache: 'no-store',
   })
 }

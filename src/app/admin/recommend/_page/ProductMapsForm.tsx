@@ -10,7 +10,7 @@ export const ProductMapsForm = ({
   poolsPromise,
 }: ProductMapsFormProps) => {
   const res = use(poolsPromise)
-  const pools = res.data.results
+  const pools = res?.data?.results ?? []
 
   useEffect(() => {
     if (pools.length > 0 && value === 0) {
