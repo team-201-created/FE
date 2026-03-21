@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { FetchError } from '@/lib/api'
 import { deleteAdminRecommend } from '../_api/adminDeleteRecommend'
 import {
   patchAdminBlendMapPublish,
@@ -19,13 +20,33 @@ import {
   ProductPoolsListResponse,
 } from '../_types'
 
+function extractError(error: unknown) {
+  if (error instanceof FetchError) {
+    return { message: error.message, reason: error.details?.reason ?? null }
+  }
+  return {
+    message: error instanceof Error ? error.message : null,
+    reason: null,
+  }
+}
+
 /**
  * 채택된 제품 후보군 목록 조회 Server Action
  * — 클라이언트에서 authFetch를 직접 호출하면 토큰이 주입되지 않으므로
  *   서버 컨텍스트에서 실행되는 Server Action으로 감쌈
  */
 export async function fetchAdoptedPoolsAction(): Promise<ProductPoolsListResponse> {
-  return RECOMMEND_API.productPools({ size: 5, adoption_status: 'ADOPTED' })
+  try {
+    return await RECOMMEND_API.productPools({
+      size: 5,
+      adoption_status: 'ADOPTED',
+    })
+  } catch {
+    return {
+      success: false,
+      data: { results: [], page: 1, size: 5, count: 0, total_pages: 0 },
+    } as ProductPoolsListResponse
+  }
 }
 
 /**
@@ -37,12 +58,9 @@ export async function deleteRecommendAction(tabId: RecommendTabId, id: number) {
 
     revalidatePath('/admin/recommend')
 
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : null,
-    }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -67,12 +85,9 @@ export async function toggleRecommendStatusAction(
     }
 
     revalidatePath('/admin/recommend')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : null,
-    }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -84,12 +99,9 @@ export async function createProductPoolAction(body: ProductPoolCreateBody) {
     await createAdminProductPool(body)
 
     revalidatePath('/admin/recommend')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : null,
-    }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -101,12 +113,9 @@ export async function createProductMapAction(product_pool_id: number) {
     await createAdminProductMap(product_pool_id)
 
     revalidatePath('/admin/recommend')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : null,
-    }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -118,11 +127,8 @@ export async function createBlendMapAction(input_type: string) {
     await createAdminBlendMap(input_type)
 
     revalidatePath('/admin/recommend')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : null,
-    }
+    return { success: false as const, ...extractError(error) }
   }
 }

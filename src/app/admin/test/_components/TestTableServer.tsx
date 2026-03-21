@@ -5,12 +5,14 @@ import {
   AdminDateCell,
   AdminTypeCell,
   AdminTableEmpty,
+  AdminTableError,
   AdminPagination,
+  AdminPageGuard,
 } from '@/app/admin/_components'
 import { fetchAdminTests } from '../_api/adminFetchTest'
 import { TestStatusCell } from './TestStatusCell'
 import { TestTableRow } from './TestTableRow'
-// import { TestDeleteButton } from './TestDeleteButton' // TODO: DELETE API 미개발, 추후 활성화
+import { TestDeleteButton } from './TestDeleteButton'
 
 interface TestTableServerProps {
   searchParams: {
@@ -26,18 +28,26 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
   const currentPage = Math.max(1, Number(searchParams.page) || 1)
   const pageSize = 10
 
-  const response = await fetchAdminTests({
-    page: currentPage,
-    size: pageSize,
-    profiling_type: searchParams.profiling_type,
-    publish_status: searchParams.publish_status,
-    search: searchParams.q,
-  })
+  let tests: any[] = []
+  let totalPages = 1
 
-  const tests = response?.data?.results || []
-  const totalPages = response?.data?.total_pages ?? 1
+  try {
+    const response = await fetchAdminTests({
+      page: currentPage,
+      size: pageSize,
+      profiling_type: searchParams.profiling_type,
+      publish_status: searchParams.publish_status,
+      search: searchParams.q,
+    })
+    tests = response?.data?.results || []
+    totalPages = response?.data?.total_pages ?? 1
+  } catch {
+    if (currentPage > 1) return <AdminPageGuard currentPage={currentPage} />
+    return <AdminTableError />
+  }
 
-  if (!tests.length && currentPage === 1) {
+  if (!tests.length) {
+    if (currentPage > 1) return <AdminPageGuard currentPage={currentPage} />
     return <AdminTableEmpty />
   }
 
@@ -56,7 +66,7 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
           <AdminDateCell slot={6} date={test.updated_at} />
 
           <AdminTableCell slot={7}>
-            {/* <TestDeleteButton testId={test.id} /> TODO: DELETE API 미개발, 추후 활성화 */}
+            <TestDeleteButton testId={test.id} />
           </AdminTableCell>
         </TestTableRow>
       ))}
