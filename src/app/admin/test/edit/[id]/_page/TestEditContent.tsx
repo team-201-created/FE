@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { Reorder } from 'motion/react'
-import type { Metadata } from 'next'
 import {
   AdminListCard,
   AdminPageHeader,
@@ -10,18 +9,27 @@ import {
 } from '@/app/admin/_components'
 import Button from '@/components/common/Button'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
-import { useTestCreate } from '@/app/admin/test/create/_hooks'
+import { useTestEdit } from '../_hooks/useTestEdit'
 import { QuestionForm } from '@/app/admin/test/create/_components'
 import { Question } from '@/app/admin/test/create/_types'
 import { TEST_TYPE_TABS } from '@/app/admin/test/create/_constants'
+import type { TestFormData } from '@/app/admin/test/create/_types'
 
-export default function TestCreatePage() {
-  const { state, actions } = useTestCreate()
+interface TestEditContentProps {
+  testId: number
+  initialData: TestFormData
+}
+
+export default function TestEditContent({
+  testId,
+  initialData,
+}: TestEditContentProps) {
+  const { state, actions } = useTestEdit(testId, initialData)
 
   return (
     <div className="flex min-w-[600px] flex-col gap-8">
       <AdminPageHeader
-        title="새 테스트 생성"
+        title="테스트 수정"
         leftContent={
           <Link
             href="/admin/test"
@@ -91,6 +99,7 @@ export default function TestCreatePage() {
                 activeTab={state.uiCategory}
                 onChange={(id) => actions.updateCategory(id)}
                 fullWidth
+                disabled
               />
             </div>
 
@@ -110,22 +119,6 @@ export default function TestCreatePage() {
                 className="border-gray-light min-h-[120px] w-full rounded-2xl border bg-gray-50/50 p-6 text-sm outline-none focus:border-violet-300 focus:bg-white"
                 maxLength={100}
               />
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 rounded-2xl border border-blue-100 bg-blue-50/50 p-5">
-            <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-blue-800 text-xs font-bold text-blue-800">
-              i
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-sm font-bold text-blue-900">
-                노출 상태 안내
-              </h4>
-              <p className="text-xs leading-relaxed text-blue-700 opacity-80">
-                새로 생성되는 테스트는 기본적으로{' '}
-                <span className="font-bold underline">비노출</span> 상태로
-                저장됩니다. 노출 설정은 목록에서 변경할 수 있습니다.
-              </p>
             </div>
           </div>
         </div>

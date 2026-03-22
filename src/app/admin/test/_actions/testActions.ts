@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache'
 import { deleteAdminTest } from '../_api/adminDeleteTest'
-import { patchAdminTestPublish } from '../_api/adminPatchTest'
+import { toggleAdminTestPublish } from '../_api/adminPatchTest'
 import { createAdminTest, CreateTestPayload } from '../_api/adminCreateTest'
+import { updateAdminTest, UpdateTestPayload } from '../_api/adminUpdateTest'
 import { fetchAdminTestDetail } from '../_api/adminFetchTestDetail'
 import { extractError } from '@/app/admin/_lib/actionUtils'
 
@@ -25,7 +26,7 @@ export async function toggleTestPublishAction(
   status: 'PUBLISHED' | 'UNPUBLISHED'
 ) {
   try {
-    await patchAdminTestPublish(form_id, status)
+    await toggleAdminTestPublish(form_id, status)
     revalidatePath('/admin/test')
     return { success: true as const }
   } catch (error) {
@@ -42,6 +43,22 @@ export async function getTestDetailAction(form_id: number) {
     return { success: true as const, data: result.data }
   } catch (error) {
     return { success: false as const, ...extractError(error), data: null }
+  }
+}
+
+/**
+ * 테스트 수정 Server Action
+ */
+export async function updateTestAction(
+  form_id: number,
+  payload: UpdateTestPayload
+) {
+  try {
+    await updateAdminTest(form_id, payload)
+    revalidatePath('/admin/test')
+    return { success: true as const }
+  } catch (error) {
+    return { success: false as const, ...extractError(error) }
   }
 }
 

@@ -3,7 +3,7 @@ import { authFetch } from '@/lib/api'
 /**
  * 어드민 테스트 발행 상태 변경 API
  */
-export const patchAdminTestPublish = (
+export const toggleAdminTestPublish = (
   form_id: number,
   publish_status: 'PUBLISHED' | 'UNPUBLISHED'
 ): Promise<{

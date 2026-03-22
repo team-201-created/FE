@@ -11,6 +11,7 @@ interface AdminTabGroupProps {
   className?: string
   /** 탭들을 부모 너비에 맞춰 균등하게 배분할지 여부임 */
   fullWidth?: boolean
+  disabled?: boolean
 }
 
 /**
@@ -22,6 +23,7 @@ export const AdminTabGroup = ({
   onChange,
   className,
   fullWidth = false,
+  disabled = false,
 }: AdminTabGroupProps) => {
   return (
     <div className={cn('flex gap-4 pb-4', fullWidth && 'w-full', className)}>
@@ -30,10 +32,11 @@ export const AdminTabGroup = ({
         return (
           <Button
             key={tab.id}
-            onClick={() => onChange(tab.id)}
+            onClick={() => !disabled && onChange(tab.id)}
             className={cn(
-              'cursor-pointer rounded-xl text-sm font-semibold transition-all',
+              'rounded-xl text-sm font-semibold transition-all',
               fullWidth && 'flex-1',
+              disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
               isActive
                 ? 'bg-black-primary text-white'
                 : 'bg-gray-light text-black-primary border-none shadow-none hover:bg-neutral-200'
