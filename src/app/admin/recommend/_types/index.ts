@@ -1,5 +1,6 @@
 export * from './BlendMapsTypes'
 export * from './ProductPoolsTypes'
 export * from './ProductMapsTypes'
+export * from './PipelineTypes'
 export * from './RecommendTab'
 export * from './RecommendData'
