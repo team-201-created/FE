@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { Reorder } from 'motion/react'
-import type { Metadata } from 'next'
 import {
   AdminListCard,
   AdminPageHeader,

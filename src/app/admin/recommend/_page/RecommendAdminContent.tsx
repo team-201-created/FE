@@ -9,6 +9,7 @@ import {
   AdminTableError,
   AdminTableLoading,
 } from '@/app/admin/_components'
+import Button from '@/components/common/Button'
 import { RECOMMEND_TAB_HEADERS } from '@/constants/admin'
 import { RecommendTabId, RECOMMEND_TABS } from '@/app/admin/recommend/_types'
 import { RecommendPostModal } from '@/app/admin/recommend/_page'
@@ -43,6 +44,10 @@ export default function RecommendAdminContent({
     openModal(<RecommendPostModal activeTab={activeTab} />)
   }
 
+  const handleOpenPipelineModal = () => {
+    openModal(<RecommendPostModal activeTab="pipeline" />)
+  }
+
   return (
     <AdminListCard className={cn(isPending && 'pointer-events-none')}>
       <AdminPageHeader
@@ -57,11 +62,21 @@ export default function RecommendAdminContent({
         onFilterChange={onFilterChange}
         onReset={() => resetParams(['status', 'input_type'])}
       />
-      <AdminTabGroup
-        tabs={RECOMMEND_TABS}
-        activeTab={activeTab}
-        onChange={onTabChange}
-      />
+      <div className="flex items-center justify-between">
+        <AdminTabGroup
+          tabs={RECOMMEND_TABS}
+          activeTab={activeTab}
+          onChange={onTabChange}
+        />
+        <Button
+          color="primary"
+          rounded="sm"
+          onClick={handleOpenPipelineModal}
+          className="mb-4 shrink-0 text-sm font-semibold"
+        >
+          파이프라인 생성
+        </Button>
+      </div>
       <AdminTable headers={RECOMMEND_TAB_HEADERS[activeTab]}>
         <ErrorBoundary fallback={<AdminTableError />}>
           <Suspense

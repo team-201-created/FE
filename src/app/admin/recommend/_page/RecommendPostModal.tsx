@@ -16,12 +16,18 @@ import {
   createBlendMapAction,
   createProductPoolAction,
   createProductMapAction,
+  createPipelineSnapshotAction,
   fetchAdoptedPoolsAction,
+  fetchPublishedBlendMapsAction,
+  fetchPublishedProductMapsAction,
+  fetchPublishedTestsAction,
 } from '../_actions/recommendActions'
+import { PipelineSnapshotBody } from '../_types'
+import { PipelineForm } from './PipelineForm'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 
 interface RecommendPostModalProps {
-  activeTab: RecommendTabId
+  activeTab: RecommendTabId | 'pipeline'
 }
 
 // 제품 추천맵 폼 로딩
@@ -36,7 +42,9 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const activeTabLabel =
-    RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
+    activeTab === 'pipeline'
+      ? '파이프라인'
+      : RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
 
   // 각 탭별 폼 default 값 설정
   const [formData, setFormData] = useState({
@@ -63,9 +71,30 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     typeof fetchAdoptedPoolsAction
   > | null>(null)
 
+  const [pipelinePromises, setPipelinePromises] = useState<{
+    blendMaps: ReturnType<typeof fetchPublishedBlendMapsAction>
+    productMaps: ReturnType<typeof fetchPublishedProductMapsAction>
+    tests: ReturnType<typeof fetchPublishedTestsAction>
+  } | null>(null)
+
+  const [pipelineData, setPipelineData] = useState<PipelineSnapshotBody>({
+    input_type: 'PREFERENCE',
+    product_type: 'DIFFUSER',
+    profiling_form_id: undefined,
+    blend_match_map_id: 0,
+    product_match_map_id: 0,
+  })
+
   useEffect(() => {
     if (activeTab === 'product-maps') {
       setPoolsPromise(fetchAdoptedPoolsAction())
+    }
+    if (activeTab === 'pipeline') {
+      setPipelinePromises({
+        blendMaps: fetchPublishedBlendMapsAction(),
+        productMaps: fetchPublishedProductMapsAction(),
+        tests: fetchPublishedTestsAction(),
+      })
     }
   }, [activeTab])
 
@@ -124,6 +153,29 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
           })
           return
         }
+      } else if (activeTab === 'pipeline') {
+        if (
+          !pipelineData.blend_match_map_id ||
+          !pipelineData.product_match_map_id
+        ) {
+          openAlert({
+            type: 'danger',
+            title: '입력 오류',
+            content: '향조합 추천맵과 제품 추천맵을 선택해주세요.',
+            confirmText: '확인',
+          })
+          return
+        }
+        const result = await createPipelineSnapshotAction(pipelineData)
+        if (!result.success) {
+          openAlert({
+            type: 'danger',
+            title: result.message ?? '등록 실패',
+            content: result.reason ?? '파이프라인 생성에 실패했습니다.',
+            confirmText: '확인',
+          })
+          return
+        }
       }
       closeModal()
     } finally {
@@ -156,6 +208,22 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
                 value={formData.product_pool_id}
                 onChange={(val) => handleChange('product_pool_id', Number(val))}
                 poolsPromise={poolsPromise}
+              />
+            )}
+          </Suspense>
+        )
+      case 'pipeline':
+        return (
+          <Suspense fallback={<ProductMapsFormFallback />}>
+            {pipelinePromises && (
+              <PipelineForm
+                formData={pipelineData}
+                onChange={(updates) =>
+                  setPipelineData((prev) => ({ ...prev, ...updates }))
+                }
+                blendMapsPromise={pipelinePromises.blendMaps}
+                productMapsPromise={pipelinePromises.productMaps}
+                testsPromise={pipelinePromises.tests}
               />
             )}
           </Suspense>
