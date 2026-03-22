@@ -5,6 +5,7 @@ import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
 import Input from '@/components/common/Input'
 import { useModalStore } from '@/store/useModalStore'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 import type { CreateElementBody } from '../../_api/adminCreateProduct'
 import {
@@ -38,6 +39,7 @@ export function ElementProductForm({
   productId,
 }: ElementProductFormProps) {
   const { openAlert } = useModalStore()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [data, setData] = useState<CreateElementBody>({
     name: initialData?.name ?? '',
     description: initialData?.description ?? '',
@@ -85,24 +87,29 @@ export function ElementProductForm({
       return
     }
 
-    const body = { ...data, image_url: imageUrl }
-    const result = productId
-      ? await patchElementAction(productId, body)
-      : await createElementAction(body)
+    setIsSubmitting(true)
+    try {
+      const body = { ...data, image_url: imageUrl }
+      const result = productId
+        ? await patchElementAction(productId, body)
+        : await createElementAction(body)
 
-    if (!result.success) {
-      openAlert({
-        type: 'danger',
-        title: result.message ?? (productId ? '수정 실패' : '등록 실패'),
-        content:
-          result.reason ??
-          (productId
-            ? '단품 수정 중 오류가 발생했습니다.'
-            : '단품 등록 중 오류가 발생했습니다.'),
-      })
-      return
+      if (!result.success) {
+        openAlert({
+          type: 'danger',
+          title: result.message ?? (productId ? '수정 실패' : '등록 실패'),
+          content:
+            result.reason ??
+            (productId
+              ? '단품 수정 중 오류가 발생했습니다.'
+              : '단품 등록 중 오류가 발생했습니다.'),
+        })
+        return
+      }
+      onClose()
+    } finally {
+      setIsSubmitting(false)
     }
-    onClose()
   }
 
   return (
@@ -156,12 +163,23 @@ export function ElementProductForm({
         <Button
           color="none"
           className="border-gray-light border"
+          disabled={isSubmitting}
           onClick={onClose}
         >
           취소
         </Button>
-        <Button color="primary" onClick={handleSubmit} disabled={isPending}>
-          {productId ? '단품 수정' : '단품 등록'}
+        <Button
+          color="primary"
+          onClick={handleSubmit}
+          disabled={isPending || isSubmitting}
+        >
+          {isSubmitting ? (
+            <LoadingSpinner size="sm" className="mx-auto" />
+          ) : productId ? (
+            '단품 수정'
+          ) : (
+            '단품 등록'
+          )}
         </Button>
       </Modal.Footer>
     </>

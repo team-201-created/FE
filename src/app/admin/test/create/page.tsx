@@ -8,6 +8,7 @@ import {
   AdminTabGroup,
 } from '@/app/admin/_components'
 import Button from '@/components/common/Button'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { useTestCreate } from '@/app/admin/test/create/_hooks'
 import { QuestionForm } from '@/app/admin/test/create/_components'
 import { Question } from '@/app/admin/test/create/_types'
@@ -37,8 +38,17 @@ export default function TestCreatePage() {
             >
               미리보기
             </Button>
-            <Button color="primary" rounded="sm" onClick={actions.handleSave}>
-              저장
+            <Button
+              color="primary"
+              rounded="sm"
+              disabled={state.isSubmitting}
+              onClick={actions.handleSave}
+            >
+              {state.isSubmitting ? (
+                <LoadingSpinner size="sm" className="mx-auto" />
+              ) : (
+                '저장'
+              )}
             </Button>
           </div>
         }

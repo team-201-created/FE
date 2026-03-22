@@ -12,6 +12,7 @@ export const useTestCreate = () => {
   const router = useRouter()
   const { openAlert, openModal, closeModal } = useModalStore()
   const [uiCategory, setUiCategory] = useState<string>('PREFERENCE')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const generateUniqueId = (prefix: string) =>
     `${prefix}-${Math.random().toString(36).substring(2, 9)}`
@@ -219,6 +220,7 @@ export const useTestCreate = () => {
       })),
     }
 
+    setIsSubmitting(true)
     try {
       const result = await createTestAction(payload)
       if (result.success) {
@@ -238,6 +240,8 @@ export const useTestCreate = () => {
         content: '테스트 생성 중 오류가 발생했습니다.',
         confirmText: '확인',
       })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -249,6 +253,7 @@ export const useTestCreate = () => {
     state: {
       uiCategory,
       formData,
+      isSubmitting,
     },
     actions: {
       updateField,

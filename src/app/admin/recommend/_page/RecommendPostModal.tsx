@@ -18,6 +18,7 @@ import {
   createProductMapAction,
   fetchAdoptedPoolsAction,
 } from '../_actions/recommendActions'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 
 interface RecommendPostModalProps {
   activeTab: RecommendTabId
@@ -32,6 +33,7 @@ const ProductMapsFormFallback = () => (
 
 export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
   const { closeModal, openAlert } = useModalStore()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const activeTabLabel =
     RECOMMEND_TABS.find((t) => t.id === activeTab)?.label || ''
@@ -63,7 +65,6 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
 
   useEffect(() => {
     if (activeTab === 'product-maps') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPoolsPromise(fetchAdoptedPoolsAction())
     }
   }, [activeTab])
@@ -82,48 +83,52 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
   }
 
   const handleRegister = async () => {
-    if (activeTab === 'blend-maps') {
-      const result = await createBlendMapAction(formData.inputType)
-      if (!result.success) {
-        openAlert({
-          type: 'danger',
-          title: result.message ?? '등록 실패',
-          content: result.reason ?? '향조합 추천맵 등록에 실패했습니다.',
-          confirmText: '확인',
+    setIsSubmitting(true)
+    try {
+      if (activeTab === 'blend-maps') {
+        const result = await createBlendMapAction(formData.inputType)
+        if (!result.success) {
+          openAlert({
+            type: 'danger',
+            title: result.message ?? '등록 실패',
+            content: result.reason ?? '향조합 추천맵 등록에 실패했습니다.',
+            confirmText: '확인',
+          })
+          return
+        }
+      } else if (activeTab === 'product-pools') {
+        const result = await createProductPoolAction({
+          crawl_source: formData.crawl_source,
+          crawl_count: formData.crawl_count,
+          crawl_sort: formData.crawl_sort,
+          product_type: formData.product_type,
+          crawl_config: formData.crawl_config,
         })
-        return
+        if (!result.success) {
+          openAlert({
+            type: 'danger',
+            title: result.message ?? '등록 실패',
+            content: result.reason ?? '제품 후보군 등록에 실패했습니다.',
+            confirmText: '확인',
+          })
+          return
+        }
+      } else if (activeTab === 'product-maps') {
+        const result = await createProductMapAction(formData.product_pool_id)
+        if (!result.success) {
+          openAlert({
+            type: 'danger',
+            title: result.message ?? '등록 실패',
+            content: result.reason ?? '제품 추천맵 등록에 실패했습니다.',
+            confirmText: '확인',
+          })
+          return
+        }
       }
-    } else if (activeTab === 'product-pools') {
-      const result = await createProductPoolAction({
-        crawl_source: formData.crawl_source,
-        crawl_count: formData.crawl_count,
-        crawl_sort: formData.crawl_sort,
-        product_type: formData.product_type,
-        crawl_config: formData.crawl_config,
-      })
-      if (!result.success) {
-        openAlert({
-          type: 'danger',
-          title: result.message ?? '등록 실패',
-          content: result.reason ?? '제품 후보군 등록에 실패했습니다.',
-          confirmText: '확인',
-        })
-        return
-      }
-    } else if (activeTab === 'product-maps') {
-      const result = await createProductMapAction(formData.product_pool_id)
-      if (!result.success) {
-        openAlert({
-          type: 'danger',
-          title: result.message ?? '등록 실패',
-          content: result.reason ?? '제품 추천맵 등록에 실패했습니다.',
-          confirmText: '확인',
-        })
-        return
-      }
+      closeModal()
+    } finally {
+      setIsSubmitting(false)
     }
-
-    closeModal()
   }
 
   const renderContent = () => {
@@ -161,19 +166,33 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
   }
 
   return (
-    <Modal isOpen onClose={closeModal} size="md" overflowVisible>
+    <Modal
+      isOpen
+      onClose={isSubmitting ? () => {} : closeModal}
+      size="md"
+      overflowVisible
+    >
       <Modal.Header>{activeTabLabel} 등록</Modal.Header>
       <Modal.Content>{renderContent()}</Modal.Content>
       <Modal.Footer className="flex justify-end gap-2 text-[16px]">
         <Button
           color="none"
           className="border-gray-light border"
+          disabled={isSubmitting}
           onClick={closeModal}
         >
           취소
         </Button>
-        <Button color="primary" onClick={handleRegister}>
-          등록
+        <Button
+          color="primary"
+          disabled={isSubmitting}
+          onClick={handleRegister}
+        >
+          {isSubmitting ? (
+            <LoadingSpinner size="sm" className="mx-auto" />
+          ) : (
+            '등록'
+          )}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -1,10 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Modal from './Modal'
 import Button from '../Button'
 import AlertDangerIcon from '@/assets/icons/alertDanger.svg'
 import AlertSuccessIcon from '@/assets/icons/alertSuccess.svg'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 
 export interface AlertConfig {
   type: 'success' | 'danger'
@@ -14,7 +15,7 @@ export interface AlertConfig {
   showButtons?: boolean
   confirmText?: string
   cancelText?: string
-  onConfirm?: () => void
+  onConfirm?: () => void | Promise<void>
   onCancel?: () => void
 }
 
@@ -35,12 +36,23 @@ export function AlertModal({
   onConfirm,
   onCancel,
 }: AlertModalProps) {
-  const handleConfirm = () => {
-    if (onConfirm) onConfirm()
-    else onClose()
+  const [isConfirming, setIsConfirming] = useState(false)
+
+  const handleConfirm = async () => {
+    if (onConfirm) {
+      setIsConfirming(true)
+      try {
+        await onConfirm()
+      } finally {
+        setIsConfirming(false)
+      }
+    } else {
+      onClose()
+    }
   }
 
   const handleCancel = () => {
+    if (isConfirming) return
     if (onCancel) onCancel()
     else onClose()
   }
@@ -93,9 +105,14 @@ export function AlertModal({
               color={isDanger ? 'danger' : 'success'}
               size="none"
               className="flex-1 rounded-[14px] border border-transparent py-3 font-semibold"
+              disabled={isConfirming}
               onClick={handleConfirm}
             >
-              {confirmText}
+              {isConfirming ? (
+                <LoadingSpinner size="sm" className="mx-auto" />
+              ) : (
+                confirmText
+              )}
             </Button>
           </div>
         )}
