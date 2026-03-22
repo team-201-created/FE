@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { FetchError } from '@/lib/api'
 import { deleteAdminRecommend } from '../_api/adminDeleteRecommend'
 import {
   patchAdminBlendMapPublish,
@@ -19,16 +18,7 @@ import {
   ProductPoolCreateBody,
   ProductPoolsListResponse,
 } from '../_types'
-
-function extractError(error: unknown) {
-  if (error instanceof FetchError) {
-    return { message: error.message, reason: error.details?.reason ?? null }
-  }
-  return {
-    message: error instanceof Error ? error.message : null,
-    reason: null,
-  }
-}
+import { extractError } from '@/app/admin/_lib/actionUtils'
 
 /**
  * 채택된 제품 후보군 목록 조회 Server Action
