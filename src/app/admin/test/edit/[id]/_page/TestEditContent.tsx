@@ -99,6 +99,7 @@ export default function TestEditContent({
                 activeTab={state.uiCategory}
                 onChange={(id) => actions.updateCategory(id)}
                 fullWidth
+                disabled
               />
             </div>
 
