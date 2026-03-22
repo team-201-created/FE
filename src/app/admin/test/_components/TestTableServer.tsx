@@ -13,6 +13,7 @@ import { fetchAdminTests } from '../_api/adminFetchTest'
 import { TestStatusCell } from './TestStatusCell'
 import { TestTableRow } from './TestTableRow'
 import { TestDeleteButton } from './TestDeleteButton'
+import { TestEditButton } from './TestEditButton'
 
 interface TestTableServerProps {
   searchParams: {
@@ -66,7 +67,10 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
           <AdminDateCell slot={6} date={test.updated_at} />
 
           <AdminTableCell slot={7}>
-            <TestDeleteButton testId={test.id} />
+            <div className="flex items-center gap-1">
+              <TestEditButton testId={test.id} />
+              <TestDeleteButton testId={test.id} />
+            </div>
           </AdminTableCell>
         </TestTableRow>
       ))}

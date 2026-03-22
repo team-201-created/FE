@@ -1,4 +1,5 @@
 export * from './adminFetchTest'
 export * from './adminCreateTest'
+export * from './adminUpdateTest'
 export * from './adminPatchTest'
 export * from './adminFetchTestDetail'
