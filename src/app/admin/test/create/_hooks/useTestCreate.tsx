@@ -226,8 +226,8 @@ export const useTestCreate = () => {
       } else {
         openAlert({
           type: 'danger',
-          title: '테스트 생성 실패',
-          content: result.message ?? '테스트 생성에 실패했습니다.',
+          title: result.message ?? '테스트 생성 실패',
+          content: result.reason ?? '테스트 생성에 실패했습니다.',
           confirmText: '확인',
         })
       }

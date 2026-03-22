@@ -117,13 +117,12 @@ export function BlendProductForm({
     if (!result.success) {
       openAlert({
         type: 'danger',
-        title: productId ? '수정 실패' : '등록 실패',
+        title: result.message ?? (productId ? '수정 실패' : '등록 실패'),
         content:
-          result.error instanceof Error
-            ? result.error.message
-            : productId
-              ? '조합 수정 중 오류가 발생했습니다.'
-              : '조합 등록 중 오류가 발생했습니다.',
+          result.reason ??
+          (productId
+            ? '조합 수정 중 오류가 발생했습니다.'
+            : '조합 등록 중 오류가 발생했습니다.'),
       })
       return
     }

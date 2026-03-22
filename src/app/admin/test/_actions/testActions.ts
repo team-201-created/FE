@@ -1,22 +1,21 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-// import { deleteAdminTest } from '../_api/adminDeleteTest' // TODO: DELETE API 미개발, 추후 활성화
+import { deleteAdminTest } from '../_api/adminDeleteTest'
 import { patchAdminTestPublish } from '../_api/adminPatchTest'
 import { createAdminTest, CreateTestPayload } from '../_api/adminCreateTest'
 import { fetchAdminTestDetail } from '../_api/adminFetchTestDetail'
+import { extractError } from '@/app/admin/_lib/actionUtils'
 
-// TODO: DELETE API 미개발, 추후 활성화
-// export async function deleteTestAction(form_id: number) {
-//   try {
-//     await deleteAdminTest(form_id)
-//     revalidatePath('/admin/test')
-//     return { success: true }
-//   } catch (error) {
-//     const message = error instanceof Error ? error.message : null
-//     return { success: false, message }
-//   }
-// }
+export async function deleteTestAction(form_id: number) {
+  try {
+    await deleteAdminTest(form_id)
+    revalidatePath('/admin/test')
+    return { success: true as const }
+  } catch (error) {
+    return { success: false as const, ...extractError(error) }
+  }
+}
 
 /**
  * 테스트 발행 상태 토글 Server Action
@@ -28,10 +27,9 @@ export async function toggleTestPublishAction(
   try {
     await patchAdminTestPublish(form_id, status)
     revalidatePath('/admin/test')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    const message = error instanceof Error ? error.message : null
-    return { success: false, message }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -41,10 +39,9 @@ export async function toggleTestPublishAction(
 export async function getTestDetailAction(form_id: number) {
   try {
     const result = await fetchAdminTestDetail(form_id)
-    return { success: true, data: result.data }
+    return { success: true as const, data: result.data }
   } catch (error) {
-    const message = error instanceof Error ? error.message : null
-    return { success: false, message, data: null }
+    return { success: false as const, ...extractError(error), data: null }
   }
 }
 
@@ -55,9 +52,8 @@ export async function createTestAction(payload: CreateTestPayload) {
   try {
     await createAdminTest(payload)
     revalidatePath('/admin/test')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    const message = error instanceof Error ? error.message : null
-    return { success: false, message }
+    return { success: false as const, ...extractError(error) }
   }
 }

@@ -9,7 +9,11 @@ interface AdminStatusToggleCellProps {
   id: number | string
   status: string
   slot: number
-  onToggle: (nextStatus: any) => Promise<{ success: boolean }>
+  onToggle: (nextStatus: any) => Promise<{
+    success: boolean
+    message?: string | null
+    reason?: string | null
+  }>
   trueLabel?: string
   falseLabel?: string
 }
@@ -41,8 +45,8 @@ export function AdminStatusToggleCell({
       if (!result.success) {
         openAlert({
           type: 'danger',
-          title: '오류',
-          content: '상태 변경에 실패했습니다.',
+          title: result.message ?? '상태 변경 실패',
+          content: result.reason ?? '상태 변경에 실패했습니다.',
           confirmText: '확인',
         })
       }

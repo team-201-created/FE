@@ -60,9 +60,9 @@ export function CategoryPostModal({
       } else {
         openAlert({
           type: 'danger',
-          title: '카테고리 등록 실패',
+          title: result.message ?? '카테고리 등록 실패',
           content:
-            result.message ??
+            result.reason ??
             '카테고리 등록에 실패했습니다. 다시 시도해 주세요.',
           confirmText: '확인',
         })

@@ -87,8 +87,8 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
       if (!result.success) {
         openAlert({
           type: 'danger',
-          title: '등록 실패',
-          content: result.message ?? '향조합 추천맵 등록에 실패했습니다.',
+          title: result.message ?? '등록 실패',
+          content: result.reason ?? '향조합 추천맵 등록에 실패했습니다.',
           confirmText: '확인',
         })
         return
@@ -104,8 +104,8 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
       if (!result.success) {
         openAlert({
           type: 'danger',
-          title: '등록 실패',
-          content: result.message ?? '제품 후보군 등록에 실패했습니다.',
+          title: result.message ?? '등록 실패',
+          content: result.reason ?? '제품 후보군 등록에 실패했습니다.',
           confirmText: '확인',
         })
         return
@@ -115,8 +115,8 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
       if (!result.success) {
         openAlert({
           type: 'danger',
-          title: '등록 실패',
-          content: result.message ?? '제품 추천맵 등록에 실패했습니다.',
+          title: result.message ?? '등록 실패',
+          content: result.reason ?? '제품 추천맵 등록에 실패했습니다.',
           confirmText: '확인',
         })
         return

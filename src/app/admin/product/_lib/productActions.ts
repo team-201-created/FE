@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { FetchError } from '@/lib/api'
+import { extractError } from '@/app/admin/_lib/actionUtils'
 import { deleteAdminProduct } from '../_api/adminDeleteProduct'
 import {
   createAdminElement,
@@ -45,14 +45,7 @@ export async function deleteProductAction(type: ProductTabId, id: number) {
     revalidatePath('/admin/product')
     return { success: true as const }
   } catch (error) {
-    if (error instanceof FetchError) {
-      return {
-        success: false as const,
-        message: error.message,
-        reason: error.details?.reason,
-      }
-    }
-    return { success: false as const, message: null, reason: null }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -67,7 +60,7 @@ export async function getProductPresignedUrlAction(
     const data = await getAdminProductPresignedUrl(file_name, file_size)
     return { success: true as const, data: data.data }
   } catch (error) {
-    return { success: false as const, error }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -78,9 +71,9 @@ export async function createElementAction(body: CreateElementBody) {
   try {
     await createAdminElement(body)
     revalidatePath('/admin/product')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return { success: false, error }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -91,9 +84,9 @@ export async function createBlendAction(body: CreateBlendBody) {
   try {
     await createAdminBlend(body)
     revalidatePath('/admin/product')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return { success: false, error }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -118,9 +111,9 @@ export async function patchElementAction(id: number, body: CreateElementBody) {
   try {
     await patchAdminElement(id, body)
     revalidatePath('/admin/product')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return { success: false, error }
+    return { success: false as const, ...extractError(error) }
   }
 }
 
@@ -131,8 +124,8 @@ export async function patchBlendAction(id: number, body: CreateBlendBody) {
   try {
     await patchAdminBlend(id, body)
     revalidatePath('/admin/product')
-    return { success: true }
+    return { success: true as const }
   } catch (error) {
-    return { success: false, error }
+    return { success: false as const, ...extractError(error) }
   }
 }
