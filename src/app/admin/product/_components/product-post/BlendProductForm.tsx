@@ -6,6 +6,7 @@ import Modal from '@/components/common/Modal/Modal'
 import Button from '@/components/common/Button'
 import Input from '@/components/common/Input'
 import { useModalStore } from '@/store/useModalStore'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
 import type { AdminElementListResponse } from '../../_types/AdminProductType'
 import type { CreateBlendBody } from '../../_api/adminCreateProduct'
@@ -40,6 +41,7 @@ export function BlendProductForm({
   productId,
 }: BlendProductFormProps) {
   const { openAlert } = useModalStore()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [data, setData] = useState<CreateBlendBody>({
     name: initialData?.name ?? '',
     description: initialData?.description ?? '',
@@ -109,24 +111,29 @@ export function BlendProductForm({
       return
     }
 
-    const body = { ...data, image_url: imageUrl }
-    const result = productId
-      ? await patchBlendAction(productId, body)
-      : await createBlendAction(body)
+    setIsSubmitting(true)
+    try {
+      const body = { ...data, image_url: imageUrl }
+      const result = productId
+        ? await patchBlendAction(productId, body)
+        : await createBlendAction(body)
 
-    if (!result.success) {
-      openAlert({
-        type: 'danger',
-        title: result.message ?? (productId ? '수정 실패' : '등록 실패'),
-        content:
-          result.reason ??
-          (productId
-            ? '조합 수정 중 오류가 발생했습니다.'
-            : '조합 등록 중 오류가 발생했습니다.'),
-      })
-      return
+      if (!result.success) {
+        openAlert({
+          type: 'danger',
+          title: result.message ?? (productId ? '수정 실패' : '등록 실패'),
+          content:
+            result.reason ??
+            (productId
+              ? '조합 수정 중 오류가 발생했습니다.'
+              : '조합 등록 중 오류가 발생했습니다.'),
+        })
+        return
+      }
+      onClose()
+    } finally {
+      setIsSubmitting(false)
     }
-    onClose()
   }
 
   return (
@@ -209,12 +216,23 @@ export function BlendProductForm({
         <Button
           color="none"
           className="border-gray-light border"
+          disabled={isSubmitting}
           onClick={onClose}
         >
           취소
         </Button>
-        <Button color="primary" onClick={handleSubmit} disabled={isPending}>
-          {productId ? '조합 수정' : '조합 등록'}
+        <Button
+          color="primary"
+          onClick={handleSubmit}
+          disabled={isPending || isSubmitting}
+        >
+          {isSubmitting ? (
+            <LoadingSpinner size="sm" className="mx-auto" />
+          ) : productId ? (
+            '조합 수정'
+          ) : (
+            '조합 등록'
+          )}
         </Button>
       </Modal.Footer>
     </>
