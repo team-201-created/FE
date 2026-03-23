@@ -3,57 +3,120 @@ import { NextRequest, NextResponse } from 'next/server'
 import { postTokenRefresh } from '@/lib/api/auth'
 import type { ApiResponse, User } from '@/types'
 
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
-
-/** MSW/목 모드에서 프로필 동기화가 실 API 없이 동작하도록 */
-const MOCK_ME_USER: User = {
-  id: 1,
-  nickname: '목 사용자',
-  email: 'mock@example.com',
-  profileImageUrl: undefined,
-  is_admin: false,
+const BASE_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
 }
 
-export async function GET() {
-  try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('access_token')?.value
+const clearAuthCookies = (response: NextResponse) => {
+  response.cookies.set('access_token', '', { maxAge: 0, path: '/' })
+  response.cookies.set('refresh_token', '', { maxAge: 0, path: '/' })
+}
 
-    if (!token) {
-      return NextResponse.json(
-        {
-          success: false,
-          data: null,
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'No access token found.',
-          },
+const parseJsonSafely = async <T>(response: Response): Promise<T | null> => {
+  return response.json().catch(() => null)
+}
+
+const fetchUsersMe = async ({
+  method,
+  accessToken,
+  baseUrl,
+  requestBody,
+}: {
+  method: 'GET' | 'DELETE'
+  accessToken: string
+  baseUrl: string
+  requestBody?: string
+}) => {
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${accessToken}`,
+  }
+
+  if (method === 'DELETE') {
+    headers['Content-Type'] = 'application/json'
+  }
+
+  return fetch(`${baseUrl}/api/v1/users/me`, {
+    method,
+    headers,
+    body: method === 'DELETE' ? requestBody : undefined,
+    cache: 'no-store',
+  })
+}
+
+const proxyUsersMe = async ({
+  method,
+  requestBody,
+}: {
+  method: 'GET' | 'DELETE'
+  requestBody?: string
+}) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+
+  if (!baseUrl) {
+    return NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: {
+          code: 'MISSING_API_URL',
+          message: 'NEXT_PUBLIC_API_URL is not configured.',
         },
-        { status: 401 }
-      )
+      },
+      { status: 500 }
+    )
+  }
+
+  const cookieStore = await cookies()
+  let accessToken = cookieStore.get('access_token')?.value
+  const refreshToken = cookieStore.get('refresh_token')?.value
+
+  if (!accessToken && !refreshToken) {
+    return NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: {
+          code: 'NOT_AUTHENTICATED',
+          message: '인증이 필요합니다.',
+        },
+      },
+      { status: 401 }
+    )
+  }
+
+  if (accessToken) {
+    const upstream = await fetchUsersMe({
+      method,
+      accessToken,
+      baseUrl,
+      requestBody,
+    })
+
+    if (upstream.ok) {
+      const body = await parseJsonSafely<ApiResponse<User | null>>(upstream)
+      return NextResponse.json(body, { status: upstream.status })
     }
 
-    if (USE_MOCK) {
-      const body: ApiResponse<User> = {
-        success: true,
-        data: MOCK_ME_USER,
-      }
-      return NextResponse.json(body, { status: 200 })
-    }
-
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
-
-    if (!baseUrl) {
+    if (upstream.status !== 401) {
+      const errorBody =
+        await parseJsonSafely<ApiResponse<User | null>>(upstream)
       return NextResponse.json(
         errorBody ?? {
           success: false,
           data: null,
           error: {
-            code: 'MISSING_API_URL',
-            message: 'NEXT_PUBLIC_API_URL is not configured.',
+            code: 'USERS_ME_FETCH_FAILED',
+            message:
+              method === 'GET'
+                ? 'Failed to fetch user profile.'
+                : 'Failed to withdraw user account.',
           },
         },
-        { status: 500 }
+        { status: upstream.status }
       )
     }
   }
@@ -132,6 +195,7 @@ export async function GET() {
   try {
     return proxyUsersMe({ method: 'GET' })
   } catch (error) {
+    // eslint-disable-next-line no-console -- 서버 오류 추적
     console.error('Users me API error:', error)
     return NextResponse.json(
       {
@@ -180,6 +244,7 @@ export async function DELETE(request: NextRequest) {
       requestBody: JSON.stringify({ confirm_text: confirmText }),
     })
   } catch (error) {
+    // eslint-disable-next-line no-console -- 서버 오류 추적
     console.error('Users withdraw API error:', error)
     return NextResponse.json(
       {
