@@ -30,24 +30,17 @@ export function ProfilingTestPage({ testType }: { testType: TestType }) {
   const { isOpen: showErrorPopup, close: closeErrorPopup } =
     useErrorPopup(error)
 
-  if (productType === null) {
+  /** 인증 초기화 전 — 제품 유형 모달이 잠깐이라도 뜨지 않음 */
+  if (!isInitialized) {
     return (
-      <>
-        <PageCenter>
-          <p className="text-center text-sm text-neutral-500">
-            추천 받을 제품 유형을 선택해 주세요.
-          </p>
-        </PageCenter>
-        <ProductTypeSelectModal
-          isOpen
-          onSelect={setProductType}
-          onClose={() => router.back()}
-        />
-      </>
+      <PageCenter>
+        <LoadingSpinner />
+      </PageCenter>
     )
   }
 
-  if (isInitialized && isLoggedIn === false) {
+  /** 비로그인: 타입 선택 모달보다 먼저 경고 (LoginRequiredTestModal: 3초 후 /login) */
+  if (isLoggedIn === false) {
     return (
       <>
         <PageCenter>
@@ -64,6 +57,23 @@ export function ProfilingTestPage({ testType }: { testType: TestType }) {
           </div>
         </PageCenter>
         <LoginRequiredTestModal isOpen onClose={() => router.push('/login')} />
+      </>
+    )
+  }
+
+  if (productType === null) {
+    return (
+      <>
+        <PageCenter>
+          <p className="text-center text-sm text-neutral-500">
+            추천 받을 제품 유형을 선택해 주세요.
+          </p>
+        </PageCenter>
+        <ProductTypeSelectModal
+          isOpen
+          onSelect={setProductType}
+          onClose={() => router.back()}
+        />
       </>
     )
   }
