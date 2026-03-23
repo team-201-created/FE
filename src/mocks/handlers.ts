@@ -374,7 +374,7 @@ const MOCK_AI_IMAGE_KEY = 'images/ai-visual-mock.jpg'
 /**
  * 1. 이미지 업로드용 presigned URL 발급
  * PUT /api/v1/profilings/images/presigned-url
- * Body: { file_name, image_format (jpeg|jpg|png|webp), file_size }
+ * Body: { file_name, file_size } — 실 API와 동일 (image_format은 선택, 있으면 검증)
  */
 export const presignedUrlHandler = http.put(
   '/api/v1/profilings/images/presigned-url',
@@ -412,32 +412,34 @@ export const presignedUrlHandler = http.put(
     }
 
     const { file_name, image_format, file_size } = body ?? {}
-    if (!file_name || !image_format || file_size == null) {
+    if (!file_name || file_size == null) {
       return HttpResponse.json(
         {
           success: false,
           error: {
             code: 'BAD_REQUEST',
-            message: 'file_name, image_format, file_size는 필수입니다.',
+            message: 'file_name, file_size는 필수입니다.',
             details: null,
           },
         },
         { status: 400 }
       )
     }
-    const formatLower = image_format.toLowerCase()
-    if (!IMAGE_FORMATS.includes(formatLower as ImageFormat)) {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'BAD_REQUEST',
-            message: '허용되지 않는 파일 형식입니다.',
-            details: { field: 'image_format', reason: 'invalid' },
+    if (image_format != null) {
+      const formatLower = image_format.toLowerCase()
+      if (!IMAGE_FORMATS.includes(formatLower as ImageFormat)) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'BAD_REQUEST',
+              message: '허용되지 않는 파일 형식입니다.',
+              details: { field: 'image_format', reason: 'invalid' },
+            },
           },
-        },
-        { status: 400 }
-      )
+          { status: 400 }
+        )
+      }
     }
 
     // 클라이언트가 같은 출처로 PUT 할 수 있도록 mock 업로드 경로 반환 (상대 URL)

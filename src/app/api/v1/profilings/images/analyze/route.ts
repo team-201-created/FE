@@ -1,14 +1,29 @@
 /**
- * AI 분석 테스트 제출 (MSW 미가로챔 시 fallback)
+ * AI 분석 테스트 제출
  * POST /api/v1/profilings/images/analyze
  * Body: { image_url, image_type (OOTD|INTERIOR), product_type (DIFFUSER|PERFUME) }
+ *
+ * - NEXT_PUBLIC_USE_MOCK_API=true: 로컬 mock result_id
+ * - 그 외: 백엔드 프록시
  */
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
 
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
+
 export async function POST(request: Request) {
-  const auth = request.headers.get('Authorization')
-  if (!auth?.startsWith('Bearer ')) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('access_token')?.value
+  const authHeader = request.headers.get('Authorization')
+  const bearer =
+    authHeader?.startsWith('Bearer ') && authHeader.length > 7
+      ? authHeader
+      : token
+        ? `Bearer ${token}`
+        : null
+
+  if (!bearer) {
     return NextResponse.json(
       {
         success: false,
@@ -84,14 +99,59 @@ export async function POST(request: Request) {
     )
   }
 
-  return NextResponse.json(
-    {
-      success: true,
-      data: {
-        result_id: mockProfilingResultDetail.id,
-        message: '사진 분석이 완료되었습니다.',
+  if (USE_MOCK) {
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          result_id: mockProfilingResultDetail.id,
+          message: '사진 분석이 완료되었습니다.',
+        },
       },
+      { status: 201 }
+    )
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+  if (!baseUrl) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'MISSING_API_URL',
+          message: 'NEXT_PUBLIC_API_URL is not configured.',
+          details: null,
+        },
+      },
+      { status: 500 }
+    )
+  }
+
+  const upstream = await fetch(`${baseUrl}/api/v1/profilings/images/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: bearer,
     },
-    { status: 201 }
-  )
+    body: JSON.stringify({ image_url, image_type, product_type }),
+    cache: 'no-store',
+  })
+
+  const text = await upstream.text()
+  let data: unknown = null
+  try {
+    data = text ? JSON.parse(text) : null
+  } catch {
+    data = {
+      success: false,
+      error: {
+        code: 'UPSTREAM_PARSE_ERROR',
+        message: '서버 응답을 해석하지 못했습니다.',
+        details: null,
+      },
+    }
+  }
+
+  return NextResponse.json(data, { status: upstream.status })
 }
