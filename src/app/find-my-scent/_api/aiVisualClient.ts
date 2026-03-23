@@ -7,30 +7,15 @@
 export type PhotoType = 'INTERIOR' | 'OOTD'
 export type ProductType = 'DIFFUSER' | 'PERFUME'
 
-const ALLOWED_FORMATS = ['jpeg', 'jpg', 'png', 'webp'] as const
-type ImageFormat = (typeof ALLOWED_FORMATS)[number]
-
-function getImageFormatFromFile(file: File): ImageFormat {
-  const type = file.type?.toLowerCase() ?? ''
-  if (type === 'image/jpeg' || type === 'image/jpg') return 'jpeg'
-  if (type === 'image/png') return 'png'
-  if (type === 'image/webp') return 'webp'
-  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
-  if (ext === 'jpg' || ext === 'jpeg') return 'jpeg'
-  if (ext === 'png') return 'png'
-  if (ext === 'webp') return 'webp'
-  return 'jpeg'
-}
-
-/** 개발/MSW용 토큰 (실서비스에서는 인증 컨텍스트에서 주입) */
-function getAuthHeader(): Record<string, string> {
-  const token =
-    typeof window !== 'undefined'
-      ? (window as unknown as { __AI_VISUAL_TOKEN?: string }).__AI_VISUAL_TOKEN
-      : undefined
-  return {
-    Authorization: token ? `Bearer ${token}` : 'Bearer mock_token',
+/** MSW/목 모드에서만 Bearer 부착 — 실 API는 쿠키(access_token) + BFF */
+function getAiVisualAuthHeaders(): Record<string, string> {
+  if (typeof window === 'undefined') return {}
+  if (process.env.NEXT_PUBLIC_USE_MOCK_API === 'true') {
+    return { Authorization: 'Bearer mock-dev-token' }
   }
+  const token = (window as unknown as { __AI_VISUAL_TOKEN?: string })
+    .__AI_VISUAL_TOKEN
+  return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
 type PresignedUrlResponse = {
@@ -53,19 +38,21 @@ type AnalyzeResponse = {
 /**
  * 1. presigned URL 발급
  * PUT /api/v1/profilings/images/presigned-url
+ * Body: { file_name, file_size } (백엔드 명세)
  */
 async function getPresignedUrl(
   file_name: string,
-  image_format: ImageFormat,
   file_size: number
 ): Promise<{ presigned_url: string; image_url: string }> {
   const res = await fetch('/api/v1/profilings/images/presigned-url', {
     method: 'PUT',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...getAuthHeader(),
+      Accept: 'application/json',
+      ...getAiVisualAuthHeaders(),
     },
-    body: JSON.stringify({ file_name, image_format, file_size }),
+    body: JSON.stringify({ file_name, file_size }),
   })
 
   const json: PresignedUrlResponse = await res.json().catch(() => ({
@@ -115,9 +102,11 @@ async function submitAnalyze(
 ): Promise<number> {
   const res = await fetch('/api/v1/profilings/images/analyze', {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...getAuthHeader(),
+      Accept: 'application/json',
+      ...getAiVisualAuthHeaders(),
     },
     body: JSON.stringify({ image_url, image_type, product_type }),
   })
@@ -142,12 +131,10 @@ export async function submitAiVisualAnalysis(
   file: File,
   productType: ProductType = 'DIFFUSER'
 ): Promise<number> {
-  const image_format = getImageFormatFromFile(file)
-  const file_name = file.name || `upload.${image_format}`
+  const file_name = file.name || 'upload.jpg'
 
   const { presigned_url, image_url } = await getPresignedUrl(
     file_name,
-    image_format,
     file.size
   )
 
