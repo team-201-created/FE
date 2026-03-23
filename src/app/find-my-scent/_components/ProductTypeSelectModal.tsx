@@ -82,7 +82,7 @@ function DiffuserIcon({ className }: { className?: string }) {
 const styles = {
   panel: 'relative w-full max-w-lg rounded-2xl bg-white p-6 pt-12 shadow-lg',
   closeBtn:
-    'absolute right-3 top-3 flex h-14 w-14 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-black',
+    'absolute right-6 top-6 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-neutral-400 shadow-none transition-[color,box-shadow,transform] duration-150 ease-out hover:translate-y-px hover:scale-[0.96] hover:text-[var(--color-black-primary)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2 active:translate-y-0.5 active:scale-[0.92] active:shadow-[0_1px_3px_rgba(0,0,0,0.12)]',
   title: 'pr-12 text-lg font-bold text-[var(--color-black-primary)]',
   sub: 'mt-2 text-sm leading-relaxed text-neutral-600',
   /** 가로: 두 선택지 나란히 */
