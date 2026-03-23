@@ -1,3 +1,5 @@
+'use client'
+
 import {
   AdminTableRow,
   AdminTableCell,
@@ -11,14 +13,23 @@ import {
   BlendMapsItemResponse,
   RecommendTabProps,
 } from '@/app/admin/recommend/_types'
+import { useModalStore } from '@/store/useModalStore'
+import { RecommendDetailModal } from './RecommendDetailModal'
 
 export const BlendMapsTab = ({
   data,
 }: RecommendTabProps<BlendMapsItemResponse>) => {
+  const { openModal } = useModalStore()
+
   return (
     <>
       {data.map((row) => (
-        <AdminTableRow key={row.id}>
+        <AdminTableRow
+          key={row.id}
+          onClick={() =>
+            openModal(<RecommendDetailModal tab="blend-maps" id={row.id} />)
+          }
+        >
           <AdminFirstCell>{row.id}</AdminFirstCell>
 
           <AdminTypeCell slot={2} type={row.input_type} />

@@ -12,14 +12,23 @@ import {
   ProductMapsItemResponse,
   RecommendTabProps,
 } from '@/app/admin/recommend/_types'
+import { useModalStore } from '@/store/useModalStore'
+import { RecommendDetailModal } from './RecommendDetailModal'
 
 export const ProductMapsTab = ({
   data,
 }: RecommendTabProps<ProductMapsItemResponse>) => {
+  const { openModal } = useModalStore()
+
   return (
     <>
       {data.map((row) => (
-        <AdminTableRow key={row.id}>
+        <AdminTableRow
+          key={row.id}
+          onClick={() =>
+            openModal(<RecommendDetailModal tab="product-maps" id={row.id} />)
+          }
+        >
           <AdminFirstCell>{row.id}</AdminFirstCell>
 
           <RecommendStatusCell
