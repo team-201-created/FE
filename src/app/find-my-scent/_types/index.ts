@@ -98,7 +98,8 @@ export type ProfilingResultDetail = {
   input_data_type: string
   product_type: string
   input_data_summary: string
-  recommended_blend: ProfilingResultBlend
+  /** 분석·추천 파이프라인이 아직 없으면 null 일 수 있음 */
+  recommended_blend: ProfilingResultBlend | null
   recommended_products: { purchase_url: string }[]
   created_at: string
 }

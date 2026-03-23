@@ -2,6 +2,7 @@ import {
   fetchProfilingResult,
   resultDetailToContentBoxProps,
 } from '../_api/profilingClient'
+import { FetchError } from '@/lib/api/fetchError'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
@@ -61,7 +62,7 @@ export async function loadProfilingResultPageProps(
         (res as { error?: { message?: string } }).error?.message ??
         '결과를 불러오지 못했습니다.',
     }
-  } catch {
+  } catch (err) {
     if (USE_MOCK) {
       return {
         ok: true,
@@ -70,9 +71,15 @@ export async function loadProfilingResultPageProps(
         ),
       }
     }
+    const message =
+      err instanceof FetchError
+        ? err.message
+        : err instanceof Error
+          ? err.message
+          : '결과를 불러오지 못했습니다.'
     return {
       ok: false,
-      errorMessage: '결과를 불러오지 못했습니다.',
+      errorMessage: message,
     }
   }
 }

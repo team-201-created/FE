@@ -51,8 +51,9 @@ const styles = {
     'flex min-h-[550px] w-full max-w-[1000px] flex-col rounded-2xl bg-white shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] ring-1 ring-black/5',
   header:
     'relative flex shrink-0 flex-col items-center justify-center px-10 pt-8 pb-5 text-center',
+  /** 제품 유형 선택 모달(ProductTypeSelectModal) closeBtn 과 동일 — 헤더 패딩에 맞춰 top-8 만 다름 */
   closeBtn:
-    'absolute right-6 top-8 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-black',
+    'absolute right-6 top-8 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-neutral-400 shadow-none transition-[color,box-shadow,transform] duration-150 ease-out hover:translate-y-px hover:scale-[0.96] hover:text-[var(--color-black-primary)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2 active:translate-y-0.5 active:scale-[0.92] active:shadow-[0_1px_3px_rgba(0,0,0,0.12)]',
   titleWrap: 'flex w-full flex-none items-center justify-center gap-2',
   titleIcon: 'relative h-8 w-8 shrink-0',
   title:
