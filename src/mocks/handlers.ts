@@ -36,6 +36,43 @@ const PROFILING_FORM_MAP: Record<ProfilingType, ProfilingForm> = {
 }
 
 /**
+ * 내 정보 조회 GET /api/v1/users/me
+ * - MSW 활성 시 브라우저 요청을 가로채 Next 라우트·실 API 없이 목 프로필 반환
+ * - ClientLayoutInitializer는 credentials: 'include' 만 보냄 → Cookie 의 access_token 확인
+ */
+export const usersMeHandler = http.get('/api/v1/users/me', ({ request }) => {
+  const auth = request.headers.get('Authorization')
+  const cookie = request.headers.get('cookie') ?? ''
+  const accessMatch = cookie.match(/access_token=([^;]*)/)
+  const hasAccessToken =
+    Boolean(accessMatch?.[1]?.trim()) || /^Bearer\s+\S+/.test(auth ?? '')
+
+  if (!hasAccessToken) {
+    return HttpResponse.json(
+      {
+        success: false,
+        data: null,
+        error: {
+          code: 'NOT_AUTHENTICATED',
+          message: '인증이 필요합니다.',
+        },
+      },
+      { status: 401 }
+    )
+  }
+
+  return HttpResponse.json({
+    success: true,
+    data: {
+      id: 1,
+      nickname: '목 사용자',
+      email: 'mock@example.com',
+      is_admin: false,
+    },
+  })
+})
+
+/**
  * 단품 목록 조회 GET /api/v1/scents/elements
  * Query: q?, scent_category_id?, sort?, page?, size?
  */
@@ -570,6 +607,7 @@ export const imagesAnalyzeHandler = http.post(
 )
 
 export const handlers = [
+  usersMeHandler,
   elementsHandler,
   blendsHandler,
   elementDetailHandler,
