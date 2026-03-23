@@ -7,6 +7,7 @@
  */
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { getUpstreamApiBaseUrl } from '@/lib/api/upstreamBaseUrl'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
 const ALLOWED_FORMATS = ['jpeg', 'jpg', 'png', 'webp']
@@ -117,7 +118,7 @@ export async function PUT(request: Request) {
     )
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+  const baseUrl = getUpstreamApiBaseUrl()
   if (!baseUrl) {
     return NextResponse.json(
       {

@@ -2,24 +2,19 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { ApiResponse, User } from '@/types'
 
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
+
+/** MSW/목 모드에서 프로필 동기화가 실 API 없이 동작하도록 */
+const MOCK_ME_USER: User = {
+  id: 1,
+  nickname: '목 사용자',
+  email: 'mock@example.com',
+  profileImageUrl: undefined,
+  is_admin: false,
+}
+
 export async function GET() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
-
-    if (!baseUrl) {
-      return NextResponse.json(
-        {
-          success: false,
-          data: null,
-          error: {
-            code: 'MISSING_API_URL',
-            message: 'NEXT_PUBLIC_API_URL is not configured.',
-          },
-        },
-        { status: 500 }
-      )
-    }
-
     const cookieStore = await cookies()
     const token = cookieStore.get('access_token')?.value
 
@@ -34,6 +29,30 @@ export async function GET() {
           },
         },
         { status: 401 }
+      )
+    }
+
+    if (USE_MOCK) {
+      const body: ApiResponse<User> = {
+        success: true,
+        data: MOCK_ME_USER,
+      }
+      return NextResponse.json(body, { status: 200 })
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+
+    if (!baseUrl) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: null,
+          error: {
+            code: 'MISSING_API_URL',
+            message: 'NEXT_PUBLIC_API_URL is not configured.',
+          },
+        },
+        { status: 500 }
       )
     }
 

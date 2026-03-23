@@ -116,6 +116,13 @@ async function submitAnalyze(
     error: { code: 'UNKNOWN', message: '응답을 파싱할 수 없습니다.' },
   }))
 
+  if (res.status === 404) {
+    throw new Error(
+      json.error?.message ??
+        '분석 API를 찾을 수 없습니다(404). 백엔드에 POST /api/v1/profilings/images/analyze 가 있는지, NEXT_PUBLIC_API_URL 이 올바른지 확인하세요.'
+    )
+  }
+
   if (!res.ok || !json.success || json.data?.result_id == null) {
     throw new Error(json.error?.message ?? `분석 제출 실패 (${res.status})`)
   }

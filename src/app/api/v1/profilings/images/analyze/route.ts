@@ -8,6 +8,7 @@
  */
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { getUpstreamApiBaseUrl } from '@/lib/api/upstreamBaseUrl'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
@@ -112,7 +113,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+  const baseUrl = getUpstreamApiBaseUrl()
   if (!baseUrl) {
     return NextResponse.json(
       {
