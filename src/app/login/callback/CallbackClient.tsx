@@ -35,7 +35,6 @@ export default function CallbackClient() {
           localStorage.setItem('user', JSON.stringify(result.user))
           login(result.user)
 
-          alert(`${result.user.nickname}님, 환영합니다!`)
           router.replace('/')
         } else {
           throw new Error(result.error)
