@@ -3,12 +3,13 @@ import Image from 'next/image'
 const styles = {
   footer: 'border-t border-neutral-200 bg-white',
   container: 'mx-auto max-w-6xl px-4 py-12 sm:px-6',
-  grid: 'grid grid-cols-1 gap-10 md:grid-cols-3',
+  grid: 'grid grid-cols-1 divide-y md:divide-y-0 md:grid-cols-3 md:gap-10',
   logo: 'block h-6 w-auto',
   description: 'mt-3 text-sm leading-relaxed text-neutral-600',
   snsWrap: 'mt-4 flex gap-2',
   snsIcon: 'size-10 shrink-0',
   sectionTitle: 'text-sm font-bold text-neutral-900',
+  section: 'py-8 md:py-0',
   list: 'mt-3 space-y-2',
   listItem: 'text-sm text-neutral-600',
   bottomWrap: 'mt-10 border-t border-neutral-200 pt-6',
@@ -23,7 +24,7 @@ export function Footer() {
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.grid}>
-          <div>
+          <div className={styles.section}>
             <Image
               src="/logo.svg"
               alt="DeepScent"
@@ -62,7 +63,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div>
+          <div className={styles.section}>
             <h3 className={styles.sectionTitle}>서비스</h3>
             <ul className={styles.list}>
               <li>
@@ -83,7 +84,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className={styles.section}>
             <h3 className={styles.sectionTitle}>고객지원</h3>
             <ul className={styles.list}>
               <li>
