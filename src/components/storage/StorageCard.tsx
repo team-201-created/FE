@@ -33,12 +33,14 @@ export default function StorageCard({
           />
         ) : null}
         {/* 삭제 아이콘 */}
-        <button
-          onClick={onDelete}
-          className="absolute top-4 right-4 rounded-[10px] bg-white p-2 shadow"
-        >
-          <Trashicon className="h-4 w-4" />
-        </button>
+        {onDelete ? (
+          <button
+            onClick={onDelete}
+            className="absolute top-4 right-4 rounded-[10px] bg-white p-2 shadow"
+          >
+            <Trashicon className="h-4 w-4" />
+          </button>
+        ) : null}
       </div>
       {/* 하단 내용 */}
       <div className="flex flex-1 flex-col px-6 py-4">
