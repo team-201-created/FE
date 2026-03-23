@@ -34,6 +34,9 @@ export type ResultContentBoxProps = {
 
 const DEFAULT_PRIMARY_LABEL = '추천한 향기와 어울리는 연관 추천 상품 보러가기 →'
 
+/** API에 purchase_url 이 없을 때 외부 기본 링크로 유도 */
+const PRIMARY_BUTTON_FALLBACK_HREF = 'https://www.coupang.com/'
+
 const styles = {
   card: 'h-[770px] w-full max-w-[1200px] rounded-2xl bg-white px-6 py-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)]',
   topRow: 'flex items-center gap-3 pb-4 border-b border-neutral-100',
@@ -75,6 +78,8 @@ export function ResultContentBox({
   resultType,
 }: ResultContentBoxProps) {
   const [isOtherTestModalOpen, setIsOtherTestModalOpen] = useState(false)
+  const resolvedPrimaryHref =
+    primaryButtonHref?.trim() || PRIMARY_BUTTON_FALLBACK_HREF
 
   return (
     <>
@@ -184,9 +189,9 @@ export function ResultContentBox({
           </div>
         </div>
 
-        {/* 하단 버튼 3개 */}
+        {/* 하단 버튼 3개 — 상품 URL 없으면 콤보 상품 목록으로 연결 */}
         <div className={styles.buttons}>
-          <Link href={primaryButtonHref} className={styles.btnPrimary}>
+          <Link href={resolvedPrimaryHref} className={styles.btnPrimary}>
             {primaryButtonLabel}
           </Link>
           <Link href={retestButtonHref} className={styles.btnSecondary}>

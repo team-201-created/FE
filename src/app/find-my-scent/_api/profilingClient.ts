@@ -187,7 +187,24 @@ export function resultDetailToContentBoxProps(detail: ProfilingResultDetail): {
   /** 추천한 향기와 어울리는 연관 추천 상품 보러가기 버튼 링크 */
   primaryButtonHref: string
 } {
-  const { recommended_blend, recommended_products } = detail
+  const { recommended_blend, recommended_products, input_data_summary } = detail
+
+  if (recommended_blend == null) {
+    const summary = input_data_summary?.trim() ?? ''
+    return {
+      productImageUrl: '',
+      productName: '추천 블렌드 준비 중',
+      description:
+        summary ||
+        '아직 추천 블렌드 정보가 없습니다. 잠시 후 새로고침하거나 테스트를 다시 진행해 주세요.',
+      scentTypeLabel: undefined,
+      showRecommendLabel: false,
+      scentTypeTags: [],
+      noteTags: [],
+      primaryButtonHref: recommended_products[0]?.purchase_url ?? '',
+    }
+  }
+
   const scentTypeTags =
     recommended_blend.contained_elements?.map(
       (e) => e.category?.en ?? e.category?.kr ?? ''
