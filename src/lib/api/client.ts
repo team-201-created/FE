@@ -11,7 +11,24 @@ const DEFAULT_HEADERS: Record<string, string> = {
 }
 
 const AUTH_REFRESH_PATH = '/api/auth/refresh'
-const RETRY_HEADER = 'x-auth-retried'
+
+let refreshPromise: Promise<Response> | null = null
+
+const requestTokenRefresh = async (): Promise<Response> => {
+  if (!refreshPromise) {
+    refreshPromise = fetch(AUTH_REFRESH_PATH, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).finally(() => {
+      refreshPromise = null
+    })
+  }
+
+  return refreshPromise
+}
 
 type RefreshErrorPayload = {
   success?: boolean
@@ -76,50 +93,36 @@ export const appFetch = createFetch({
         typeof window !== 'undefined' &&
         !requestArgs.url.includes(AUTH_REFRESH_PATH)
       ) {
-        const headers = new Headers(requestArgs.options.headers as HeadersInit)
-        const hasRetried = headers.get(RETRY_HEADER) === '1'
+        const refreshResponse = await requestTokenRefresh()
 
-        if (!hasRetried) {
-          const refreshResponse = await fetch(AUTH_REFRESH_PATH, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-            },
+        if (refreshResponse.ok) {
+          const retryResponse = await fetch(requestArgs.url, {
+            ...requestArgs.options,
           })
 
-          if (refreshResponse.ok) {
-            headers.set(RETRY_HEADER, '1')
-
-            const retryResponse = await fetch(requestArgs.url, {
-              ...requestArgs.options,
-              headers: Object.fromEntries(headers.entries()),
-            })
-
-            if (retryResponse.ok) {
-              return retryResponse
-            }
-
-            return handleResponse(retryResponse)
+          if (retryResponse.ok) {
+            return retryResponse
           }
 
-          const refreshError = (await refreshResponse
-            .json()
-            .catch(() => null)) as RefreshErrorPayload | null
-
-          const { useModalStore } = await import('@/store/useModalStore')
-          useModalStore.getState().openAlert({
-            type: 'danger',
-            title: '인증이 만료되었습니다.',
-            content:
-              refreshError?.error?.message ||
-              '세션이 만료되었습니다. 다시 로그인해 주세요.',
-            confirmText: '로그인으로 이동',
-            onConfirm: () => {
-              window.location.href = '/login'
-            },
-          })
+          return handleResponse(retryResponse)
         }
+
+        const refreshError = (await refreshResponse
+          .json()
+          .catch(() => null)) as RefreshErrorPayload | null
+
+        const { useModalStore } = await import('@/store/useModalStore')
+        useModalStore.getState().openAlert({
+          type: 'danger',
+          title: '인증이 만료되었습니다.',
+          content:
+            refreshError?.error?.message ||
+            '세션이 만료되었습니다. 다시 로그인해 주세요.',
+          confirmText: '로그인으로 이동',
+          onConfirm: () => {
+            window.location.href = '/login'
+          },
+        })
       }
 
       return handleResponse(response)

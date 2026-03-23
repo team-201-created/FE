@@ -1,18 +1,48 @@
-export interface StorageItem {
+export type AnalysisInputDataType =
+  | 'PREFERENCE'
+  | 'HEALTH'
+  | 'OOTD'
+  | 'INTERIOR'
+
+export interface AnalysisResultCategoryName {
+  kr: string
+  en: string
+}
+
+export interface AnalysisResultCategory {
+  name: AnalysisResultCategoryName
+}
+
+export interface AnalysisResultElement {
+  name: string
+  category: AnalysisResultCategoryName
+}
+
+export interface AnalysisResultBlend {
   id: number
-  input_data_type: string
+  name: string
+  image_url: string
+  categories: AnalysisResultCategory[]
+  contained_elements: AnalysisResultElement[]
+}
+
+export interface AnalysisResultItem {
+  id: number
+  input_data_type: AnalysisInputDataType
   product_type: string
-  recommended_blend: {
-    id: number
-    name: string
-    image_url: string
-    element_category: string
-    blend_category: string[]
-  }
+  matched_blend: AnalysisResultBlend | null
   created_at: string
 }
 
-export interface StorageApiResponse {
+export interface AnalysisResultListData {
+  results: AnalysisResultItem[]
+  page: number
+  size: number
+  count: number
+  total_pages: number
+}
+
+export interface AnalysisResultListApiResponse {
   success: boolean
-  data?: StorageItem[]
+  data?: AnalysisResultListData
 }
