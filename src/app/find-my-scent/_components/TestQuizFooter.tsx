@@ -29,7 +29,8 @@ export function TestQuizFooter({
   onNext,
 }: TestQuizFooterProps) {
   const prevClassName = cn(styles.prev, isFirst && styles.prevHidden)
-  const nextDisabled = !canGoNext || isSubmitting
+  // 제출 중에도 버튼은 비활성화하지 않음(이중 제출은 상위 핸들러에서 방지)
+  const nextDisabled = !canGoNext
   const nextClassName = cn(
     styles.next,
     nextDisabled ? styles.nextInactive : styles.nextActive

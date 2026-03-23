@@ -11,17 +11,13 @@ export function useQuizStep(questions: QuizQuestion[]) {
   const total = questions.length
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<AnswersState>({})
-  const [showMinSelectionWarning, setShowMinSelectionWarning] = useState(false)
 
   // 현재 질문 조회
   const question = questions[step]
   const selectedIds = answers[question?.id] ?? []
 
-  // 다중선택 규칙 적용
-  const minSelections = question?.questionType === 'MULTI' ? 2 : 1
-
-  // 다음 질문으로 이동 가능 여부
-  const canGoNext = !question?.required || selectedIds.length >= minSelections
+  // 다음 질문으로 이동 가능 여부 — 필수: 단일·다중 모두 1개 이상 선택
+  const canGoNext = !question?.required || selectedIds.length >= 1
   const isFirst = step === 0
   const isLast = step === total - 1
 
@@ -46,15 +42,9 @@ export function useQuizStep(questions: QuizQuestion[]) {
     if (step > 0) setStep((s) => s - 1)
   }
 
-  // 다음 질문으로 이동 핸들러 (필수 아님 + 다중선택에서 1개만 선택 시 경고 모달 표시)
+  // 다음 질문으로 이동 핸들러
   const handleNext = () => {
     if (isLast) return
-    const isMultiNotRequired =
-      question?.questionType === 'MULTI' && !question?.required
-    if (isMultiNotRequired && selectedIds.length === 1) {
-      setShowMinSelectionWarning(true)
-      return
-    }
     if (!canGoNext) return
     setStep((s) => s + 1)
   }
@@ -68,8 +58,6 @@ export function useQuizStep(questions: QuizQuestion[]) {
     canGoNext,
     isFirst,
     isLast,
-    showMinSelectionWarning,
-    closeMinSelectionWarning: () => setShowMinSelectionWarning(false),
     handleToggle,
     handlePrev,
     handleNext,
