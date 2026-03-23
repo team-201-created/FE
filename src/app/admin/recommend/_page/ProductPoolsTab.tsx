@@ -13,14 +13,23 @@ import {
   ProductPoolsItemResponse,
   RecommendTabProps,
 } from '@/app/admin/recommend/_types'
+import { useModalStore } from '@/store/useModalStore'
+import { RecommendDetailModal } from './RecommendDetailModal'
 
 export const ProductPoolsTab = ({
   data,
 }: RecommendTabProps<ProductPoolsItemResponse>) => {
+  const { openModal } = useModalStore()
+
   return (
     <>
       {data.map((row) => (
-        <AdminTableRow key={row.id}>
+        <AdminTableRow
+          key={row.id}
+          onClick={() =>
+            openModal(<RecommendDetailModal tab="product-pools" id={row.id} />)
+          }
+        >
           <AdminFirstCell>{row.product_count}개</AdminFirstCell>
 
           <AdminTypeCell slot={2} type={row.product_type} />
