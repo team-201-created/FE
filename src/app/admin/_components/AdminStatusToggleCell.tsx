@@ -9,7 +9,7 @@ interface AdminStatusToggleCellProps {
   id: number | string
   status: string
   slot: number
-  onToggle: (nextStatus: any) => Promise<{
+  onToggle: (nextStatus: string) => Promise<{
     success: boolean
     message?: string | null
     reason?: string | null

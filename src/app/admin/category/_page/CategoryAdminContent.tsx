@@ -1,7 +1,10 @@
 'use client'
 
 import React, { ReactNode, Suspense } from 'react'
-import type { AdminCategoryListResponse } from '@/app/admin/category/_types/AdminCategoryType'
+import type {
+  AdminCategoryListResponse,
+  RootCategory,
+} from '@/app/admin/category/_types/AdminCategoryType'
 import {
   AdminPageHeader,
   AdminTabGroup,
@@ -11,7 +14,6 @@ import {
   AdminTableError,
   AdminTableLoading,
 } from '@/app/admin/_components'
-import type { RootCategory } from '@/app/admin/category/_types/AdminCategoryType'
 import { CATEGORY_TABLE_HEADERS } from '@/constants/admin'
 import { ErrorBoundary } from 'react-error-boundary'
 import { CategoryPostModal } from '@/app/admin/category/_components/CategoryPostModal'

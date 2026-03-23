@@ -14,6 +14,7 @@ import { TestStatusCell } from './TestStatusCell'
 import { TestTableRow } from './TestTableRow'
 import { TestDeleteButton } from './TestDeleteButton'
 import { TestEditButton } from './TestEditButton'
+import type { TestListItem } from '../_types'
 
 interface TestTableServerProps {
   searchParams: {
@@ -29,7 +30,7 @@ export async function TestTableServer({ searchParams }: TestTableServerProps) {
   const currentPage = Math.max(1, Number(searchParams.page) || 1)
   const pageSize = 10
 
-  let tests: any[] = []
+  let tests: TestListItem[] = []
   let totalPages = 1
 
   try {
