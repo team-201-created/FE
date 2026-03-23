@@ -13,7 +13,7 @@ import {
   createAdminProductMap,
 } from '../_api/adminCreateRecommend'
 import { createAdminPipelineSnapshot } from '../_api/adminCreatePipeline'
-import { RECOMMEND_API } from '../_api'
+import { RECOMMEND_API, fetchAdminRecommendDetail } from '../_api'
 import {
   RecommendTabId,
   ProductPoolCreateBody,
@@ -28,6 +28,21 @@ import { extractError } from '@/app/admin/_lib/actionUtils'
 
 const REVALIDATE_DELAY_MS = 100
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * 추천 단건 상세 조회 Server Action
+ * — authFetch는 서버 컨텍스트에서만 토큰이 주입되므로 Server Action으로 래핑
+ */
+export async function fetchRecommendDetailAction<T extends RecommendTabId>(
+  tabId: T,
+  id: number
+) {
+  try {
+    return await fetchAdminRecommendDetail(tabId, id)
+  } catch (error) {
+    return { success: false as const, data: null, ...extractError(error) }
+  }
+}
 
 /**
  * 채택된 제품 후보군 목록 조회 Server Action

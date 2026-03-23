@@ -30,6 +30,35 @@ export interface ProductPoolsItemResponse {
 export type ProductPoolsListResponse =
   RecommendApiResponse<ProductPoolsItemResponse>
 
+export interface ProductPoolsDetailResult {
+  id: number
+  product_type: string
+  name: string
+  brand: string
+  price: number
+  review_rating: number
+  review_count: number
+  scent_keywords: string[]
+  purchase_url: string
+}
+
+export interface ProductPoolsDetailResponse {
+  id: number
+  product_type: 'DIFFUSER' | 'PERFUME'
+  crawl_source: string
+  crawl_count: number
+  crawl_sort: string
+  crawl_config: Record<string, unknown>
+  adoption_status: 'ADOPTED' | 'UNADOPTED'
+  created_at: string
+  updated_at: string
+  results: ProductPoolsDetailResult[]
+  page: number
+  size: number
+  count: number
+  total_pages: number
+}
+
 export interface ProductPoolsFormProps {
   formData: {
     crawl_source: string

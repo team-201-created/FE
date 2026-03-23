@@ -10,6 +10,24 @@ export interface BlendMapsItemResponse {
 
 export type BlendMapsListResponse = RecommendApiResponse<BlendMapsItemResponse>
 
+export interface BlendMapsDetailResult {
+  id: number
+  input_data: Record<string, unknown>
+  blend: {
+    id: number
+    name: string
+  }
+}
+
+export interface BlendMapsDetailResponse {
+  id: number
+  input_type: string
+  publish_status: 'PUBLISHED' | 'UNPUBLISHED'
+  created_at: string
+  updated_at: string
+  results: BlendMapsDetailResult[]
+}
+
 export interface BlendMapsFormProps {
   value: string
   onChange: (val: string) => void

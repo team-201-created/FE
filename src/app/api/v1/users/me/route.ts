@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { postTokenRefresh } from '@/lib/api/auth'
 import type { ApiResponse, User } from '@/types'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
@@ -44,7 +45,7 @@ export async function GET() {
 
     if (!baseUrl) {
       return NextResponse.json(
-        {
+        errorBody ?? {
           success: false,
           data: null,
           error: {
@@ -55,35 +56,81 @@ export async function GET() {
         { status: 500 }
       )
     }
+  }
 
-    const response = await fetch(`${baseUrl}/api/v1/users/me`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
+  if (!refreshToken) {
+    const response = NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: {
+          code: 'NOT_AUTHENTICATED',
+          message: '인증이 필요합니다.',
+        },
       },
-      cache: 'no-store',
+      { status: 401 }
+    )
+    clearAuthCookies(response)
+    return response
+  }
+
+  try {
+    const refreshed = await postTokenRefresh(refreshToken)
+    accessToken = refreshed.data.access_token
+
+    const upstream = await fetchUsersMe({
+      method,
+      accessToken,
+      baseUrl,
+      requestBody,
+    })
+    const body = await parseJsonSafely<ApiResponse<User | null>>(upstream)
+
+    const response = NextResponse.json(
+      body ?? {
+        success: false,
+        data: null,
+        error: {
+          code: 'USERS_ME_FETCH_FAILED',
+          message:
+            method === 'GET'
+              ? 'Failed to fetch user profile.'
+              : 'Failed to withdraw user account.',
+        },
+      },
+      { status: upstream.status }
+    )
+
+    response.cookies.set('access_token', refreshed.data.access_token, {
+      ...BASE_COOKIE_OPTIONS,
+      maxAge: refreshed.data.expires_in,
+    })
+    response.cookies.set('refresh_token', refreshed.data.refresh_token, {
+      ...BASE_COOKIE_OPTIONS,
+      maxAge: refreshed.data.refresh_expires_in,
     })
 
-    const data = (await response
-      .json()
-      .catch(() => null)) as ApiResponse<User> | null
-
-    if (!response.ok || !data) {
-      return NextResponse.json(
-        {
-          success: false,
-          data: null,
-          error: {
-            code: data?.error?.code ?? 'USERS_ME_FETCH_FAILED',
-            message: data?.error?.message ?? 'Failed to fetch user profile.',
-          },
+    return response
+  } catch {
+    const response = NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: {
+          code: 'NOT_AUTHENTICATED',
+          message: '인증이 필요합니다.',
         },
-        { status: response.status || 500 }
-      )
-    }
+      },
+      { status: 401 }
+    )
+    clearAuthCookies(response)
+    return response
+  }
+}
 
-    return NextResponse.json(data, { status: response.status })
+export async function GET() {
+  try {
+    return proxyUsersMe({ method: 'GET' })
   } catch (error) {
     console.error('Users me API error:', error)
     return NextResponse.json(
@@ -93,6 +140,54 @@ export async function GET() {
         error: {
           code: 'USERS_ME_FAILED',
           message: 'An error occurred while fetching profile.',
+        },
+      },
+      { status: 500 }
+    )
+  }
+}
+
+type WithdrawRequest = {
+  confirm_text?: string
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = (await request
+      .json()
+      .catch(() => null)) as WithdrawRequest | null
+    const confirmText = body?.confirm_text
+
+    if (confirmText !== '회원탈퇴') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_WITHDRAW_REQUEST',
+            message: '회원탈퇴 파라미터가 올바르지 않습니다.',
+            details: {
+              field: 'confirm_text',
+              reason: 'must_equal_회원탈퇴',
+            },
+          },
+        },
+        { status: 400 }
+      )
+    }
+
+    return proxyUsersMe({
+      method: 'DELETE',
+      requestBody: JSON.stringify({ confirm_text: confirmText }),
+    })
+  } catch (error) {
+    console.error('Users withdraw API error:', error)
+    return NextResponse.json(
+      {
+        success: false,
+        data: null,
+        error: {
+          code: 'USERS_WITHDRAW_FAILED',
+          message: 'An error occurred while withdrawing account.',
         },
       },
       { status: 500 }
