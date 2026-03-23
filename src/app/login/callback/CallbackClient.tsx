@@ -5,6 +5,29 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { loginWithKakaoAction } from '@/lib/auth/sessionActions'
 import { useAuthStore } from '@/store/useAuthStore'
+import type { User } from '@/types'
+
+async function fetchLatestUserProfile(): Promise<User | null> {
+  try {
+    const response = await fetch('/api/v1/users/me', {
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    })
+
+    const body = (await response.json().catch(() => null)) as {
+      success?: boolean
+      data?: User
+    } | null
+
+    if (response.ok && body?.success && body.data) {
+      return body.data
+    }
+  } catch {
+    // 프로필 동기화 실패 시 콜백 응답 user를 fallback으로 사용
+  }
+
+  return null
+}
 
 export default function CallbackClient() {
   const searchParams = useSearchParams()
@@ -31,10 +54,14 @@ export default function CallbackClient() {
         const result = await loginWithKakaoAction(code, state)
 
         if (result.success) {
-          // user 정보는 UI 표시용으로 localStorage에 저장
-          localStorage.setItem('user', JSON.stringify(result.user))
-          login(result.user)
+          const latestUser = await fetchLatestUserProfile()
+          const userToStore = latestUser ?? result.user
 
+          // user 정보는 UI 표시용으로 localStorage에 저장
+          localStorage.setItem('user', JSON.stringify(userToStore))
+          login(userToStore)
+
+          alert(`${userToStore.nickname}님, 환영합니다!`)
           router.replace('/')
         } else {
           throw new Error(result.error)
