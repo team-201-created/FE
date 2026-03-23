@@ -1,5 +1,8 @@
 import React, { use, useEffect } from 'react'
-import { ProductMapsFormProps } from '@/app/admin/recommend/_types'
+import {
+  ProductMapsFormProps,
+  ProductPoolsItemResponse,
+} from '@/app/admin/recommend/_types'
 import { PRODUCT_TYPE_LABELS } from '@/app/admin/_constants/labels'
 import { formatDate } from '@/app/admin/_utils'
 import { cn } from '@/lib/cn'
@@ -16,7 +19,7 @@ export const ProductMapsForm = ({
     if (pools.length > 0 && value === 0) {
       onChange(pools[0].id)
     }
-  }, [pools])
+  }, [pools, value, onChange])
 
   return (
     <div className="flex flex-col gap-4 py-6">
@@ -24,7 +27,7 @@ export const ProductMapsForm = ({
         <label className="text-lg font-bold">대상 후보군 선택</label>
         {pools.length > 0 ? (
           <div className="flex flex-col gap-1.5">
-            {pools.map((p: any) => (
+            {pools.map((p: ProductPoolsItemResponse) => (
               <button
                 key={p.id}
                 type="button"

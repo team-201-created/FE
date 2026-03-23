@@ -24,7 +24,7 @@ export function useAdminSearch(delay = 300) {
         setSearchTerm(currentParamQ)
       })
     }
-  }, [searchParams])
+  }, [searchParams, searchTerm])
 
   useEffect(() => {
     const currentQ = searchParams.get('q') || ''

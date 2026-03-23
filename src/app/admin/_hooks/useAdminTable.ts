@@ -50,7 +50,7 @@ export function useAdminTable({
         setSearchTerm(currentUrlQ)
       })
     }
-  }, [currentUrlQ])
+  }, [currentUrlQ, searchTerm])
 
   const updateUrl = useCallback(
     (

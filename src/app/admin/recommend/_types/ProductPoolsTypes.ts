@@ -72,6 +72,6 @@ export interface ProductPoolsFormProps {
       min_review_count: number
     }
   }
-  onFieldChange: (key: string, value: any) => void
-  onConfigChange: (key: string, value: any) => void
+  onFieldChange: (key: string, value: string | number) => void
+  onConfigChange: (key: string, value: string | number) => void
 }

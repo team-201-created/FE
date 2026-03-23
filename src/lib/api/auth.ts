@@ -92,7 +92,6 @@ export async function postSocialCallback(
   const data = await response.json()
 
   if (!response.ok) {
-    console.error('Error in social callback:', data)
     throw new Error(data.error?.message || 'Failed to process social callback')
   }
 

@@ -11,9 +11,8 @@ import Button from '@/components/common/Button'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { useTestEdit } from '../_hooks/useTestEdit'
 import { QuestionForm } from '@/app/admin/test/create/_components'
-import { Question } from '@/app/admin/test/create/_types'
+import type { Question, TestFormData } from '@/app/admin/test/create/_types'
 import { TEST_TYPE_TABS } from '@/app/admin/test/create/_constants'
-import type { TestFormData } from '@/app/admin/test/create/_types'
 
 interface TestEditContentProps {
   testId: number

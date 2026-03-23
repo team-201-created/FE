@@ -49,10 +49,13 @@ export async function loginWithKakaoAction(
     cookieStore.set('access_token', access_token, BASE_COOKIE_OPTIONS)
     cookieStore.set('refresh_token', refresh_token, REFRESH_COOKIE_OPTIONS)
     return { success: true, user }
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      error: error.message || '로그인 처리 중 오류가 발생했습니다.',
+      error:
+        error instanceof Error
+          ? error.message
+          : '로그인 처리 중 오류가 발생했습니다.',
     }
   }
 }

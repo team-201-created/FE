@@ -99,12 +99,12 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
   }, [activeTab])
 
   // 일반 필드 업데이트
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
   }
 
   // 후보군 설정 업데이트
-  const handleConfigChange = (key: string, value: any) => {
+  const handleConfigChange = (key: string, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
       crawl_config: { ...prev.crawl_config, [key]: value },
