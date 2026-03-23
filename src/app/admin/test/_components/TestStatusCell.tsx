@@ -9,8 +9,8 @@ interface TestStatusCellProps {
 }
 
 export function TestStatusCell({ testId, status }: TestStatusCellProps) {
-  const handleToggle = (nextStatus: 'PUBLISHED' | 'UNPUBLISHED') =>
-    toggleTestPublishAction(testId, nextStatus)
+  const handleToggle = (nextStatus: string) =>
+    toggleTestPublishAction(testId, nextStatus as 'PUBLISHED' | 'UNPUBLISHED')
 
   return (
     <AdminStatusToggleCell
