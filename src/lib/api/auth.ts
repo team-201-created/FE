@@ -1,6 +1,7 @@
 import type { ApiResponse, AuthTokens, AuthorizeUrl, User } from '@/types'
-import { apiFetch, appFetch } from './client'
+import { appFetch } from './client'
 import { FetchError } from './fetchError'
+import type { ApiErrorResponse } from './types'
 
 type TokenRefreshData = {
   access_token: string
@@ -12,34 +13,57 @@ type TokenRefreshData = {
 
 /**
  * 소셜 로그인/회원가입 URL을 요청합니다.
- * @param provider 소셜 제공자 (e.g., 'kakao')
- * @param state CSRF 방지용 랜덤 문자열
+ * apiFetch는 NEXT_PUBLIC_API_URL을 base로 쓰므로 브라우저에서 CORS가 납니다.
+ * 동일 출처 `/api/v1/auth/social/...` Next 라우트(BFF)로만 요청합니다.
  */
 export async function getSocialAuthorizeUrl(
   provider: string,
   state: string
 ): Promise<ApiResponse<AuthorizeUrl>> {
   const redirectUri = `${window.location.origin}/login/callback`
+  const params = new URLSearchParams({
+    state,
+    redirect_uri: redirectUri,
+  })
+  const path = `/api/v1/auth/social/${provider}/authorize-url?${params.toString()}`
 
-  try {
-    return await apiFetch.get<ApiResponse<AuthorizeUrl>>(
-      `/api/v1/auth/social/${provider}/authorize-url`,
-      {
-        params: { state, redirect_uri: redirectUri },
-      }
-    )
-  } catch (error) {
-    // 백엔드 경로가 /auth/{provider}/authorize-url 인 환경을 fallback으로 지원
-    if (error instanceof FetchError && error.status === 404) {
-      return apiFetch.get<ApiResponse<AuthorizeUrl>>(
-        `/api/v1/auth/${provider}/authorize-url`,
-        {
-          params: { state, redirect_uri: redirectUri },
-        }
-      )
-    }
-    throw error
+  const response = await fetch(path, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const body = (await response.json().catch(() => null)) as
+    | ApiResponse<AuthorizeUrl>
+    | ApiErrorResponse
+    | null
+
+  if (!body) {
+    throw new FetchError({
+      code: 'PARSE_ERROR',
+      message: 'authorize-url 응답을 해석할 수 없습니다.',
+      status: response.status,
+      statusText: response.statusText,
+      url: path,
+    })
   }
+
+  if (!response.ok) {
+    const err = body as ApiErrorResponse
+    throw new FetchError({
+      code: err.error?.code ?? 'AUTHORIZE_URL_FAILED',
+      message:
+        err.error?.message ?? `authorize-url 요청 실패 (${response.status})`,
+      status: response.status,
+      statusText: response.statusText,
+      url: path,
+      details: err.error?.details,
+    })
+  }
+
+  return body as ApiResponse<AuthorizeUrl>
 }
 
 /**

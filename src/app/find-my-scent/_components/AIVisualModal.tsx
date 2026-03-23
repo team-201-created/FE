@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { ModalOverlay, ModalPortal } from '@/components/common/Modal'
+import { uploadImageViaPresignedUrl } from '../_api/aiVisualClient'
 import { StepIndicator } from './StepIndicator'
 
 const ACCEPT_TYPES = 'image/jpeg,image/jpg,image/png,image/webp'
@@ -38,8 +39,11 @@ const PHOTO_TYPE_CONFIG: Record<
 export type AIVisualModalProps = {
   isOpen: boolean
   onClose: () => void
-  /** 제출 후 결과 페이지로 이동 등; Promise 반환 시 제출 중 버튼 비활성화 */
-  onAnalyze?: (photoType: PhotoType, file: File) => void | Promise<void>
+  /**
+   * S3 업로드 완료 후 저장된 image_url 로만 호출 (「분석 시작」버튼).
+   * Presigned 발급·PUT 업로드는 파일 첨부 시 모달 내부에서 처리.
+   */
+  onAnalyze?: (photoType: PhotoType, imageUrl: string) => void | Promise<void>
 }
 
 const styles = {
@@ -109,6 +113,10 @@ export function AIVisualModal({
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  /** Presigned 발급 + S3 PUT 완료 후 서버가 준 image_url (분석 API에만 사용) */
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+  const [isUploadingS3, setIsUploadingS3] = useState(false)
+  const [s3Error, setS3Error] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -129,6 +137,8 @@ export function AIVisualModal({
     }
     setPreviewUrl(null)
     setUploadError(null)
+    setUploadedImageUrl(null)
+    setS3Error(null)
     setSubmitError(null)
   }
 
@@ -137,8 +147,10 @@ export function AIVisualModal({
     onClose()
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setUploadError(null)
+    setS3Error(null)
+    setUploadedImageUrl(null)
     const next = e.target.files?.[0]
     if (!next) return
     if (!next.type.match(/^image\/(jpeg|jpg|png|webp)$/)) {
@@ -152,6 +164,19 @@ export function AIVisualModal({
     if (previewUrl) URL.revokeObjectURL(previewUrl)
     setFile(next)
     setPreviewUrl(URL.createObjectURL(next))
+
+    setIsUploadingS3(true)
+    try {
+      const data = await uploadImageViaPresignedUrl(next)
+      setUploadedImageUrl(data.image_url)
+    } catch (err) {
+      setUploadedImageUrl(null)
+      setS3Error(
+        err instanceof Error ? err.message : '이미지 업로드에 실패했습니다.'
+      )
+    } finally {
+      setIsUploadingS3(false)
+    }
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -174,6 +199,8 @@ export function AIVisualModal({
     setFile(null)
     setPreviewUrl(null)
     setUploadError(null)
+    setUploadedImageUrl(null)
+    setS3Error(null)
   }
 
   const goNext = () => {
@@ -188,12 +215,12 @@ export function AIVisualModal({
   }
 
   const handleAnalyze = async () => {
-    if (step !== 2 || !photoType || !file) return
+    if (step !== 2 || !photoType || !uploadedImageUrl) return
     if (onAnalyze) {
       setSubmitError(null)
       setIsSubmitting(true)
       try {
-        await onAnalyze(photoType, file)
+        await onAnalyze(photoType, uploadedImageUrl)
         // onAnalyze에서 결과 페이지로 이동하므로 handleClose() 호출하지 않음 (history.back() 방지)
       } catch (err) {
         setSubmitError(
@@ -371,6 +398,14 @@ export function AIVisualModal({
                 {uploadError && (
                   <p className="mt-3 text-sm text-red-600">{uploadError}</p>
                 )}
+                {s3Error && (
+                  <p className="mt-3 text-sm text-red-600">{s3Error}</p>
+                )}
+                {isUploadingS3 && (
+                  <p className="mt-3 text-sm text-neutral-600">
+                    Presigned URL 발급 및 이미지 업로드 중…
+                  </p>
+                )}
                 {submitError && (
                   <p className="mt-3 text-sm text-red-600">{submitError}</p>
                 )}
@@ -400,10 +435,16 @@ export function AIVisualModal({
                 <button
                   type="button"
                   onClick={handleAnalyze}
-                  disabled={!file || isSubmitting}
-                  className={`${styles.btnNext} ${file && !isSubmitting ? styles.btnNextActive : styles.btnNextInactive}`}
+                  disabled={
+                    !file || !uploadedImageUrl || isUploadingS3 || isSubmitting
+                  }
+                  className={`${styles.btnNext} ${file && uploadedImageUrl && !isUploadingS3 && !isSubmitting ? styles.btnNextActive : styles.btnNextInactive}`}
                 >
-                  {isSubmitting ? '제출 중...' : '분석 시작'}
+                  {isUploadingS3
+                    ? '업로드 중...'
+                    : isSubmitting
+                      ? '분석 중...'
+                      : '분석 시작'}
                 </button>
               </>
             )}
