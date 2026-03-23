@@ -1,34 +1,37 @@
 'use client'
 import Link from 'next/link'
 import { motion, type Variants } from 'motion/react'
+import TasteTestIcon from '@public/LandingTasteTest.svg'
+import WellnessIcon from '@public/LandingWellness.svg'
+import AiVisualIcon from '@public/LandingAiVisual.svg'
 
 const cards = [
   {
-    index: 0,
+    id: 0,
     title: '취향 테스트',
     meta: '약 3분 · 7문항',
     description:
       '생활 방식과 취향을 분석해 나의 일상에 꼭 맞는 향기를 추천합니다',
     link: '/find-my-scent/taste-test',
-    imgSrc: '/LandingTasteTest.svg',
+    Icon: TasteTestIcon,
   },
   {
-    index: 1,
+    id: 1,
     title: '웰니스 케어 진단',
     meta: '약 2분 · 5문항',
     description:
       '현재 컨디션과 건강 상태를 체크해 심신 안정에 도움이 되는 아로마를 제안합니다',
     link: '/find-my-scent/wellness',
-    imgSrc: '/LandingWellness.svg',
+    Icon: WellnessIcon,
   },
   {
-    index: 2,
+    id: 2,
     title: 'AI 비주얼 분석',
     meta: '이미지 업로드 · AI 즉시 분석',
     description:
       '인테리어·OOTD·공간 사진을 올리면 AI가 분위기를 읽고 어울리는 향기를 찾아줍니다',
     link: '/find-my-scent/ai-visual',
-    imgSrc: '/LandingAiVisual.svg',
+    Icon: AiVisualIcon,
   },
 ]
 
@@ -77,7 +80,7 @@ export default function LandingCard() {
         viewport={{ once: true, amount: 0.15 }}
       >
         {cards.map((card) => (
-          <CardItem key={card.index} {...card} />
+          <CardItem key={card.id} {...card} />
         ))}
       </motion.div>
     </section>
@@ -85,12 +88,12 @@ export default function LandingCard() {
 }
 
 function CardItem({
-  index,
+  id,
   title,
   meta,
   description,
   link,
-  imgSrc,
+  Icon,
 }: (typeof cards)[number]) {
   return (
     <motion.div
@@ -99,12 +102,10 @@ function CardItem({
       className="flex w-full flex-none flex-col rounded-3xl bg-white p-8 sm:min-h-[480px] sm:w-80 sm:p-10"
     >
       <span className="text-gray-secondary mb-6 text-xs font-semibold">
-        {String(index + 1).padStart(2, '0')}
+        {String(id + 1).padStart(2, '0')}
       </span>
 
-      <img
-        src={imgSrc}
-        alt=""
+      <Icon
         aria-hidden
         className="mb-6 h-14 w-14 transition-transform duration-300 sm:h-16 sm:w-16"
       />
