@@ -33,6 +33,20 @@ const TAB_TO_INPUT_TYPES: Record<TabKey, AnalysisInputDataType[]> = {
   ai_interior: ['INTERIOR'],
 }
 
+const ALL_INPUT_TYPES: AnalysisInputDataType[] = [
+  'PREFERENCE',
+  'HEALTH',
+  'OOTD',
+  'INTERIOR',
+]
+
+const INPUT_TYPE_TO_TAB: Record<AnalysisInputDataType, TabKey> = {
+  PREFERENCE: 'preference',
+  HEALTH: 'wellness',
+  OOTD: 'ai_ootd',
+  INTERIOR: 'ai_interior',
+}
+
 const toAccordId = (raw: string | undefined): string => {
   if (!raw) return 'base'
   return raw.trim().toLowerCase()
@@ -96,6 +110,31 @@ const requestAnalysisResults = async (params: {
   return data
 }
 
+const fetchResultsByInputTypes = async (
+  inputTypes: AnalysisInputDataType[],
+  size: number
+) => {
+  const responses = await Promise.all(
+    inputTypes.map((inputType) =>
+      requestAnalysisResults({
+        input_data_type: inputType,
+        sort: DEFAULT_SORT,
+        page: DEFAULT_PAGE,
+        size,
+      })
+    )
+  )
+
+  return responses
+}
+
+const emptyTabCounts: Record<TabKey, number> = {
+  preference: 0,
+  wellness: 0,
+  ai_ootd: 0,
+  ai_interior: 0,
+}
+
 export default function ProfileStoragePage() {
   const [activeTab, setActiveTab] = useState<TabKey>('preference')
   const [storageData, setStorageData] = useState<AnalysisResultItem[]>([])
@@ -106,66 +145,51 @@ export default function ProfileStoragePage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let cancelled = false
+
     async function fetchTabCounts() {
       try {
-        const [preferenceRes, healthRes, ootdRes, interiorRes] =
-          await Promise.all([
-            requestAnalysisResults({
-              input_data_type: 'PREFERENCE',
-              sort: DEFAULT_SORT,
-              page: DEFAULT_PAGE,
-              size: 1,
-            }),
-            requestAnalysisResults({
-              input_data_type: 'HEALTH',
-              sort: DEFAULT_SORT,
-              page: DEFAULT_PAGE,
-              size: 1,
-            }),
-            requestAnalysisResults({
-              input_data_type: 'OOTD',
-              sort: DEFAULT_SORT,
-              page: DEFAULT_PAGE,
-              size: 1,
-            }),
-            requestAnalysisResults({
-              input_data_type: 'INTERIOR',
-              sort: DEFAULT_SORT,
-              page: DEFAULT_PAGE,
-              size: 1,
-            }),
-          ])
+        const responses = await fetchResultsByInputTypes(ALL_INPUT_TYPES, 1)
 
-        setTabCounts({
-          preference: preferenceRes.data?.count ?? 0,
-          wellness: healthRes.data?.count ?? 0,
-          ai_ootd: ootdRes.data?.count ?? 0,
-          ai_interior: interiorRes.data?.count ?? 0,
-        })
+        if (cancelled) return
+
+        const nextCounts = responses.reduce<Record<TabKey, number>>(
+          (acc, response, index) => {
+            const inputType = ALL_INPUT_TYPES[index]
+            const tabKey = INPUT_TYPE_TO_TAB[inputType]
+            acc[tabKey] = response.data?.count ?? 0
+            return acc
+          },
+          { ...emptyTabCounts }
+        )
+
+        setTabCounts(nextCounts)
       } catch {
-        setTabCounts({ preference: 0, wellness: 0, ai_ootd: 0, ai_interior: 0 })
+        if (!cancelled) setTabCounts({ ...emptyTabCounts })
       }
     }
 
-    fetchTabCounts()
+    void fetchTabCounts()
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
+    let cancelled = false
+
     async function fetchStorageByTab() {
-      setLoading(true)
-      setError(null)
+      if (!cancelled) {
+        setLoading(true)
+        setError(null)
+      }
 
       try {
         const inputTypes = TAB_TO_INPUT_TYPES[activeTab]
-        const responses = await Promise.all(
-          inputTypes.map((inputType) =>
-            requestAnalysisResults({
-              input_data_type: inputType,
-              sort: DEFAULT_SORT,
-              page: DEFAULT_PAGE,
-              size: DEFAULT_SIZE,
-            })
-          )
+        const responses = await fetchResultsByInputTypes(
+          inputTypes,
+          DEFAULT_SIZE
         )
 
         const mergedResults = responses
@@ -176,16 +200,26 @@ export default function ProfileStoragePage() {
               new Date(a.created_at).getTime()
           )
 
-        setStorageData(mergedResults)
-      } catch (e: any) {
-        setError(e?.message || '데이터를 불러오지 못했습니다')
+        if (!cancelled) setStorageData(mergedResults)
+      } catch (error: unknown) {
+        if (cancelled) return
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : '데이터를 불러오지 못했습니다'
+        setError(message)
         setStorageData([])
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
-    fetchStorageByTab()
+    void fetchStorageByTab()
+
+    return () => {
+      cancelled = true
+    }
   }, [activeTab])
 
   return (
@@ -237,7 +271,7 @@ export default function ProfileStoragePage() {
               elementCategory={getElementCategory(item)}
               blendCategory={mapBlendCategories(item)}
               createdAt={item.created_at ?? ''}
-              onDetail={() => console.log('자세히 보기 클릭')}
+              onDetail={() => undefined}
             />
           ))}
       </div>

@@ -21,7 +21,10 @@ export type WithdrawModalProps = {
   onClose: () => void
 }
 
-export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
+export default function WithdrawModal({
+  isOpen: _isOpen,
+  onClose,
+}: WithdrawModalProps) {
   const router = useRouter()
   const logout = useAuthStore((state) => state.logout)
   const openAlert = useModalStore((state) => state.openAlert)

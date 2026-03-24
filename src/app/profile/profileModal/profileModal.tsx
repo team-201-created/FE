@@ -10,8 +10,8 @@ type ProfileModalProps = {
 }
 
 export default function ProfileModal({
-  isOpen,
-  onClose,
+  isOpen: _isOpen,
+  onClose: _onClose,
   onNicknameClick,
   onWithdrawClick,
 }: ProfileModalProps) {
