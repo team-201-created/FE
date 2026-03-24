@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import Image from 'next/image'
+import GithubIcon from '@public/github.svg'
 
 const styles = {
   footer: 'border-t border-neutral-200 bg-white',
@@ -6,12 +8,13 @@ const styles = {
   grid: 'grid grid-cols-1 divide-y md:divide-y-0 md:grid-cols-3 md:gap-10',
   logo: 'block h-6 w-auto',
   description: 'mt-3 text-sm leading-relaxed text-neutral-600',
-  snsWrap: 'mt-4 flex gap-2',
+  snsWrap: 'mt-4 flex gap-2 cursor-pointer',
   snsIcon: 'size-10 shrink-0',
   sectionTitle: 'text-sm font-bold text-neutral-900',
   section: 'py-8 md:py-0',
   list: 'mt-3 space-y-2',
   listItem: 'text-sm text-neutral-600',
+  listItemDisabled: 'text-sm text-neutral-400 cursor-not-allowed',
   bottomWrap: 'mt-10 border-t border-neutral-200 pt-6',
   bottomInner: 'flex flex-col items-center justify-between gap-4 sm:flex-row',
   copyright: 'text-sm text-neutral-500',
@@ -39,27 +42,13 @@ export function Footer() {
               경험하세요.
             </p>
             <div className={styles.snsWrap}>
-              <Image
-                src="/LinkA.svg"
-                alt=""
-                width={40}
-                height={40}
-                className={styles.snsIcon}
-              />
-              <Image
-                src="/LinkB.svg"
-                alt=""
-                width={40}
-                height={40}
-                className={styles.snsIcon}
-              />
-              <Image
-                src="/LinkC.svg"
-                alt=""
-                width={40}
-                height={40}
-                className={styles.snsIcon}
-              />
+              <Link
+                href="https://github.com/team-201-created"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GithubIcon width={40} height={40} />
+              </Link>
             </div>
           </div>
 
@@ -67,19 +56,38 @@ export function Footer() {
             <h3 className={styles.sectionTitle}>서비스</h3>
             <ul className={styles.list}>
               <li>
-                <span className={styles.listItem}>향기 테스트</span>
+                <Link
+                  href="/find-my-scent/taste-test"
+                  className={styles.listItem}
+                >
+                  향기 테스트
+                </Link>
               </li>
               <li>
-                <span className={styles.listItem}>건강 테스트</span>
+                <Link
+                  href="/find-my-scent/wellness"
+                  className={styles.listItem}
+                >
+                  건강 테스트
+                </Link>
               </li>
               <li>
-                <span className={styles.listItem}>AI 추천</span>
+                <Link
+                  href="/find-my-scent/ai-visual"
+                  className={styles.listItem}
+                >
+                  AI 추천
+                </Link>
               </li>
               <li>
-                <span className={styles.listItem}>향기 저장소</span>
+                <Link href="/profile/storage" className={styles.listItem}>
+                  향기 저장소
+                </Link>
               </li>
               <li>
-                <span className={styles.listItem}>상품 둘러보기</span>
+                <Link href="/products/single" className={styles.listItem}>
+                  상품 둘러보기
+                </Link>
               </li>
             </ul>
           </div>
@@ -88,16 +96,18 @@ export function Footer() {
             <h3 className={styles.sectionTitle}>고객지원</h3>
             <ul className={styles.list}>
               <li>
-                <span className={styles.listItem}>공지사항</span>
+                <span className={styles.listItemDisabled}>공지사항</span>
               </li>
               <li>
-                <span className={styles.listItem}>FAQ</span>
+                <span className={styles.listItemDisabled}>FAQ</span>
               </li>
               <li>
-                <span className={styles.listItem}>이용약관</span>
+                <span className={styles.listItemDisabled}>이용약관</span>
               </li>
               <li>
-                <span className={styles.listItem}>개인정보처리방침</span>
+                <span className={styles.listItemDisabled}>
+                  개인정보처리방침
+                </span>
               </li>
             </ul>
           </div>
@@ -106,14 +116,14 @@ export function Footer() {
         <div className={styles.bottomWrap}>
           <div className={styles.bottomInner}>
             <p className={styles.copyright}>
-              © 2026 DeepScent. All rights reserved.
+              © 2026 201-created. All rights reserved.
             </p>
             <div className={styles.bottomLinksWrap}>
-              <span className={styles.listItem}>이용약관</span>
+              <span className={styles.listItemDisabled}>이용약관</span>
               <span className={styles.bottomDot} aria-hidden />
-              <span className={styles.listItem}>개인정보처리방침</span>
+              <span className={styles.listItemDisabled}>개인정보처리방침</span>
               <span className={styles.bottomDot} aria-hidden />
-              <span className={styles.listItem}>문의하기</span>
+              <span className={styles.listItemDisabled}>문의하기</span>
             </div>
           </div>
         </div>
