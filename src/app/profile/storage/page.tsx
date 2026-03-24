@@ -7,7 +7,9 @@ import type {
   AnalysisResultListApiResponse,
 } from './_types'
 import { useEffect, useState } from 'react'
+import { LoginRequiredTestModal } from '@/app/find-my-scent/_components/LoginRequiredTestModal'
 import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
+import { useAuthStore } from '@/store/useAuthStore'
 import HeartIcon from '@/assets/icons/heart.svg'
 import AdminTestIcon from '@/assets/icons/adminTest.svg'
 import AdminRecommendationIcon from '@/assets/icons/adminRecommendation.svg'
@@ -136,6 +138,7 @@ const emptyTabCounts: Record<TabKey, number> = {
 }
 
 export default function ProfileStoragePage() {
+  const { isInitialized, isLoggedIn } = useAuthStore()
   const [activeTab, setActiveTab] = useState<TabKey>('preference')
   const [storageData, setStorageData] = useState<AnalysisResultItem[]>([])
   const [tabCounts, setTabCounts] = useState<Record<TabKey, number> | null>(
@@ -145,6 +148,8 @@ export default function ProfileStoragePage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!isInitialized || isLoggedIn !== true) return
+
     let cancelled = false
 
     async function fetchTabCounts() {
@@ -174,9 +179,11 @@ export default function ProfileStoragePage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [isInitialized, isLoggedIn])
 
   useEffect(() => {
+    if (!isInitialized || isLoggedIn !== true) return
+
     let cancelled = false
 
     async function fetchStorageByTab() {
@@ -220,7 +227,15 @@ export default function ProfileStoragePage() {
     return () => {
       cancelled = true
     }
-  }, [activeTab])
+  }, [activeTab, isInitialized, isLoggedIn])
+
+  if (!isInitialized) {
+    return null
+  }
+
+  if (isLoggedIn !== true) {
+    return <LoginRequiredTestModal isOpen onClose={() => undefined} />
+  }
 
   return (
     <div className="mb-6 flex flex-col items-center text-2xl">
