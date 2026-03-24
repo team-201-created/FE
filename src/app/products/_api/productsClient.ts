@@ -1,9 +1,28 @@
 /**
  * 향(단품/조합) API — 명세 최종본 기준
  * - 목데이터(MSW): NEXT_PUBLIC_USE_MOCK_API=true 시 같은 origin 요청 → MSW가 가로챔
- * - 실제 API: NEXT_PUBLIC_API_URL 사용 (lib/api client와 동일)
+ * - 목록: NEXT_PUBLIC_API_URL 사용 (lib/api client와 동일)
+ * - 상세: 브라우저는 같은 출처 `/api/v1/scents/...` 로만 요청 → Route Handler가 실 API 프록시 (CORS 회피)
  */
-import { apiFetch } from '@/lib/api'
+import { apiFetch, handleResponse } from '@/lib/api'
+
+/** 클라이언트는 같은 출처, 서버(SSR 등)는 환경 변수 base로 직접 요청 */
+async function fetchScentDetailJson<T>(path: string): Promise<T> {
+  const base =
+    typeof window === 'undefined'
+      ? process.env.NEXT_PUBLIC_API_URL?.trim() || 'http://localhost:3000'
+      : ''
+  const res = await fetch(`${base}${path}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    cache: 'no-store',
+  })
+  const ok = await handleResponse(res)
+  return ok.json() as Promise<T>
+}
 
 // ─── 공통: API 한글 이름 → 프론트 id/라벨 매핑 ─────────────────────────────
 
@@ -95,7 +114,7 @@ export type ElementDetailResponse = {
 export async function fetchElementDetail(
   elementId: number
 ): Promise<ElementDetailResponse> {
-  return apiFetch.get<ElementDetailResponse>(
+  return fetchScentDetailJson<ElementDetailResponse>(
     `/api/v1/scents/elements/${elementId}`
   )
 }
@@ -169,5 +188,7 @@ export type BlendDetailResponse = {
 export async function fetchBlendDetail(
   blendId: number
 ): Promise<BlendDetailResponse> {
-  return apiFetch.get<BlendDetailResponse>(`/api/v1/scents/blends/${blendId}`)
+  return fetchScentDetailJson<BlendDetailResponse>(
+    `/api/v1/scents/blends/${blendId}`
+  )
 }

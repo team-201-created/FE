@@ -54,11 +54,11 @@ export function ProductCard({
                 alt={name}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
-                className="block rounded-[20px_20px_0_0] object-contain p-1"
+                className="block rounded-t-2xl object-contain p-1"
                 priority={priority}
               />
             ) : (
-              <div className="h-full w-full rounded-[20px_20px_0_0] bg-neutral-100" />
+              <div className="h-full w-full rounded-t-2xl bg-neutral-100" />
             )}
           </Lens>
         </div>

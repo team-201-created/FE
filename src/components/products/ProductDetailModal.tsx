@@ -10,6 +10,7 @@ import {
 } from '@/constants/accordLabelStyles'
 import Button from '@/components/common/Button'
 import { buttonVariants } from '@/components/common/Button/Button.variants'
+import { Lens } from '@/components/magicui/lens'
 import { cn } from '@/lib/cn'
 
 // ─── 스타일 ─────────────────────────────────────────────────────────────────
@@ -137,13 +138,18 @@ export function ProductDetailModal({
             </div>
           )}
           {!isLoading && product?.imageUrl?.trim() && (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              sizes="(max-width: 896px) 100vw, 60vw"
-              className={styles.image}
-            />
+            <Lens
+              className="h-full min-h-0 w-full"
+              ariaLabel="상품 이미지 확대 영역"
+            >
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                sizes="(max-width: 896px) 100vw, 60vw"
+                className={styles.image}
+              />
+            </Lens>
           )}
         </div>
 

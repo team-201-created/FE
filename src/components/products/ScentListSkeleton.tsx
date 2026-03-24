@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 const CARD_COUNT = 8
 
 /** 스켈레톤 최소 노출 시간(ms). 이 시간만큼 지난 뒤 실제 목록 표시 */
-export const SCENT_LIST_SKELETON_DELAY_MS = 3000
+export const SCENT_LIST_SKELETON_DELAY_MS = 800
 
 type SkeletonDelayProps = {
   /** 스켈레톤을 보여줄 최소 시간(ms) */
