@@ -24,6 +24,9 @@ export function ShineBorder({
   const width = borderWidth ?? shineSize ?? 1
   return (
     <div className={cn('relative rounded-[inherit]', className)} {...props}>
+      <div className="relative z-0 min-h-0 w-full rounded-[inherit]">
+        {children}
+      </div>
       <div
         style={
           {
@@ -42,9 +45,8 @@ export function ShineBorder({
             ...style,
           } as React.CSSProperties
         }
-        className="motion-safe:animate-shine pointer-events-none absolute inset-0 size-full rounded-[inherit] will-change-[background-position]"
+        className="motion-safe:animate-shine pointer-events-none absolute inset-0 z-[30] size-full rounded-[inherit] will-change-[background-position]"
       />
-      {children}
     </div>
   )
 }

@@ -1,25 +1,17 @@
+'use client'
+
 /** 테스트 결과 페이지 — 상단(아이콘/타이틀/부타이틀) + 컨텐츠 박스 */
 import type { ComponentProps } from 'react'
 import Image from 'next/image'
+import { useAuthStore } from '@/store/useAuthStore'
 import type { ResultPageType } from '../_types'
 import { ResultContentBox } from './ResultContentBox'
 
-const RESULT_HEADER_CONFIG: Record<
-  ResultPageType,
-  { title: string; subtitle: string }
-> = {
-  PREFERENCE: {
-    title: '당신을 위한 조합 향기를 찾았습니다!',
-    subtitle: '질문을 통해 취향에 맞는 조합 향기를 추천해드립니다',
-  },
-  HEALTH: {
-    title: '웰니스 향기 분석 완료!',
-    subtitle: '당신의 건강 상태에 맞는 아로마 테라피를 찾았습니다',
-  },
-  AI: {
-    title: 'AI 조합 향기 분석 완료!',
-    subtitle: '이미지 기반으로 최적의 조합 향기를 찾았습니다',
-  },
+/** 유형별 부타이틀 — 타이틀은 닉네임 기반으로 공통 처리 */
+const RESULT_SUBTITLE: Record<ResultPageType, string> = {
+  PREFERENCE: '질문을 통해 취향에 맞는 아로마 테라피를 찾았습니다',
+  HEALTH: '질문을 통해 건강 상태에 맞는 아로마 테라피를 찾았습니다',
+  AI: 'AI 조합 향기 분석 완료! 첨부해주신 이미지 기반으로 최적의 아로마 테라피를 찾았습니다',
 }
 
 /** 결과 유형별 재테스트 경로 (다른 테스트는 모달에서 선택) */
@@ -34,8 +26,9 @@ const styles = {
   inner: 'mx-auto w-full max-w-[1200px]',
   header: 'flex flex-col items-center gap-4 pb-8 text-center',
   iconWrap: 'relative h-[104px] w-[104px] shrink-0',
-  title: 'text-xl font-bold text-[var(--color-black-primary)]',
-  subtitle: 'text-sm leading-relaxed text-neutral-600',
+  title:
+    'text-2xl font-bold text-[var(--color-black-primary)] sm:text-[1.75rem]',
+  subtitle: 'text-base leading-relaxed text-neutral-600 sm:text-lg',
   content: 'mt-0',
 } as const
 
@@ -52,7 +45,10 @@ export function TestResultPage({
   resultType,
   contentBoxProps,
 }: TestResultPageProps) {
-  const { title, subtitle } = RESULT_HEADER_CONFIG[resultType]
+  const user = useAuthStore((s) => s.user)
+  const displayName = user?.nickname?.trim() || '고객'
+  const title = `${displayName}님을 위한 조합 향기 분석이 완료되었습니다!`
+  const subtitle = RESULT_SUBTITLE[resultType]
   const { retest } = RESULT_PATHS[resultType]
 
   return (
@@ -69,7 +65,7 @@ export function TestResultPage({
             />
           </div>
           <h1 className={styles.title}>{title}</h1>
-          <p className={styles.subtitle}>{subtitle}</p>
+          <p className={`${styles.subtitle} max-w-2xl`}>{subtitle}</p>
         </header>
 
         <div className={styles.content}>

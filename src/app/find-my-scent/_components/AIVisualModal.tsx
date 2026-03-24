@@ -402,11 +402,6 @@ export function AIVisualModal({
                 {s3Error && (
                   <p className="mt-3 text-sm text-red-600">{s3Error}</p>
                 )}
-                {isUploadingS3 && (
-                  <p className="mt-3 text-sm text-neutral-600">
-                    Presigned URL 발급 및 이미지 업로드 중…
-                  </p>
-                )}
                 {submitError && (
                   <p className="mt-3 text-sm text-red-600">{submitError}</p>
                 )}
