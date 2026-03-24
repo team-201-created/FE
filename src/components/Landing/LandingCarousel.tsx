@@ -69,10 +69,10 @@ export default function LandingCarousel() {
               </span>
               <span className="bg-black-primary/25 h-px w-6" />
             </div>
-            <h2 className="text-4xl leading-tight font-semibold tracking-tight whitespace-pre-line sm:text-5xl">
+            <h2 className="text-4xl leading-tight whitespace-pre-line sm:text-5xl">
               {slides[active].title}
             </h2>
-            <p className="text-gray-primary text-base sm:text-lg">
+            <p className="text-gray-primary sm:text-lg">
               {slides[active].subtitle}
             </p>
             <Link

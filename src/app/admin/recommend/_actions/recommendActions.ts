@@ -18,12 +18,8 @@ import {
   RecommendTabId,
   ProductPoolCreateBody,
   ProductPoolsListResponse,
-  BlendMapsListResponse,
-  ProductMapsListResponse,
   PipelineSnapshotBody,
 } from '../_types'
-import { fetchAdminTests } from '@/app/admin/test/_api/adminFetchTest'
-import { TestListResponse } from '@/app/admin/test/_types'
 import { extractError } from '@/app/admin/_lib/actionUtils'
 
 const REVALIDATE_DELAY_MS = 100
@@ -159,53 +155,5 @@ export async function createPipelineSnapshotAction(body: PipelineSnapshotBody) {
     return { success: true as const }
   } catch (error) {
     return { success: false as const, ...extractError(error) }
-  }
-}
-
-/**
- * 발행 중인 향조합 추천맵 목록 조회 (파이프라인 폼 드롭다운용)
- */
-export async function fetchPublishedBlendMapsAction(): Promise<BlendMapsListResponse> {
-  try {
-    return await RECOMMEND_API.blendMaps({
-      publish_status: 'PUBLISHED',
-      size: 4,
-    })
-  } catch {
-    return {
-      success: false,
-      data: { results: [], page: 1, size: 4, count: 0, total_pages: 0 },
-    }
-  }
-}
-
-/**
- * 발행 중인 제품 추천맵 목록 조회 (파이프라인 폼 드롭다운용)
- */
-export async function fetchPublishedProductMapsAction(): Promise<ProductMapsListResponse> {
-  try {
-    return await RECOMMEND_API.productMaps({
-      publish_status: 'PUBLISHED',
-      size: 2,
-    })
-  } catch {
-    return {
-      success: false,
-      data: { results: [], page: 1, size: 2, count: 0, total_pages: 0 },
-    }
-  }
-}
-
-/**
- * 발행 중인 테스트 목록 조회 (파이프라인 폼 드롭다운용)
- */
-export async function fetchPublishedTestsAction(): Promise<TestListResponse> {
-  try {
-    return await fetchAdminTests({ publish_status: 'PUBLISHED', size: 4 })
-  } catch {
-    return {
-      success: false,
-      data: { results: [], page: 1, size: 4, count: 0, total_pages: 0 },
-    }
   }
 }

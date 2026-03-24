@@ -18,9 +18,6 @@ import {
   createProductMapAction,
   createPipelineSnapshotAction,
   fetchAdoptedPoolsAction,
-  fetchPublishedBlendMapsAction,
-  fetchPublishedProductMapsAction,
-  fetchPublishedTestsAction,
 } from '../_actions/recommendActions'
 import { PipelineSnapshotBody } from '../_types'
 import { PipelineForm } from './PipelineForm'
@@ -71,30 +68,14 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
     typeof fetchAdoptedPoolsAction
   > | null>(null)
 
-  const [pipelinePromises, setPipelinePromises] = useState<{
-    blendMaps: ReturnType<typeof fetchPublishedBlendMapsAction>
-    productMaps: ReturnType<typeof fetchPublishedProductMapsAction>
-    tests: ReturnType<typeof fetchPublishedTestsAction>
-  } | null>(null)
-
   const [pipelineData, setPipelineData] = useState<PipelineSnapshotBody>({
     input_type: 'PREFERENCE',
     product_type: 'DIFFUSER',
-    profiling_form_id: undefined,
-    blend_match_map_id: 0,
-    product_match_map_id: 0,
   })
 
   useEffect(() => {
     if (activeTab === 'product-maps') {
       setPoolsPromise(fetchAdoptedPoolsAction())
-    }
-    if (activeTab === 'pipeline') {
-      setPipelinePromises({
-        blendMaps: fetchPublishedBlendMapsAction(),
-        productMaps: fetchPublishedProductMapsAction(),
-        tests: fetchPublishedTestsAction(),
-      })
     }
   }, [activeTab])
 
@@ -154,18 +135,6 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
           return
         }
       } else if (activeTab === 'pipeline') {
-        if (
-          !pipelineData.blend_match_map_id ||
-          !pipelineData.product_match_map_id
-        ) {
-          openAlert({
-            type: 'danger',
-            title: '입력 오류',
-            content: '향조합 추천맵과 제품 추천맵을 선택해주세요.',
-            confirmText: '확인',
-          })
-          return
-        }
         const result = await createPipelineSnapshotAction(pipelineData)
         if (!result.success) {
           openAlert({
@@ -214,19 +183,12 @@ export const RecommendPostModal = ({ activeTab }: RecommendPostModalProps) => {
         )
       case 'pipeline':
         return (
-          <Suspense fallback={<ProductMapsFormFallback />}>
-            {pipelinePromises && (
-              <PipelineForm
-                formData={pipelineData}
-                onChange={(updates) =>
-                  setPipelineData((prev) => ({ ...prev, ...updates }))
-                }
-                blendMapsPromise={pipelinePromises.blendMaps}
-                productMapsPromise={pipelinePromises.productMaps}
-                testsPromise={pipelinePromises.tests}
-              />
-            )}
-          </Suspense>
+          <PipelineForm
+            formData={pipelineData}
+            onChange={(updates) =>
+              setPipelineData((prev) => ({ ...prev, ...updates }))
+            }
+          />
         )
       default:
         return null

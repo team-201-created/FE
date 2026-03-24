@@ -1,9 +1,6 @@
 export interface PipelineSnapshotBody {
-  input_type: string
-  product_type: string
-  profiling_form_id?: number
-  blend_match_map_id: number
-  product_match_map_id: number
+  input_type: 'PREFERENCE' | 'HEALTH' | 'OOTD' | 'INTERIOR'
+  product_type: 'DIFFUSER' | 'PERFUME'
 }
 
 export interface PipelineSnapshotItem {
