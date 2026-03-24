@@ -53,7 +53,7 @@ export default function ProductAdminContent({
   const handleOpenRegisterModal = () => {
     const elementPromiseForBlend =
       activeTab === 'BLEND'
-        ? fetchAdminProductList('ELEMENT')
+        ? fetchAdminProductList('ELEMENT', { size: 50 })
         : Promise.resolve(null)
 
     const categoryPromiseForElement: Promise<AdminCategoryListResponse | null> =
