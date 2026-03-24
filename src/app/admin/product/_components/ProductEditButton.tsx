@@ -57,7 +57,7 @@ export function ProductEditButton({ type, id }: ProductEditButtonProps) {
         const [detailRes, categoryRes, elementRes] = await Promise.all([
           fetchBlendDetailAction(id),
           fetchBlendCategoriesAction(),
-          fetchAdminProductList('ELEMENT'),
+          fetchAdminProductList('ELEMENT', { size: 50 }),
         ])
         const item = detailRes.data
 
