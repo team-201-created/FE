@@ -10,7 +10,7 @@ type LoginResult =
 
 const BASE_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false,
+  secure: process.env.NODE_ENV === 'production',
   maxAge: 3600,
   sameSite: 'lax' as const,
   path: '/',
@@ -49,7 +49,7 @@ export async function loginWithKakaoAction(
     cookieStore.set('access_token', access_token, BASE_COOKIE_OPTIONS)
     cookieStore.set('refresh_token', refresh_token, REFRESH_COOKIE_OPTIONS)
     return { success: true, user }
-  } catch (error) {
+  } catch (error: unknown) {
     return {
       success: false,
       error:

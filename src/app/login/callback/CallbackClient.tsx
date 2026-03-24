@@ -3,31 +3,9 @@
 import { useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { fetchLatestUserProfile, writeStoredUser } from '@/lib/auth/userClient'
 import { loginWithKakaoAction } from '@/lib/auth/sessionActions'
 import { useAuthStore } from '@/store/useAuthStore'
-import type { User } from '@/types'
-
-async function fetchLatestUserProfile(): Promise<User | null> {
-  try {
-    const response = await fetch('/api/v1/users/me', {
-      credentials: 'include',
-      headers: { Accept: 'application/json' },
-    })
-
-    const body = (await response.json().catch(() => null)) as {
-      success?: boolean
-      data?: User
-    } | null
-
-    if (response.ok && body?.success && body.data) {
-      return body.data
-    }
-  } catch {
-    // 프로필 동기화 실패 시 콜백 응답 user를 fallback으로 사용
-  }
-
-  return null
-}
 
 export default function CallbackClient() {
   const searchParams = useSearchParams()
@@ -58,7 +36,7 @@ export default function CallbackClient() {
           const userToStore = latestUser ?? result.user
 
           // user 정보는 UI 표시용으로 localStorage에 저장
-          localStorage.setItem('user', JSON.stringify(userToStore))
+          writeStoredUser(userToStore)
           login(userToStore)
 
           alert(`${userToStore.nickname}님, 환영합니다!`)
@@ -66,8 +44,12 @@ export default function CallbackClient() {
         } else {
           throw new Error(result.error)
         }
-      } catch (error: any) {
-        alert(error.message || '로그인 처리 중 오류가 발생했습니다.')
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : '로그인 처리 중 오류가 발생했습니다.'
+        alert(message)
         router.replace('/login')
       }
     }

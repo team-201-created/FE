@@ -3,6 +3,7 @@ import { useState } from 'react'
 import ManageProfileIcon from '@/assets/icons/manageProfile.svg'
 import Input from '@/components/common/Input'
 import Button from '@/components/common/Button'
+import { writeStoredUser } from '@/lib/auth/userClient'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useModalStore } from '@/store/useModalStore'
 
@@ -28,7 +29,10 @@ export type NicknameModalProps = {
   onClose: () => void
 }
 
-export default function NicknameModal({ isOpen, onClose }: NicknameModalProps) {
+export default function NicknameModal({
+  isOpen: _isOpen,
+  onClose,
+}: NicknameModalProps) {
   const user = useAuthStore((state) => state.user)
   const [newNickname, setNewNickname] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -84,7 +88,7 @@ export default function NicknameModal({ isOpen, onClose }: NicknameModalProps) {
           : state.user
 
         if (nextUser) {
-          localStorage.setItem('user', JSON.stringify(nextUser))
+          writeStoredUser(nextUser)
         }
 
         return { user: nextUser }

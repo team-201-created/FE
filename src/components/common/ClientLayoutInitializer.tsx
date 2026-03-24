@@ -1,35 +1,30 @@
 'use client'
 
 import { useEffect } from 'react'
+import {
+  clearStoredUser,
+  fetchLatestUserProfileResult,
+  writeStoredUser,
+} from '@/lib/auth/userClient'
 import { useAuthStore } from '@/store/useAuthStore'
-import type { User } from '@/types'
 
 /** 쿠키 기준 최신 프로필(is_admin 등) 동기화 — same-origin /api/v1/users/me */
 async function syncUserProfileFromApi(): Promise<void> {
-  try {
-    const res = await fetch('/api/v1/users/me', {
-      credentials: 'include',
-      headers: { Accept: 'application/json' },
-    })
-    const body = (await res.json()) as {
-      success?: boolean
-      data?: User
-    }
-    if (res.status === 401) {
-      localStorage.removeItem('user')
-      useAuthStore.setState({ isLoggedIn: false, user: null })
-      return
-    }
-    if (res.ok && body.success && body.data) {
-      localStorage.setItem('user', JSON.stringify(body.data))
-      useAuthStore.setState({
-        isLoggedIn: true,
-        user: body.data,
-      })
-    }
-  } catch {
-    // 네트워크 오류 시 localStorage 사용자 유지
+  const result = await fetchLatestUserProfileResult()
+
+  if (result.status === 401) {
+    clearStoredUser()
+    useAuthStore.setState({ isLoggedIn: false, user: null })
+    return
   }
+
+  if (!result.user) return
+
+  writeStoredUser(result.user)
+  useAuthStore.setState({
+    isLoggedIn: true,
+    user: result.user,
+  })
 }
 
 export default function ClientLayoutInitializer({
@@ -42,6 +37,8 @@ export default function ClientLayoutInitializer({
     const run = async () => {
       useAuthStore.getState().initialize()
       if (!useAuthStore.getState().isLoggedIn) {
+        clearStoredUser()
+        useAuthStore.setState({ isLoggedIn: false, user: null })
         if (!cancelled) useAuthStore.setState({ userProfileLoaded: true })
         return
       }

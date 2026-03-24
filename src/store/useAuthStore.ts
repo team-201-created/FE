@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { logoutAction } from '@/lib/auth/sessionActions'
+import { clearStoredUser, readStoredUser } from '@/lib/auth/userClient'
 import type { User } from '@/types'
 
 interface AuthState {
@@ -28,7 +29,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     // httpOnly 쿠키 삭제는 Server Action에서만 가능
     await logoutAction()
-    localStorage.removeItem('user')
+    clearStoredUser()
     set({
       isInitialized: true,
       isLoggedIn: false,
@@ -37,18 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     })
   },
   initialize: () => {
-    if (typeof window !== 'undefined') {
-      // user 정보만 localStorage에 저장
-      const storedUser = localStorage.getItem('user')
-      let user = null
-      try {
-        if (storedUser) {
-          user = JSON.parse(storedUser)
-        }
-      } catch {
-        localStorage.removeItem('user')
-      }
-      set({ isInitialized: true, isLoggedIn: !!user, user })
-    }
+    const user = readStoredUser()
+    set({ isInitialized: true, isLoggedIn: !!user, user })
   },
 }))
