@@ -47,10 +47,11 @@ export default function StorageCard({
         <div className="mb-2 text-lg font-bold">{blendName}</div>
         <div className="mb-3 flex items-center gap-2">
           {/* 엘리멘탈 카테고리 라벨 */}
-          {(() => {
-            const label = getAccordLabel(elementCategory)
+          {elementCategory.map((category, index) => {
+            const label = getAccordLabel(category)
             return (
               <span
+                key={index}
                 className={ACCORD_LABEL_PILL_SM_CLASS}
                 style={{
                   background: label.style.bg,
@@ -61,24 +62,21 @@ export default function StorageCard({
                 {label.label}
               </span>
             )
-          })()}
+          })}
         </div>
         <div className="mb-2 flex gap-2">
-          {blendCategory.map((category, index) => {
-            const label = getAccordLabel(category)
-            return (
-              <span
-                key={index}
-                className={ACCORD_LABEL_PILL_SM_CLASS}
-                style={{
-                  background: '#f3f4f6',
-                  color: '#364153',
-                }}
-              >
-                {label.label}
-              </span>
-            )
-          })}
+          {blendCategory.map((category, index) => (
+            <span
+              key={index}
+              className={ACCORD_LABEL_PILL_SM_CLASS}
+              style={{
+                background: '#f3f4f6',
+                color: '#364153',
+              }}
+            >
+              {category}
+            </span>
+          ))}
         </div>
         <div className="mt-2 mb-4 flex items-center text-xs text-gray-400">
           <Dateicon className="mr-1 h-4 w-4" />
