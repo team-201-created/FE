@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { cn } from '@/lib/cn'
 import {
-  getAccordLabels,
+  getAccordLabelsUnique,
   ACCORD_LABEL_PILL_SM_CLASS,
   SCENT_NOTE_LINE_CLASS,
 } from '@/constants/accordLabelStyles'
@@ -67,7 +67,7 @@ export function ProductCard({
             {name}
           </h3>
           <div className="flex flex-wrap gap-1">
-            {getAccordLabels(accordIds).map(({ id, label, style }) => (
+            {getAccordLabelsUnique(accordIds).map(({ id, label, style }) => (
               <span
                 key={id}
                 className={ACCORD_LABEL_PILL_SM_CLASS}

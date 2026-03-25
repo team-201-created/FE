@@ -8,12 +8,15 @@
  * - 브라우저: 같은 오리진 + `credentials: 'include'` / RSC: 내부 URL + `Cookie` 헤더
  */
 import { handleResponse } from '@/lib/api/client'
+import { mapBlendCategoryKrLabels } from '@/lib/mapBlendCategoryKrLabels'
+import { scentCategoryKrToId } from '@/app/products/_api/productsClient'
 import type {
   AnswersState,
   ProductTypeChoice,
   ProfilingFormResponse,
   ProfilingQuestion,
   ProfilingResultDetail,
+  ProfilingResultBlend,
   ProfilingResultDetailResponse,
   ProfilingSubmitRequest,
   ProfilingSubmitResponse,
@@ -175,6 +178,28 @@ export async function fetchProfilingResult(
   )
 }
 
+/** 향기 노트용 카테고리 행 — categories / blend_categories 우선순위 */
+function pickBlendCategoryRows(
+  blend: ProfilingResultBlend | null | undefined
+): { name: { kr: string; en: string } }[] {
+  if (!blend) return []
+  const rows = blend.categories ?? blend.blend_categories
+  return Array.isArray(rows) ? rows : []
+}
+
+/**
+ * 상세 응답에서 향기 노트 라벨용 categories 해석
+ * - recommended_blend.categories / blend_categories
+ * - 누락 시 목록과 동일 필드인 data.matched_blend 쪽 보조 (스키마 불일치 대응)
+ */
+function pickNoteCategoryRowsForDetail(
+  detail: ProfilingResultDetail
+): { name: { kr: string; en: string } }[] {
+  const fromRecommended = pickBlendCategoryRows(detail.recommended_blend)
+  if (fromRecommended.length > 0) return fromRecommended
+  return pickBlendCategoryRows(detail.matched_blend ?? null)
+}
+
 /** 결과 상세 API 응답 → ResultContentBox props (primaryButtonHref = 추천 상품 링크) */
 export function resultDetailToContentBoxProps(detail: ProfilingResultDetail): {
   productImageUrl: string
@@ -206,17 +231,19 @@ export function resultDetailToContentBoxProps(detail: ProfilingResultDetail): {
   }
 
   const scentTypeTags =
-    recommended_blend.contained_elements?.map(
-      (e) => e.category?.en ?? e.category?.kr ?? ''
-    ) ?? []
+    recommended_blend.contained_elements?.map((e) => {
+      const kr = e.category?.kr?.trim()
+      if (kr && scentCategoryKrToId[kr]) return scentCategoryKrToId[kr]
+      const en = e.category?.en?.trim().toLowerCase()
+      return en ?? ''
+    }) ?? []
   const scentTypeLabel =
-    recommended_blend.contained_elements?.[0]?.category?.en ??
-    recommended_blend.contained_elements?.[0]?.category?.kr
+    recommended_blend.contained_elements?.[0]?.category?.kr ??
+    recommended_blend.contained_elements?.[0]?.category?.en
   const primaryButtonHref = recommended_products[0]?.purchase_url ?? ''
-  const noteTags =
-    recommended_blend.contained_elements?.map(
-      (e) => `#${e.category?.en ?? e.name}`
-    ) ?? []
+  const noteRows = pickNoteCategoryRowsForDetail(detail)
+  /** 저장소 목록 카드 blendCategory 와 동일 문자열·순서(중복 제거 규칙 동일) */
+  const noteTags = mapBlendCategoryKrLabels(noteRows)
   return {
     productImageUrl: recommended_blend.image_url ?? '',
     productName: recommended_blend.name ?? '',

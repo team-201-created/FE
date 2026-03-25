@@ -8,6 +8,7 @@ import type {
 } from './_types'
 import { useEffect, useState } from 'react'
 import { LoginRequiredTestModal } from '@/app/find-my-scent/_components/LoginRequiredTestModal'
+import { mapBlendCategoryKrLabels } from '@/lib/mapBlendCategoryKrLabels'
 import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useRouter } from 'next/navigation'
@@ -66,16 +67,7 @@ const toAccordId = (raw: string | undefined): string => {
 
 const mapBlendCategories = (item: AnalysisResultItem): string[] => {
   if (!item.matched_blend) return []
-
-  const categories = Array.isArray(item.matched_blend.categories)
-    ? item.matched_blend.categories
-    : []
-
-  const names = categories
-    .map((category) => category.name?.kr?.trim())
-    .filter((name): name is string => Boolean(name))
-
-  return Array.from(new Set(names))
+  return mapBlendCategoryKrLabels(item.matched_blend.categories)
 }
 
 const mapElementCategories = (item: AnalysisResultItem): string[] => {

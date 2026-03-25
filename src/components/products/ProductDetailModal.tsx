@@ -4,7 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
-  getAccordLabels,
+  getAccordLabelsUnique,
   ACCORD_LABEL_PILL_MD_CLASS,
   SCENT_NOTE_PILL_CLASS,
 } from '@/constants/accordLabelStyles'
@@ -108,7 +108,9 @@ export function ProductDetailModal({
 
   /** 연관 추천 상품 보러가기: 상세의 product_link */
   const productLink = product?.productLink?.trim() ?? ''
-  const accordLabels = product ? getAccordLabels(product.scentFamilyIds) : []
+  const accordLabels = product
+    ? getAccordLabelsUnique(product.scentFamilyIds)
+    : []
 
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
@@ -194,7 +196,7 @@ export function ProductDetailModal({
               <div className={styles.section}>
                 <p className={styles.subTitle}>향조</p>
                 <div className="flex flex-wrap gap-2">
-                  {getAccordLabels(product.scentFamilyIds).map(
+                  {getAccordLabelsUnique(product.scentFamilyIds).map(
                     ({ id, label, style }) => (
                       <span
                         key={id}
