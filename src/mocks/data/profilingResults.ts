@@ -15,6 +15,10 @@ export const mockProfilingResultDetail: ProfilingResultDetail = {
     name: '포근한 숲',
     image_url: '/images/blend_5.jpg',
     description: '따뜻한 우디 향',
+    categories: [
+      { name: { kr: '기분전환', en: 'Refresh' } },
+      { name: { kr: '로맨틱', en: 'Romantic' } },
+    ],
     contained_elements: [
       { name: '시더우드', category: { kr: '우디', en: 'Woody' } },
       { name: '라벤더', category: { kr: '아로마틱', en: 'Aromatic' } },

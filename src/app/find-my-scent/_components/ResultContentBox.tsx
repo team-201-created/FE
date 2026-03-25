@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  getAccordLabels,
+  getAccordLabelsUnique,
   ACCORD_LABEL_PILL_MD_CLASS,
   SCENT_NOTE_PILL_CLASS,
 } from '@/constants/accordLabelStyles'
@@ -19,9 +19,9 @@ export type ResultContentBoxProps = {
   productName?: string
   scentTypeLabel?: string
   showRecommendLabel?: boolean
-  /** 향조 타입 id 배열 (getAccordLabels용, 예: ['oriental', 'woody']) */
+  /** 향조 타입 id 배열 (getAccordLabelsUnique용, 예: ['oriental', 'woody']) */
   scentTypeTags?: string[]
-  /** 향기 노트 라벨 (예: ['#숙면', '#로맨틱']) */
+  /** 향기 노트 라벨 — 저장소 목록 카드 blendCategory 와 동일(한글 명 그대로) */
   noteTags?: string[]
   description?: string
   /** 하단 버튼 이동 경로/URL */
@@ -135,22 +135,22 @@ export function ResultContentBox({
               <h3 className={styles.sectionTitle}>향조 타입</h3>
               <div className={styles.tagRow}>
                 {scentTypeTags.length > 0 ? (
-                  getAccordLabels(
-                    scentTypeTags.map((id) => id.toLowerCase())
-                  ).map(({ id, label, style }) => (
-                    <span
-                      key={id}
-                      className={ACCORD_LABEL_PILL_MD_CLASS}
-                      style={{
-                        backgroundColor: style.bg,
-                        borderColor: style.border,
-                        color: style.text,
-                        borderWidth: 1,
-                      }}
-                    >
-                      {label}
-                    </span>
-                  ))
+                  getAccordLabelsUnique(scentTypeTags).map(
+                    ({ id, label, style }) => (
+                      <span
+                        key={id}
+                        className={ACCORD_LABEL_PILL_MD_CLASS}
+                        style={{
+                          backgroundColor: style.bg,
+                          borderColor: style.border,
+                          color: style.text,
+                          borderWidth: 1,
+                        }}
+                      >
+                        {label}
+                      </span>
+                    )
+                  )
                 ) : (
                   <span className="text-sm text-neutral-400">—</span>
                 )}

@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server'
 import { authFetch, FetchError } from '@/lib/api'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
+import storageMockResults from '@/mocks/data/storage'
 
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
 
@@ -30,9 +31,30 @@ export async function GET(
   }
 
   if (USE_MOCK) {
+    const listItem = storageMockResults.find((item) => item.id === id)
+    const mb = listItem?.matched_blend
+    const base = { ...mockProfilingResultDetail, id }
+    const data =
+      listItem && mb
+        ? {
+            ...base,
+            id: listItem.id,
+            input_data_type: listItem.input_data_type,
+            product_type: listItem.product_type,
+            created_at: listItem.created_at,
+            recommended_blend: {
+              name: mb.name,
+              image_url: mb.image_url,
+              description:
+                mockProfilingResultDetail.recommended_blend?.description ?? '',
+              categories: mb.categories,
+              contained_elements: mb.contained_elements,
+            },
+          }
+        : base
     return NextResponse.json({
       success: true,
-      data: { ...mockProfilingResultDetail, id },
+      data,
     })
   }
 

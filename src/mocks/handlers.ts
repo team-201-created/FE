@@ -15,6 +15,7 @@ import {
 } from './data/profilingForms'
 import { MOCK_PIPELINE_SNAPSHOT_ID } from './data/profilingConstants'
 import { mockProfilingResultDetail } from './data/profilingResults'
+import storageMockResults from './data/storage'
 import { adminCategoryHandlers } from './handlers/adminCategoryHandlers'
 import {
   IMAGE_FORMATS,
@@ -356,12 +357,31 @@ export const profilingResultDetailHandler = http.get(
       )
     }
 
+    const listItem = storageMockResults.find((item) => item.id === id)
+    const base = { ...mockProfilingResultDetail, id }
+    const mb = listItem?.matched_blend
+    const data =
+      listItem && mb
+        ? {
+            ...base,
+            id: listItem.id,
+            input_data_type: listItem.input_data_type,
+            product_type: listItem.product_type,
+            created_at: listItem.created_at,
+            recommended_blend: {
+              name: mb.name,
+              image_url: mb.image_url,
+              description:
+                mockProfilingResultDetail.recommended_blend?.description ?? '',
+              categories: mb.categories,
+              contained_elements: mb.contained_elements,
+            },
+          }
+        : base
+
     return HttpResponse.json({
       success: true,
-      data: {
-        ...mockProfilingResultDetail,
-        id,
-      },
+      data,
     })
   }
 )

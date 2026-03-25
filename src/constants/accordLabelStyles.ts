@@ -3,6 +3,7 @@
  *
  * [향조 라벨]
  * - getAccordLabels(ids) 로 id 배열 → { id, label, style }[] 변환
+ * - getAccordLabelsUnique(ids) 동일하나 id 중복 제거(첫 등장 순서 유지, 소문자 정규화)
  * - pill: ACCORD_LABEL_PILL_SM_CLASS(카드) / ACCORD_LABEL_PILL_MD_CLASS(모달)
  * - style.bg, style.border, style.text 를 인라인 style 로 넣어서 렌더
  *
@@ -46,6 +47,19 @@ export const getAccordLabel = (id: string): AccordLabel => {
 // 향조 라벨 여러 개 조회
 export const getAccordLabels = (ids: string[]): AccordLabel[] =>
   ids.map(getAccordLabel)
+
+/** React key 충돌 방지·UI 중복 라벨 방지: 동일 향조 id는 한 번만 */
+export const getAccordLabelsUnique = (ids: string[]): AccordLabel[] => {
+  const seen = new Set<string>()
+  const unique: string[] = []
+  for (const raw of ids) {
+    const id = raw.trim().toLowerCase()
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+    unique.push(id)
+  }
+  return getAccordLabels(unique)
+}
 
 // 향조 라벨 스타일 클래스
 export const ACCORD_LABEL_PILL_SM_CLASS =

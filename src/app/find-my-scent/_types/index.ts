@@ -87,6 +87,10 @@ export type ProfilingResultBlend = {
   name: string
   image_url: string
   description: string
+  /** 조합 무드·테마 (향기 노트 UI) — API 필드명: categories */
+  categories?: { name: { kr: string; en: string } }[]
+  /** 백엔드·목록과 필드명이 다를 때 대비 */
+  blend_categories?: { name: { kr: string; en: string } }[]
   contained_elements: {
     name: string
     category: { kr: string; en: string }
@@ -100,6 +104,11 @@ export type ProfilingResultDetail = {
   input_data_summary: string
   /** 분석·추천 파이프라인이 아직 없으면 null 일 수 있음 */
   recommended_blend: ProfilingResultBlend | null
+  /**
+   * 목록 API와 동일하게 matched_blend만 내려주는 경우 향기 노트(categories) 보존용
+   * (recommended_blend.categories 가 비어 있을 때 보조)
+   */
+  matched_blend?: ProfilingResultBlend | null
   recommended_products: { purchase_url: string }[]
   created_at: string
 }
