@@ -6,11 +6,14 @@ import {
 import { ResultPageWithAnalyzing } from '../../_components/ResultPageWithAnalyzing'
 import { mockProfilingResultDetail } from '@/mocks/data/profilingResults'
 
-type PageProps = { searchParams: Promise<{ result_id?: string }> }
+type PageProps = {
+  searchParams: Promise<{ result_id?: string; skip_analyzing?: string }>
+}
 
 export default async function AIResultPage({ searchParams }: PageProps) {
   const params = await searchParams
   const resultId = params.result_id ? Number(params.result_id) : null
+  const shouldSkipAnalyzing = params.skip_analyzing === '1'
 
   let contentBoxProps: ReturnType<typeof resultDetailToContentBoxProps>
   if (resultId != null && Number.isInteger(resultId) && resultId > 0) {
@@ -34,6 +37,7 @@ export default async function AIResultPage({ searchParams }: PageProps) {
     <ResultPageWithAnalyzing
       resultType="AI"
       contentBoxProps={contentBoxProps}
+      analyzingDurationMs={shouldSkipAnalyzing ? 0 : undefined}
     />
   )
 }

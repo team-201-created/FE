@@ -1,8 +1,7 @@
 'use client'
 
 /** 결과 페이지: 분석 중 UI 표시 후 결과 콘텐츠 표시 */
-import { useState, useEffect } from 'react'
-import type { ComponentProps } from 'react'
+import { useState, useEffect, type ComponentProps } from 'react'
 import { AnalyzingUI } from '@/components/common/AnalyzingUI'
 import { TestResultPage } from './TestResultPage'
 import type { ResultPageType } from '../_types'
@@ -24,9 +23,11 @@ export function ResultPageWithAnalyzing({
   contentBoxProps,
   analyzingDurationMs = DEFAULT_ANALYZING_MS,
 }: ResultPageWithAnalyzingProps) {
-  const [isAnalyzing, setIsAnalyzing] = useState(true)
+  const [isAnalyzing, setIsAnalyzing] = useState(() => analyzingDurationMs > 0)
 
   useEffect(() => {
+    if (analyzingDurationMs <= 0) return
+
     const timer = setTimeout(() => setIsAnalyzing(false), analyzingDurationMs)
     return () => clearTimeout(timer)
   }, [analyzingDurationMs])
