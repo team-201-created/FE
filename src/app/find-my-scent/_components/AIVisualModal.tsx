@@ -89,8 +89,7 @@ const styles = {
   uploadText: 'mt-4 text-sm font-medium text-neutral-700',
   uploadHint: 'mt-2 text-xs text-neutral-500',
   uploadTypes: 'mt-3 text-xs text-neutral-400',
-  previewWrap:
-    'relative min-h-[200px] flex-1 w-full overflow-hidden rounded-lg bg-neutral-200',
+  previewWrap: 'relative w-full overflow-hidden rounded-lg bg-neutral-200',
   previewImg: 'object-cover object-center',
   previewRemove:
     'absolute right-3 top-3 z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/60 text-white shadow-md transition-all hover:bg-black/80 hover:scale-105',
@@ -349,12 +348,10 @@ export function AIVisualModal({
                     className={`${styles.uploadZone} ${styles.uploadZoneFilled}`}
                   >
                     <div className={styles.previewWrap}>
-                      <Image
+                      <img
                         src={previewUrl}
                         alt="업로드된 사진"
-                        fill
-                        className={styles.previewImg}
-                        unoptimized
+                        className="block max-h-[420px] w-full object-contain"
                       />
                       <button
                         type="button"
