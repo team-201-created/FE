@@ -11,6 +11,7 @@ import { LoginRequiredTestModal } from '@/app/find-my-scent/_components/LoginReq
 import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useRouter } from 'next/navigation'
+import StorageCardSkeleton from '@/components/storage/StorageCardSkeleton'
 import HeartIcon from '@/assets/icons/heart.svg'
 import AdminTestIcon from '@/assets/icons/adminTest.svg'
 import AdminRecommendationIcon from '@/assets/icons/adminRecommendation.svg'
@@ -28,6 +29,7 @@ const ANALYSIS_RESULTS_API_PATH = '/api/v1/users/me/analysis-results'
 const DEFAULT_SORT = 'created_at_desc'
 const DEFAULT_PAGE = 1
 const DEFAULT_SIZE = 50
+const MIN_SKELETON_MS = 500
 
 const TAB_TO_INPUT_TYPES: Record<TabKey, AnalysisInputDataType[]> = {
   preference: ['PREFERENCE'],
@@ -199,6 +201,8 @@ export default function ProfileStoragePage() {
     let cancelled = false
 
     async function fetchStorageByTab() {
+      const startedAt = Date.now()
+
       if (!cancelled) {
         setLoading(true)
         setError(null)
@@ -230,6 +234,13 @@ export default function ProfileStoragePage() {
         setError(message)
         setStorageData([])
       } finally {
+        const elapsed = Date.now() - startedAt
+        const remaining = MIN_SKELETON_MS - elapsed
+
+        if (remaining > 0) {
+          await new Promise((resolve) => setTimeout(resolve, remaining))
+        }
+
         if (!cancelled) setLoading(false)
       }
     }
@@ -282,7 +293,7 @@ export default function ProfileStoragePage() {
 
       {/* 카드 영역 */}
       <div className="flex flex-wrap justify-center">
-        {loading && <div>로딩 중...</div>}
+        {loading && <StorageCardSkeleton />}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !error && storageData.length === 0 && (
           <div className="text-gray-500">저장된 결과가 없습니다.</div>
