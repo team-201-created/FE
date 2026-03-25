@@ -3,11 +3,14 @@ import { loadProfilingResultPageProps } from '../../_lib/loadProfilingResultPage
 import { ProfilingResultLoadError } from '../../_components/ProfilingResultLoadError'
 import { ResultPageWithAnalyzing } from '../../_components/ResultPageWithAnalyzing'
 
-type PageProps = { searchParams: Promise<{ result_id?: string }> }
+type PageProps = {
+  searchParams: Promise<{ result_id?: string; skip_analyzing?: string }>
+}
 
 export default async function WellnessResultPage({ searchParams }: PageProps) {
   const params = await searchParams
   const loaded = await loadProfilingResultPageProps(params.result_id)
+  const shouldSkipAnalyzing = params.skip_analyzing === '1'
 
   if (!loaded.ok) {
     return (
@@ -22,6 +25,7 @@ export default async function WellnessResultPage({ searchParams }: PageProps) {
     <ResultPageWithAnalyzing
       resultType="HEALTH"
       contentBoxProps={loaded.contentBoxProps}
+      analyzingDurationMs={shouldSkipAnalyzing ? 0 : undefined}
     />
   )
 }

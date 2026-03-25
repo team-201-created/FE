@@ -301,7 +301,9 @@ export default function ProfileStoragePage() {
               onDetail={() => {
                 const resultPath =
                   RESULT_PATH_BY_INPUT_TYPE[item.input_data_type]
-                router.push(`${resultPath}?result_id=${item.id}`)
+                router.push(
+                  `${resultPath}?result_id=${item.id}&skip_analyzing=1`
+                )
               }}
             />
           ))}
