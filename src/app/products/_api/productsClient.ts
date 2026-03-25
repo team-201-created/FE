@@ -38,6 +38,30 @@ export const scentCategoryKrToId: Record<string, string> = {
   머스크: 'animalic',
 }
 
+/** contained_elements[].category.en 등 영문 응답 → scentFamilyId */
+const scentCategoryEnToId: Record<string, string> = {
+  base: 'base',
+  citrus: 'citrus',
+  aromatic: 'aromatic',
+  woody: 'woody',
+  floral: 'floral',
+  oriental: 'oriental',
+  animalic: 'animalic',
+  musk: 'animalic',
+}
+
+/** 단품/조합 원료 category — kr 우선, 없으면 en 소문자로 scentFamilyId */
+export function elementCategoryToScentFamilyId(category: {
+  kr?: string
+  en?: string
+}): string | undefined {
+  const kr = category.kr?.trim() ?? ''
+  if (kr && scentCategoryKrToId[kr]) return scentCategoryKrToId[kr]
+  const en = category.en?.trim().toLowerCase() ?? ''
+  if (en && scentCategoryEnToId[en]) return scentCategoryEnToId[en]
+  return undefined
+}
+
 /** blend_categories[].name.kr → 노트 라벨 (#포함) */
 export const blendCategoryKrToNoteLabel: Record<string, string> = {
   포근: '#포근',
@@ -129,6 +153,10 @@ export type BlendsListResponse = {
       name: string
       thumbnail_image_url: string
       blend_categories: Array<{ name: { kr: string; en: string } }>
+      contained_elements?: Array<{
+        name: string
+        category: { kr: string; en: string }
+      }>
     }>
     page: number
     size: number
@@ -190,5 +218,29 @@ export async function fetchBlendDetail(
 ): Promise<BlendDetailResponse> {
   return fetchScentDetailJson<BlendDetailResponse>(
     `/api/v1/scents/blends/${blendId}`
+  )
+}
+
+/**
+ * 조합 목록에 contained_elements 가 없을 때(실 API 흔함) 상세 조회로 보강해 카드·필터에 다중 향조 반영.
+ * 이미 목록에 원료가 있으면 추가 요청하지 않음.
+ */
+export async function enrichBlendListItemsWithContainedElements(
+  items: CombinationItem[]
+): Promise<CombinationItem[]> {
+  return Promise.all(
+    items.map(async (item) => {
+      if (item.contained_elements && item.contained_elements.length > 0) {
+        return item
+      }
+      try {
+        const res = await fetchBlendDetail(item.id)
+        const ce = res.data.contained_elements
+        if (!ce?.length) return item
+        return { ...item, contained_elements: ce }
+      } catch {
+        return item
+      }
+    })
   )
 }

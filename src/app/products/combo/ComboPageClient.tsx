@@ -9,6 +9,7 @@ import { ProductDetailModal } from '@/components/products/ProductDetailModal'
 import {
   fetchBlendDetail,
   blendCategoryKrToNoteLabel,
+  elementCategoryToScentFamilyId,
 } from '../_api/productsClient'
 import { mapBlendDetailToModalProduct } from '../_api/productDetailMappers'
 import { useProductDetailModal, type CombinationItem } from '../_hooks'
@@ -44,7 +45,13 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
     )
   }
 
+  const getScentFamilyIds = (item: CombinationItem): string[] =>
+    (item.contained_elements ?? [])
+      .map((el) => elementCategoryToScentFamilyId(el.category ?? {}) ?? '')
+      .filter(Boolean)
+
   const filtered = initialItems.filter((item) => {
+    const scentFamilyIds = getScentFamilyIds(item)
     const noteLabels = (item.blend_categories ?? [])
       .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
       .filter(Boolean)
@@ -53,7 +60,10 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
     const matchNote =
       selectedNotes.length === 0 ||
       noteLabels.some((n) => selectedNotes.includes(n))
-    return matchSearch && matchNote
+    const matchScent =
+      selectedScentIds.length === 0 ||
+      scentFamilyIds.some((id) => selectedScentIds.includes(id))
+    return matchSearch && matchNote && matchScent
   })
 
   return (
@@ -71,6 +81,7 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
       </div>
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {filtered.map((item, index) => {
+          const scentFamilyIds = getScentFamilyIds(item)
           const scentNotes = (item.blend_categories ?? [])
             .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
             .filter(Boolean)
@@ -80,8 +91,8 @@ export function ComboPageClient({ initialItems }: ComboPageClientProps) {
                 variant="combo"
                 name={item.name}
                 imageUrl={resolveApiMediaUrl(item.thumbnail_image_url)}
-                scentFamilyId="woody"
-                scentFamilyIds={[]}
+                scentFamilyId={scentFamilyIds[0] ?? 'base'}
+                scentFamilyIds={scentFamilyIds}
                 scentNotes={scentNotes}
                 onClick={() => openDetail(item.id)}
                 priority={index === 0}

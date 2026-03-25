@@ -1,7 +1,10 @@
 /** 조합 향기 목록: 서버에서 목록 조회 후 클라이언트에 전달 */
 import { FetchError } from '@/lib/api'
 import { SkeletonDelay } from '@/components/products/ScentListSkeleton'
-import { fetchBlends } from '../_api/productsClient'
+import {
+  enrichBlendListItemsWithContainedElements,
+  fetchBlends,
+} from '../_api/productsClient'
 import { ProductsListError } from '../_components/ProductsListError'
 import { ComboPageClient } from './ComboPageClient'
 
@@ -14,7 +17,10 @@ export default async function ProductsComboPage() {
 
   try {
     const res = await fetchBlends({ page: 1, size: 100 })
-    data = res.data
+    const results = await enrichBlendListItemsWithContainedElements(
+      res.data.results
+    )
+    data = { ...res.data, results }
   } catch (e) {
     errorMessage =
       e instanceof FetchError ? e.message : '목록을 불러올 수 없습니다.'

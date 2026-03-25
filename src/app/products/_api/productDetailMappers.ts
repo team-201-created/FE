@@ -5,6 +5,7 @@
 import type { ProductDetailModalProduct } from '@/components/products/ProductDetailModal'
 import {
   blendCategoryKrToNoteLabel,
+  elementCategoryToScentFamilyId,
   scentCategoryKrToId,
   type BlendDetailResponse,
   type ElementDetailResponse,
@@ -36,9 +37,10 @@ export function mapBlendDetailToModalProduct(
   res: BlendDetailResponse
 ): ProductDetailModalProduct {
   const data = res.data
-  const scentFamilyIds = data.contained_elements.map(
-    (el) => scentCategoryKrToId[el.category?.kr ?? ''] ?? 'woody'
-  )
+  const mapped = data.contained_elements
+    .map((el) => elementCategoryToScentFamilyId(el.category ?? {}))
+    .filter((id): id is string => Boolean(id))
+  const scentFamilyIds = mapped.length > 0 ? mapped : ['woody']
   const noteLabels = data.blend_categories
     .map((c) => blendCategoryKrToNoteLabel[c.name?.kr ?? ''])
     .filter(Boolean)
