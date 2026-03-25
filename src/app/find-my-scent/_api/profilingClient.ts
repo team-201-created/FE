@@ -16,6 +16,7 @@ import type {
   ProfilingFormResponse,
   ProfilingQuestion,
   ProfilingResultDetail,
+  ProfilingResultBlend,
   ProfilingResultDetailResponse,
   ProfilingSubmitRequest,
   ProfilingSubmitResponse,
