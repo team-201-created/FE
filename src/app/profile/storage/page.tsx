@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { LoginRequiredTestModal } from '@/app/find-my-scent/_components/LoginRequiredTestModal'
 import { resolveApiMediaUrl } from '@/lib/resolveApiMediaUrl'
 import { useAuthStore } from '@/store/useAuthStore'
+import { useRouter } from 'next/navigation'
 import HeartIcon from '@/assets/icons/heart.svg'
 import AdminTestIcon from '@/assets/icons/adminTest.svg'
 import AdminRecommendationIcon from '@/assets/icons/adminRecommendation.svg'
@@ -49,12 +50,33 @@ const INPUT_TYPE_TO_TAB: Record<AnalysisInputDataType, TabKey> = {
   INTERIOR: 'ai_interior',
 }
 
+const RESULT_PATH_BY_INPUT_TYPE: Record<AnalysisInputDataType, string> = {
+  PREFERENCE: '/find-my-scent/taste-test/result',
+  HEALTH: '/find-my-scent/wellness/result',
+  OOTD: '/find-my-scent/ai-visual/result',
+  INTERIOR: '/find-my-scent/ai-visual/result',
+}
+
 const toAccordId = (raw: string | undefined): string => {
   if (!raw) return 'base'
   return raw.trim().toLowerCase()
 }
 
 const mapBlendCategories = (item: AnalysisResultItem): string[] => {
+  if (!item.matched_blend) return []
+
+  const categories = Array.isArray(item.matched_blend.categories)
+    ? item.matched_blend.categories
+    : []
+
+  const names = categories
+    .map((category) => category.name?.kr?.trim())
+    .filter((name): name is string => Boolean(name))
+
+  return Array.from(new Set(names))
+}
+
+const mapElementCategories = (item: AnalysisResultItem): string[] => {
   if (!item.matched_blend) return ['base']
 
   const elements = Array.isArray(item.matched_blend.contained_elements)
@@ -67,17 +89,6 @@ const mapBlendCategories = (item: AnalysisResultItem): string[] => {
 
   const uniqueIds = Array.from(new Set(ids))
   return uniqueIds.length > 0 ? uniqueIds : ['base']
-}
-
-const getElementCategory = (item: AnalysisResultItem): string => {
-  if (!item.matched_blend) return 'base'
-
-  const elements = Array.isArray(item.matched_blend.contained_elements)
-    ? item.matched_blend.contained_elements
-    : []
-
-  const first = elements[0]
-  return toAccordId(first?.category.en)
 }
 
 const requestAnalysisResults = async (params: {
@@ -138,6 +149,7 @@ const emptyTabCounts: Record<TabKey, number> = {
 }
 
 export default function ProfileStoragePage() {
+  const router = useRouter()
   const { isInitialized, isLoggedIn } = useAuthStore()
   const [activeTab, setActiveTab] = useState<TabKey>('preference')
   const [storageData, setStorageData] = useState<AnalysisResultItem[]>([])
@@ -283,10 +295,14 @@ export default function ProfileStoragePage() {
               blendName={item.matched_blend?.name ?? '추천 블렌드 생성 중'}
               blendImageUrl={resolveApiMediaUrl(item.matched_blend?.image_url)}
               productType={item.product_type}
-              elementCategory={getElementCategory(item)}
+              elementCategory={mapElementCategories(item)}
               blendCategory={mapBlendCategories(item)}
               createdAt={item.created_at ?? ''}
-              onDetail={() => undefined}
+              onDetail={() => {
+                const resultPath =
+                  RESULT_PATH_BY_INPUT_TYPE[item.input_data_type]
+                router.push(`${resultPath}?result_id=${item.id}`)
+              }}
             />
           ))}
       </div>
