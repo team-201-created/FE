@@ -15,7 +15,7 @@ const pretendard = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'DeepScent',
+  title: 'Ozent',
   description: '나의 향기를 찾다.',
 }
 

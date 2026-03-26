@@ -24,7 +24,7 @@ export default function LandingHero() {
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-xs font-medium tracking-[0.3em] text-white/60 uppercase"
         >
-          Deepscent
+          Ozent
         </motion.span>
 
         <motion.h1

@@ -70,7 +70,7 @@ export default function WithdrawModal({
       openAlert({
         type: 'success',
         title: '회원 탈퇴 완료',
-        content: '그동안 DeepScent를 이용해주셔서 감사합니다.',
+        content: '그동안 Ozent를 이용해주셔서 감사합니다.',
         confirmText: '확인',
         onConfirm: navigateToLogin,
         onCancel: navigateToLogin,

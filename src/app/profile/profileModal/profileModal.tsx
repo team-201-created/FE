@@ -36,7 +36,7 @@ export default function ProfileModal({
           </div>
           <div className="ml-4">
             <h1 className="flex text-[20px] font-bold">닉네임 변경</h1>
-            <p className="text-gray-primary text-[14px]">DeepScent 사용자</p>
+            <p className="text-gray-primary text-[14px]">Ozent 사용자</p>
           </div>
         </button>
         <button
