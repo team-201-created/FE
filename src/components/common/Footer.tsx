@@ -30,7 +30,7 @@ export function Footer() {
           <div className={styles.section}>
             <Image
               src="/logo.svg"
-              alt="DeepScent"
+              alt="Ozent"
               width={189}
               height={29}
               className={styles.logo}

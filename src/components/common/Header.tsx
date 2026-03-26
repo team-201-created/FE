@@ -133,10 +133,10 @@ export function Header() {
         <div className={styles.container}>
           {/* 로고 */}
           <div className={styles.leftGroup}>
-            <Link href="/" className={styles.logo} aria-label="DeepScent 홈">
+            <Link href="/" className={styles.logo} aria-label="Ozent 홈">
               <Image
                 src="/logo.svg"
-                alt="DeepScent"
+                alt="Ozent"
                 width={189}
                 height={29}
                 className="h-7 w-auto"

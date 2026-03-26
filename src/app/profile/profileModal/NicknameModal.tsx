@@ -39,7 +39,7 @@ export default function NicknameModal({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const openAlert = useModalStore((state) => state.openAlert)
 
-  const currentNickname = user?.nickname ?? 'DeepScent 사용자'
+  const currentNickname = user?.nickname ?? 'Ozent 사용자'
 
   const handleSubmit = async () => {
     const trimmedNickname = newNickname.trim()

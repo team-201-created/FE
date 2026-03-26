@@ -28,9 +28,7 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-around">
       <div className="flex flex-col items-center">
         <h1 className="mt-10 mb-1 text-[36px] font-semibold">로그인</h1>
-        <p className="text-gray text-[16px]">
-          DeepScent에 오신 것을 환영합니다.
-        </p>
+        <p className="text-gray text-[16px]">Ozent에 오신 것을 환영합니다.</p>
       </div>
       <div className="mt-8 mb-20 flex h-141.5 w-md flex-col items-center justify-center gap-6 rounded-[24px] bg-[#FBF9F7]">
         <div>
