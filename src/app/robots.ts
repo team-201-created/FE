@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://oz-scent-match.duckdns.org'
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL!
 
 export default function robots(): MetadataRoute.Robots {
   return {
