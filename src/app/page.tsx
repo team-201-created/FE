@@ -6,7 +6,7 @@ import LandingCard from '@/components/Landing/LandingCard'
 // 웹사이트 중복 문제 해결을 위한 canonical 설정
 export const metadata: Metadata = {
   alternates: {
-    canonical: 'https://oz-scent-match.duckdns.org',
+    canonical: process.env.NEXT_PUBLIC_SITE_URL,
   },
 }
 

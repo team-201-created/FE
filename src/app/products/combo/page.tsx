@@ -1,5 +1,14 @@
-/** 조합 향기 목록: 서버에서 목록 조회 후 클라이언트에 전달 */
+import type { Metadata } from 'next'
 import { FetchError } from '@/lib/api'
+
+export const metadata: Metadata = {
+  title: '조합 향기',
+  description:
+    '여러 향기를 조합한 블렌드 제품을 탐색하세요. AI 추천과 향조 필터로 나만의 완벽한 향기 조합을 찾아드립니다.',
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/products/combo`,
+  },
+}
 import { SkeletonDelay } from '@/components/products/ScentListSkeleton'
 import {
   enrichBlendListItemsWithContainedElements,
