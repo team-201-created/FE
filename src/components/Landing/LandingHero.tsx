@@ -7,7 +7,7 @@ export default function LandingHero() {
     <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden">
       <Image
         src="/img/landing.jpg"
-        alt="Landing-hero"
+        alt="당신만을 위한 맞춤 향기 추천"
         fill
         priority
         sizes="100vw"
@@ -39,7 +39,7 @@ export default function LandingHero() {
         >
           당신만을 위한
           <br />
-          맞춤 향 추천
+          맞춤 향기 추천
         </motion.h1>
 
         <motion.p
