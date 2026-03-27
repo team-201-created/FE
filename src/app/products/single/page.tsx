@@ -1,5 +1,14 @@
-/** 단품 향기 목록: 서버에서 목록 조회 후 클라이언트에 전달 */
+import type { Metadata } from 'next'
 import { FetchError } from '@/lib/api'
+
+export const metadata: Metadata = {
+  title: '단품 향기',
+  description:
+    '취향에 맞는 단품 향기 제품을 한번에 찾아보세요. 향조 필터로 나만의 시그니처 향을 탐색할 수 있습니다.',
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/products/single`,
+  },
+}
 import { SkeletonDelay } from '@/components/products/ScentListSkeleton'
 import { fetchElements } from '../_api/productsClient'
 import { ProductsListError } from '../_components/ProductsListError'
